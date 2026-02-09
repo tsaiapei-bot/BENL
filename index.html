@@ -162,25 +162,28 @@
         .msg.ai { background: rgba(45, 212, 191, 0.15); color: #f0fdfa; align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg.user { background: #334155; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         
-        /* AI Input Area */
+        /* AI Input Area - Safe Area Optimized */
         .ai-input-area {
-            padding: 12px 16px;
+            padding: 16px 20px;
             background: #1e293b;
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex;
-            gap: 10px;
-            padding-bottom: max(20px, env(safe-area-inset-bottom)); 
+            align-items: center;
+            gap: 12px;
+            /* CRITICAL FIX: Add more bottom padding for mobile safe area */
+            padding-bottom: max(30px, env(safe-area-inset-bottom)); 
         }
         
         .ai-text-input {
             flex: 1;
             background: #334155;
             color: white;
-            border-radius: 25px;
-            padding: 10px 16px;
-            font-size: 16px;
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-size: 16px; /* Prevents zoom on iOS */
             outline: none;
-            border: 1px solid transparent;
+            border: 1px solid #475569;
+            transition: border 0.3s;
         }
         .ai-text-input:focus { border-color: #2dd4bf; }
         
@@ -188,14 +191,16 @@
             background: #2dd4bf;
             color: #0f172a;
             border-radius: 50%;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
+        .ai-send-btn:active { transform: scale(0.95); }
 
         .loading-dots span { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -321,7 +326,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton Brussels City</h3>
                 <p class="text-xs text-slate-400 mb-3">位於布魯塞爾北站旁。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -413,7 +419,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
                 <p class="text-xs text-slate-400 mb-3">搭火車返回布魯塞爾北站。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -487,7 +494,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
                 <p class="text-xs text-slate-400 mb-3">搭火車返回布魯塞爾。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -520,7 +528,7 @@
                     <span class="time-tag">10:00</span>
                     <span class="text-sm font-bold text-slate-200">安特衛普中央車站</span>
                 </div>
-                <p class="spot-desc">世界最美車站。🛅 **行李寄放**：位於 0 樓 (Level 0)，近樓梯處有置物櫃，可刷卡付費。</p>
+                <p class="spot-desc">世界最美車站。🛅 <span class="text-teal-400 font-bold">行李寄放</span>：位於 0 樓 (Level 0)，近樓梯處有置物櫃，可刷卡付費。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Antwerpen-Centraal" target="_blank" class="map-link">📍 車站導航</a></div>
             </div>
 
@@ -563,7 +571,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Hilton Rotterdam</h3>
                 <p class="text-xs text-slate-400 mb-3">距鹿特丹中央車站步行 7 分鐘。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -612,7 +621,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
                 <p class="text-xs text-slate-400 mb-3">中央車站東側。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -648,7 +658,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
                 <p class="text-xs text-slate-400 mb-3">中央車站東側。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -693,7 +704,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
                 <p class="text-xs text-slate-400 mb-3">中央車站東側。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -738,7 +750,8 @@
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
                 <p class="text-xs text-slate-400 mb-3">中央車站東側。</p>
-                <div class="text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -800,15 +813,15 @@
         const model = "gemini-2.5-flash-preview-09-2025";
 
         const dayData = {
-            1: { note: "08:00 機場出發。今天使用歐鐵通票 (Day 1)。布魯塞爾人多，請注意隨身包包。", lat: 50.8503, lon: 4.3517 },
-            2: { note: "09:00 飯店出發。使用歐鐵通票 (Day 2)。古城路面顛簸，穿舒適好走的鞋。", lat: 51.2093, lon: 3.2247 },
-            3: { note: "09:00 飯店出發。使用歐鐵通票 (Day 3)。城堡內樓梯陡峭，上下請小心。", lat: 51.0543, lon: 3.7174 },
-            4: { note: "08:30 飯店退房。使用歐鐵通票 (Day 4)。安特衛普車站行李寄放於 Level 0。", lat: 51.9225, lon: 4.4792 },
-            5: { note: "08:50 飯店出發。使用歐鐵通票 (Day 5)。河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312 },
-            6: { note: "08:30 飯店出發。刷 OV Pay。NEMO 科學館適合放電，家長可休息。", lat: 52.3676, lon: 4.9041 },
-            7: { note: "08:20 飯店出發 (博物館09:00)。刷 OV Pay。梵谷博物館嚴格預約制，別遲到。", lat: 52.3676, lon: 4.9041 },
-            8: { note: "09:00 飯店出發。刷 OV Pay。船屋空間狹小，背包建議揹前面。", lat: 52.3676, lon: 4.9041 },
-            9: { note: "08:40 飯店退房。刷 OV Pay。退稅排隊可能很久，請務必提早。", lat: 52.3105, lon: 4.7683 }
+            1: { note: "08:00 機場出發。⚠️ 布魯塞爾人多，注意隨身包包。", lat: 50.8503, lon: 4.3517 },
+            2: { note: "09:00 飯店出發。⚠️ 古城石板路顛簸，請穿舒適平底鞋。", lat: 51.2093, lon: 3.2247 },
+            3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174 },
+            4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792 },
+            5: { note: "08:50 飯店出發。⚠️ 河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312 },
+            6: { note: "08:30 飯店出發。⚠️ 刷 OV Pay。NEMO 科學館適合放電。", lat: 52.3676, lon: 4.9041 },
+            7: { note: "08:20 飯店出發。⚠️ 梵谷博物館嚴格預約制，千萬別遲到。", lat: 52.3676, lon: 4.9041 },
+            8: { note: "09:00 飯店出發。⚠️ 船屋空間狹小，背包建議揹前面。", lat: 52.3676, lon: 4.9041 },
+            9: { note: "08:40 飯店退房。⚠️ 退稅排隊可能很久，請務必提早 3 小時。", lat: 52.3105, lon: 4.7683 }
         };
 
         function switchTab(day) {
@@ -838,15 +851,14 @@
                     const wind = weatherData.current_weather.windspeed;
                     
                     let icon = "fa-cloud";
-                    let desc = "多雲";
                     let advice = "舒適";
 
-                    if(code <= 1) { icon = "fa-sun"; desc = "晴朗"; }
-                    else if(code <= 3) { icon = "fa-cloud-sun"; desc = "多雲"; }
-                    else if(code <= 67) { icon = "fa-cloud-rain"; desc = "雨天"; advice = "攜帶雨具"; }
-                    else { icon = "fa-snowflake"; desc = "有雪"; advice = "保暖防水"; }
+                    if(code <= 1) { icon = "fa-sun"; advice = "天氣晴朗，適合拍照"; }
+                    else if(code <= 3) { icon = "fa-cloud-sun"; advice = "多雲涼爽"; }
+                    else if(code <= 67) { icon = "fa-cloud-rain"; advice = "⚠️ 攜帶雨具/雨衣"; }
+                    else { icon = "fa-snowflake"; advice = "⚠️ 保暖防水"; }
                     
-                    if (wind > 20) advice += " (風大)";
+                    if (wind > 20) advice += " (風大戴帽)";
 
                     wBox.innerHTML = `
                         <div class="flex flex-col justify-center h-full">
@@ -885,7 +897,6 @@
             div.id = 'msg-' + Date.now();
             div.innerHTML = text;
             document.getElementById('ai-messages').appendChild(div);
-            // Auto scroll to bottom
             const container = document.getElementById('ai-messages');
             container.scrollTop = container.scrollHeight;
             return div.id;
