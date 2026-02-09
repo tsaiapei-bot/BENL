@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2026 荷比九日親子自由行 - 旗艦手機版</title>
+    <title>2026 荷比九日親子自由行 - 終極完全版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,6 +27,7 @@
             margin-bottom: 16px; 
             padding: 16px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); 
+            position: relative;
         }
         
         /* Flight Panel Special Style */
@@ -212,6 +213,11 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         
         .hidden { display: none; }
+        .dashed-line { 
+            position: absolute; left: 24px; top: 30px; bottom: 0; 
+            width: 1px; border-left: 1px dashed rgba(255,255,255,0.1); 
+            z-index: 0; 
+        }
     </style>
 </head>
 <body>
@@ -221,7 +227,7 @@
         <div class="flex justify-between items-end">
             <div>
                 <h1 class="text-2xl font-bold text-white leading-tight">荷比親子九日</h1>
-                <p class="text-teal-400 text-xs mt-1"><i class="fa-solid fa-calendar-days mr-1"></i>2/10 - 2/19 <span class="mx-1">|</span> 📱 旗艦導航版</p>
+                <p class="text-teal-400 text-xs mt-1"><i class="fa-solid fa-calendar-days mr-1"></i>2/10 - 2/19 <span class="mx-1">|</span> 📱 旗艦完全版</p>
             </div>
             <button onclick="toggleAI()" class="bg-teal-500/20 text-teal-400 w-10 h-10 rounded-full border border-teal-500/50 flex items-center justify-center active:bg-teal-500/40 transition-colors">
                 <i class="fa-solid fa-robot text-lg"></i>
@@ -273,7 +279,7 @@
                 <h2 class="text-lg font-bold text-white">Day 1：抵達 ➜ 布魯塞爾</h2>
                 <p class="text-xs text-slate-400">2/11 (三) · 歐鐵通票 Day 1</p>
             </div>
-
+            
             <!-- Flight Info Card -->
             <div class="glass-panel flight-panel mb-4">
                 <div class="flex items-center justify-between mb-2 text-teal-300">
@@ -291,19 +297,18 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">06:30</span>
                     <span class="text-sm font-bold text-slate-200">抵達史基浦機場 (AMS)</span>
                 </div>
+                <p class="spot-desc">入境、領行李。前往機場地下火車站搭車。</p>
                 <div class="train-info">
                     <div class="flex justify-between font-bold text-teal-400 border-b border-white/10 pb-2 mb-2">
                         <span><i class="fa-solid fa-train mr-1"></i>建議班次</span>
-                        <span>08:25 IC 9216</span>
+                        <span>08:30 IC International</span>
                     </div>
-                    <div class="flex justify-between text-xs text-slate-400 mb-1"><span>候選一</span><span>07:25 IC 9212</span></div>
-                    <div class="flex justify-between text-xs text-slate-400"><span>候選二</span><span>09:25 IC 9220</span></div>
                     <p class="text-[10px] mt-2 text-slate-500">* 直達 Brussels-Noord (北站)</p>
                 </div>
             </div>
@@ -320,6 +325,14 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:00</span>
+                    <span class="text-sm font-bold text-slate-200">前往市中心</span>
+                </div>
+                <p class="spot-desc">搭火車或步行前往布魯塞爾大廣場區域。</p>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">12:30</span>
                     <span class="text-sm font-bold text-slate-200">午餐：Chez Léon</span>
                 </div>
@@ -330,19 +343,36 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">市區巡禮</span>
+                    <span class="text-sm font-bold text-slate-200">大廣場 (Grand Place)</span>
                 </div>
-                <div class="space-y-3 mt-3">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Grand+Place+Brussels" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🏛️ 大廣場</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Manneken+Pis" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">👦 尿尿小童</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Galeries+Royales+Saint-Hubert" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🍫 聖休伯特拱廊街</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
+                <p class="spot-desc">世界最美廣場，欣賞金碧輝煌的行會建築與市政廳。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Grand+Place+Brussels" target="_blank" class="map-link">📍 地圖</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">15:30</span>
+                    <span class="text-sm font-bold text-slate-200">尿尿小童 (Manneken Pis)</span>
                 </div>
+                <p class="spot-desc">順路買列日鬆餅。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Manneken+Pis" target="_blank" class="map-link">📍 地圖</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">16:30</span>
+                    <span class="text-sm font-bold text-slate-200">聖休伯特拱廊街</span>
+                </div>
+                <p class="spot-desc">購買 Neuhaus 或 Pierre Marcolini 巧克力。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Galeries+Royales+Saint-Hubert" target="_blank" class="map-link">📍 地圖</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">18:30</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐</span>
+                </div>
+                <p class="spot-desc">回到北站附近或飯店內用餐，早點休息。</p>
             </div>
 
             <!-- Hotel Footer -->
@@ -366,7 +396,7 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:32</span>
+                    <span class="time-tag">09:30</span>
                     <span class="text-sm font-bold text-slate-200">火車：前往布魯日</span>
                 </div>
                 <div class="train-info">
@@ -392,6 +422,15 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">11:30</span>
+                    <span class="text-sm font-bold text-slate-200">半月啤酒廠 (De Halve Maan)</span>
+                </div>
+                <p class="spot-desc">頂樓可眺望全城美景。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Brouwerij+De+Halve+Maan" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">13:00</span>
                     <span class="text-sm font-bold text-slate-200">午餐：Soup</span>
                 </div>
@@ -411,16 +450,18 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">16:00</span>
-                    <span class="text-sm font-bold text-slate-200">點心時間</span>
+                    <span class="text-sm font-bold text-slate-200">點心：Chez Albert</span>
                 </div>
-                <div class="space-y-3 mt-3">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Chez+Albert+Brugge" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🧇 Chez Albert 鬆餅</span><i class="fa-solid fa-location-arrow text-teal-400"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=The+Chocolate+Line+Brugge" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🍫 The Chocolate Line</span><i class="fa-solid fa-location-arrow text-teal-400"></i>
-                    </a>
+                <p class="spot-desc">必吃現烤鬆餅。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Chez+Albert+Brugge" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">17:00</span>
+                    <span class="text-sm font-bold text-slate-200">伴手禮：The Chocolate Line</span>
                 </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Chocolate+Line+Brugge" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -459,7 +500,7 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:32</span>
+                    <span class="time-tag">09:30</span>
                     <span class="text-sm font-bold text-slate-200">火車：前往根特</span>
                 </div>
                 <div class="train-info">
@@ -479,14 +520,32 @@
                 <p class="spot-desc">必看《神秘羔羊》。推薦加購 AR 眼鏡體驗。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Sint-Baafskathedraal" target="_blank" class="map-link">📍 導航</a></div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:30</span>
+                    <span class="text-sm font-bold text-slate-200">午餐：Balls & Glory</span>
+                </div>
+                <p class="spot-desc">手工爆漿大肉丸。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Balls+&+Glory+Gent" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">14:00</span>
-                    <span class="text-sm font-bold text-slate-200">伯爵城堡</span>
+                    <span class="text-sm font-bold text-slate-200">伯爵城堡 (Gravensteen)</span>
                 </div>
                 <p class="spot-desc"><span class="badge bg-spot">親子</span>必聽中文幽默語音導覽！城堡內樓梯較陡，需注意安全。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Gravensteen" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">16:00</span>
+                    <span class="text-sm font-bold text-slate-200">香草河岸散步</span>
+                </div>
+                <p class="spot-desc">可去 Tierenteyn Verlent 買古法黃芥末醬。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Graslei" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -555,6 +614,15 @@
                 <p class="spot-desc">世界最美車站。🛅 <span class="text-teal-400 font-bold">行李寄放</span>：位於 0 樓 (Level 0)，近樓梯處有置物櫃，可刷卡付費。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Antwerpen-Centraal" target="_blank" class="map-link">📍 車站導航</a></div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">11:00</span>
+                    <span class="text-sm font-bold text-slate-200">聖母大教堂</span>
+                </div>
+                <p class="spot-desc">龍龍與忠狗故事場景。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Cathedral+of+Our+Lady+Antwerp" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
@@ -576,6 +644,14 @@
                         <tr class="suggested"><td>建議</td><td>14:45 IC 9243</td></tr>
                     </table>
                 </div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">16:00</span>
+                    <span class="text-sm font-bold text-slate-200">入住 Hilton</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Hilton+Rotterdam" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -617,6 +693,13 @@
                 <p class="spot-desc">搭 Waterbus 21 前往。風大請保暖。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Kinderdijk" target="_blank" class="map-link">📍 導航</a></div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">13:00</span>
+                    <span class="text-sm font-bold text-slate-200">搭船返回鹿特丹</span>
+                </div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
@@ -629,6 +712,22 @@
                         <tr class="suggested"><td>建議</td><td>14:30 ICD 1048</td></tr>
                     </table>
                 </div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">15:30</span>
+                    <span class="text-sm font-bold text-slate-200">Movenpick 入住</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">17:00</span>
+                    <span class="text-sm font-bold text-slate-200">點心：Winkel 43</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Winkel+43" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -661,11 +760,34 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:30</span>
-                    <span class="text-sm font-bold text-slate-200">桑斯安斯風車村</span>
+                    <span class="time-tag">09:00</span>
+                    <span class="text-sm font-bold text-slate-200">前往風車村</span>
                 </div>
-                <p class="spot-desc">看風車、木鞋、起司。</p>
+                <p class="spot-desc">搭火車到 Zaanse Schans。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Zaanse+Schans" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:00</span>
+                    <span class="text-sm font-bold text-slate-200">搭火車到 Zaandam</span>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:30</span>
+                    <span class="text-sm font-bold text-slate-200">贊丹積木飯店 (拍照)</span>
+                </div>
+                <p class="spot-desc">Inntel Hotels，就在 Zaandam 車站旁。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Inntel+Hotels+Amsterdam+Zaandam" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">14:00</span>
+                    <span class="text-sm font-bold text-slate-200">返回阿姆斯特丹</span>
+                </div>
             </div>
 
             <div class="glass-panel">
@@ -675,6 +797,13 @@
                 </div>
                 <p class="spot-desc"><span class="badge bg-spot">親子</span>就在飯店對面，小孩放電好去處。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=NEMO+Science+Museum" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">18:00</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐</span>
+                </div>
             </div>
 
             <!-- Hotel Footer -->
@@ -712,6 +841,14 @@
                 </div>
                 <p class="spot-desc">必吃現做熱焦糖煎餅。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Albert+Cuyp+Market" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">14:30</span>
+                    <span class="text-sm font-bold text-slate-200">海尼根體驗館</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Heineken+Experience" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -757,6 +894,22 @@
                 </div>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Pancake+Bakery" target="_blank" class="map-link">📍 導航</a></div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:30</span>
+                    <span class="text-sm font-bold text-slate-200">九街 & 西教堂</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=De+9+Straatjes" target="_blank" class="map-link">📍 九街</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">14:00</span>
+                    <span class="text-sm font-bold text-slate-200">水壩廣場 & 王宮</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Dam+Square" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
@@ -787,10 +940,17 @@
                 <h2 class="text-lg font-bold text-white">Day 9：機場退稅</h2>
                 <p class="text-xs text-slate-400">2/19 (四) · 預留 3 小時</p>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">09:00</span>
+                    <span class="text-sm font-bold text-slate-200">退房</span>
+                </div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:10</span>
+                    <span class="time-tag">09:30</span>
                     <span class="text-sm font-bold text-slate-200">前往機場</span>
                 </div>
                 <p class="spot-desc">搭乘 Sprinter 前往 Schiphol Airport。</p>
@@ -804,6 +964,13 @@
                 </div>
                 <p class="spot-desc">先蓋海關章，再託運。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Schiphol+Departures+3" target="_blank" class="map-link">📍 退稅點</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">11:00</span>
+                    <span class="text-sm font-bold text-slate-200">逛免稅店</span>
+                </div>
             </div>
 
             <!-- Flight Return Info -->
