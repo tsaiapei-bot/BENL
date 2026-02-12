@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2026 荷比九日親子自由行 - 終極完全版</title>
+    <title>2026 荷比九日親子自由行 - 終極詳盡版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +29,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); 
         }
         
-        /* Hotel Panel Highlight */
+        /* Highlight Panels */
         .hotel-panel { 
             background: rgba(15, 23, 42, 0.95); 
             border: 1px solid #3b82f6; 
@@ -107,6 +107,15 @@
             margin-top: 10px; 
             border-left: 3px solid #2dd4bf; 
         }
+        .train-route {
+            font-family: monospace;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        .train-route span { color: #94a3b8; font-weight: normal; margin-right: 4px; }
         .train-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
         .train-table td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
         .train-table .suggested { color: #2dd4bf; font-weight: bold; background: rgba(45, 212, 191, 0.05); }
@@ -128,7 +137,7 @@
         }
         .weather-box { border-top: 3px solid #f59e0b; }
         .note-box { border-top: 3px solid #ef4444; }
-        .info-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; }
+        .info-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
         .departure-time { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 4px; display: block; }
         
         /* AI Chat */
@@ -194,14 +203,19 @@
         <!-- Dashboard -->
         <div class="info-grid">
             <div class="info-box note-box">
-                <p class="info-title text-red-400"><i class="fa-solid fa-clock mr-1"></i> 當日重點</p>
+                <p class="info-title text-red-400">
+                    <span><i class="fa-solid fa-clock mr-1"></i> 當日重點</span>
+                </p>
                 <div>
                     <span id="departure-time" class="departure-time">--:-- 出發</span>
                     <div id="note-display" class="text-xs text-slate-300 leading-snug">載入中...</div>
                 </div>
             </div>
             <div class="info-box weather-box">
-                <p class="info-title text-amber-400"><i class="fa-solid fa-cloud-sun mr-1"></i> 氣候建議</p>
+                <p class="info-title text-amber-400">
+                    <span><i class="fa-solid fa-cloud-sun mr-1"></i> 氣候建議</span>
+                    <span id="weather-city-label" class="bg-amber-500/20 text-amber-200 px-1.5 py-0.5 rounded text-[10px] ml-1"></span>
+                </p>
                 <div id="weather-display" class="flex flex-col justify-center h-full">
                     <span class="text-xs text-slate-400">連線中...</span>
                 </div>
@@ -240,12 +254,12 @@
                 <div class="train-info">
                     <div class="train-route">
                         <span>From:</span> Schiphol Airport<br>
+                        <span>Transfer:</span> Anvers-Central<br>
                         <span>To:</span> Bruxelles-Nord
                     </div>
                     <table class="train-table">
-                        <tr class="candidate"><td>候選</td><td>07:25 ➜ 09:14</td><td>IC 9212</td></tr>
-                        <tr class="suggested"><td>建議</td><td>08:25 ➜ 10:14</td><td>IC 9216</td></tr>
-                        <tr class="candidate"><td>候選</td><td>09:25 ➜ 11:14</td><td>IC 9220</td></tr>
+                        <tr class="suggested"><td>第一段</td><td>08:12 ➜ 09:26</td><td>ECD 9520</td></tr>
+                        <tr class="suggested"><td>第二段</td><td>09:54 ➜ 10:29</td><td>IC 4531</td></tr>
                     </table>
                 </div>
             </div>
@@ -272,25 +286,39 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">市區巡禮</span>
+                    <span class="text-sm font-bold text-slate-200">市區巡禮 & 點心</span>
                 </div>
+                <p class="spot-desc">漫步舊城區，沿途享受在地美食。</p>
                 <div class="space-y-3 mt-3">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Jeanneke+Pis" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
+                        <span class="text-sm">👧 尿尿小妹 (Jeanneke Pis)</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+                    </a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Grand+Place+Brussels" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🏛️ 大廣場</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+                        <span class="text-sm">🏛️ 大廣場 (Grand-Place)</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                     </a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Manneken+Pis" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">👦 尿尿小童</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+                        <span class="text-sm">👦 尿尿小童 (Manneken Pis)</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+                    </a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Galeries+Royales+Saint-Hubert" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
+                        <span class="text-sm">🍫 聖休伯特拱廊街</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                     </a>
                 </div>
-            </div>
-
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">16:30</span>
-                    <span class="text-sm font-bold text-slate-200">聖休伯特拱廊街</span>
+                
+                <!-- 獨立的必吃清單 -->
+                <div class="mt-4 p-3 bg-rose-900/20 rounded-xl border border-rose-500/30">
+                    <p class="text-xs text-rose-300 font-bold mb-2"><i class="fa-solid fa-utensils mr-1"></i> 下午/晚上必吃清單：</p>
+                    <div class="space-y-2">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Belgian+Waffles+Brussels" target="_blank" class="flex justify-between items-center bg-rose-950/40 p-2 rounded-lg active:bg-rose-900/60">
+                            <span class="text-sm text-slate-200">🧇 Belgian Waffles</span><i class="fa-solid fa-location-arrow text-rose-400 text-xs"></i>
+                        </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Maison+Dandoy+Galet+Brussels" target="_blank" class="flex justify-between items-center bg-rose-950/40 p-2 rounded-lg active:bg-rose-900/60">
+                            <span class="text-sm text-slate-200">🧇 Galet 鬆餅</span><i class="fa-solid fa-location-arrow text-rose-400 text-xs"></i>
+                        </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Fritland+Brussels" target="_blank" class="flex justify-between items-center bg-rose-950/40 p-2 rounded-lg active:bg-rose-900/60">
+                            <span class="text-sm text-slate-200">🍟 Fritland 薯條</span><i class="fa-solid fa-location-arrow text-rose-400 text-xs"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="spot-desc">購買 Neuhaus、Pierre Marcolini 巧克力。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Galeries+Royales+Saint-Hubert" target="_blank" class="map-link">📍 地圖</a></div>
             </div>
             
             <div class="glass-panel">
@@ -305,7 +333,8 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
-                <div class="flex justify-end gap-2">
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
                     <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
@@ -321,8 +350,8 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:30</span>
-                    <span class="text-sm font-bold text-slate-200">前往布魯日</span>
+                    <span class="time-tag">09:15</span>
+                    <span class="text-sm font-bold text-slate-200">火車：前往布魯日</span>
                 </div>
                 <div class="train-info">
                     <div class="train-route">
@@ -330,33 +359,53 @@
                         <span>To:</span> Brugge
                     </div>
                     <table class="train-table">
-                        <tr class="candidate"><td>候選</td><td>09:02 ➜ 10:03</td><td>IC 531</td></tr>
-                        <tr class="suggested"><td>建議</td><td>09:32 ➜ 10:33</td><td>IC 509</td></tr>
-                        <tr class="candidate"><td>候選</td><td>10:02 ➜ 11:03</td><td>IC 532</td></tr>
+                        <tr class="suggested"><td>建議</td><td>09:15 ➜ 10:26</td><td>IC</td></tr>
+                        <tr class="candidate"><td>候選</td><td>09:32 ➜ 10:33</td><td>IC 509</td></tr>
                     </table>
                 </div>
             </div>
 
+            <div class="glass-panel border-l-4 border-teal-500">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">10:26</span>
+                    <span class="text-sm font-bold text-slate-200">轉乘公車前往市區</span>
+                </div>
+                <p class="spot-desc">抵達布魯日車站後，可搭乘站前公車 (如 1、2 號線等市區公車) 前往市中心 (Markt)，車程約 5-10 分鐘。或可步行 15 分鐘先經由愛之湖公園進入古城。</p>
+            </div>
+
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">10:30</span>
+                    <span class="time-tag">10:45</span>
                     <span class="text-sm font-bold text-slate-200">愛之湖 & 修道院</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Minnewaterpark" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc">古城最美的風景，路面多為石板路，請穿好走的鞋。</p>
+                <div class="flex justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Minnewaterpark" target="_blank" class="map-link">📍 愛之湖</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Begijnhof+Brugge" target="_blank" class="map-link">📍 修道院</a>
+                </div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">11:30</span>
+                    <span class="text-sm font-bold text-slate-200">運河遊船</span>
+                </div>
+                <p class="spot-desc"><span class="badge bg-spot">必玩</span>從水上視角看中世紀建築。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Rozenhoedkaai" target="_blank" class="map-link">📍 玫瑰碼頭上船</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:30</span>
                     <span class="text-sm font-bold text-slate-200">半月啤酒廠 (De Halve Maan)</span>
                 </div>
-                <p class="spot-desc">頂樓可眺望全城美景。</p>
+                <p class="spot-desc">中午 12 點營業。下午參觀酒廠，頂樓可眺望全城美景。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Brouwerij+De+Halve+Maan" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">13:00</span>
+                    <span class="time-tag">13:30</span>
                     <span class="text-sm font-bold text-slate-200">午餐：Soup</span>
                 </div>
                 <p class="spot-desc">平價濃湯帕尼尼。</p>
@@ -366,15 +415,6 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">運河遊船</span>
-                </div>
-                <p class="spot-desc">玫瑰碼頭上船。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Rozenhoedkaai" target="_blank" class="map-link">📍 上船點</a></div>
-            </div>
-
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">16:00</span>
                     <span class="text-sm font-bold text-slate-200">下午茶 & 伴手禮</span>
                 </div>
                 <div class="space-y-3 mt-3">
@@ -389,8 +429,8 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:30</span>
-                    <span class="text-sm font-bold text-slate-200">返回布魯塞爾</span>
+                    <span class="time-tag">15:58</span>
+                    <span class="text-sm font-bold text-slate-200">火車：返回布魯塞爾</span>
                 </div>
                 <div class="train-info">
                     <div class="train-route">
@@ -398,9 +438,8 @@
                         <span>To:</span> Bruxelles-Nord
                     </div>
                     <table class="train-table">
-                        <tr class="candidate"><td>候選</td><td>18:08 ➜ 19:08</td><td>IC 540</td></tr>
-                        <tr class="suggested"><td>建議</td><td>18:27 ➜ 19:28</td><td>IC 518</td></tr>
-                        <tr class="candidate"><td>候選</td><td>18:58 ➜ 19:58</td><td>IC 519</td></tr>
+                        <tr class="suggested"><td>建議</td><td>15:58 ➜ 17:05</td><td>IC</td></tr>
+                        <tr class="candidate"><td>候選</td><td>16:27 ➜ 17:28</td><td>IC</td></tr>
                     </table>
                 </div>
             </div>
@@ -409,7 +448,8 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
-                <div class="flex justify-end gap-2">
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
                     <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
@@ -453,36 +493,40 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">12:30</span>
-                    <span class="text-sm font-bold text-slate-200">午餐：Balls & Glory</span>
+                    <span class="text-sm font-bold text-slate-200">午餐：Amadeus</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Balls+&+Glory+Gent" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc"><span class="badge bg-food">吃到飽</span>著名的豬肋排吃到飽，改至中午享用補充體力。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Amadeus+Gent+1" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:00</span>
+                    <span class="time-tag">14:30</span>
                     <span class="text-sm font-bold text-slate-200">伯爵城堡 (Gravensteen)</span>
                 </div>
-                <p class="spot-desc">必聽中文幽默導覽。</p>
+                <p class="spot-desc"><span class="badge bg-spot">親子</span>必聽中文幽默導覽！城堡內樓梯較陡，需注意安全。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Gravensteen" target="_blank" class="map-link">📍 導航</a></div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">16:00</span>
+                    <span class="time-tag">16:30</span>
                     <span class="text-sm font-bold text-slate-200">香草河岸 & 芥末醬</span>
                 </div>
-                <p class="spot-desc">Tierenteyn Verlent 買古法黃芥末。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Tierenteyn+Verlent" target="_blank" class="map-link">📍 芥末店</a></div>
+                <p class="spot-desc">漫步香草河岸 (Graslei)。順道去 Tierenteyn Verlent 買古法黃芥末。</p>
+                <div class="flex justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Graslei" target="_blank" class="map-link">📍 香草河岸</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Tierenteyn+Verlent" target="_blank" class="map-link">📍 芥末店</a>
+                </div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Amadeus</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Balls & Glory</span>
                 </div>
-                <p class="spot-desc">豬肋排吃到飽。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Amadeus+Gent+1" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc">手工爆漿大肉丸。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Balls+&+Glory+Gent" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
@@ -507,7 +551,8 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
-                <div class="flex justify-end gap-2">
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
                     <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
@@ -524,7 +569,7 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">09:00</span>
-                    <span class="text-sm font-bold text-slate-200">前往安特衛普</span>
+                    <span class="text-sm font-bold text-slate-200">火車：前往安特衛普</span>
                 </div>
                 <div class="train-info">
                     <div class="train-route">
@@ -588,7 +633,11 @@
                     <span class="time-tag">16:30</span>
                     <span class="text-sm font-bold text-slate-200">方塊屋 & 市場</span>
                 </div>
-                <p class="spot-desc">晚餐 Markthal 推薦：Andalus Fish (炸魚) & Goudstroop (煎餅)。</p>
+                <p class="spot-desc">參觀方塊屋後，直接在 Markthal 解決晚餐。</p>
+                <div class="mt-2 p-3 bg-rose-900/20 rounded-xl border border-rose-500/30">
+                    <p class="text-xs text-rose-300 font-bold mb-1"><i class="fa-solid fa-utensils"></i> 市場推薦必吃：</p>
+                    <p class="text-sm text-slate-300">Andalus Fish (炸魚塊)、Goudstroop (現做荷蘭煎餅)</p>
+                </div>
                 <div class="flex justify-end gap-2 mt-3">
                     <a href="https://www.google.com/maps/search/?api=1&query=Cube+Houses+Rotterdam" target="_blank" class="map-link">📍 方塊屋</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Markthal" target="_blank" class="map-link">📍 市場</a>
@@ -599,10 +648,10 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Hilton Rotterdam</h3>
-                <p class="text-xs text-slate-400 mb-3">距鹿特丹中央車站步行 7 分鐘。</p>
-                <div class="flex justify-end gap-2">
-                    <a href="https://www.google.com/maps/search/laundromat+near+Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
+                    <a href="https://www.google.com/maps/search/laundromat+near+Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Hilton+Rotterdam" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
         </div>
@@ -661,10 +710,10 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
-                <p class="text-xs text-slate-400 mb-3">中央車站東側。</p>
-                <div class="flex justify-end gap-2">
-                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 active:bg-slate-600 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 active:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
         </div>
@@ -739,19 +788,13 @@
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=NEMO+Science+Museum" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐</span>
-                </div>
-            </div>
-
             <!-- Hotel Footer -->
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
-                <div class="flex justify-end gap-2">
-                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -803,8 +846,9 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
-                <div class="flex justify-end gap-2">
-                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -871,8 +915,9 @@
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
                 <h3 class="text-base font-bold text-white mb-1">Mövenpick Hotel City Centre</h3>
-                <div class="flex justify-end gap-2">
-                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 附近自助洗衣</a>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <a href="https://www.google.com/maps/search/supermarket+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
+                    <a href="https://www.google.com/maps/search/laundromat+near+Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
                     <a href="https://www.google.com/maps/search/?api=1&query=Mövenpick+Hotel+Amsterdam+City+Centre" target="_blank" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"><i class="fa-solid fa-map-location-dot mr-2"></i> 回飯店</a>
                 </div>
             </div>
@@ -954,15 +999,15 @@
         const model = "gemini-2.5-flash-preview-09-2025";
 
         const dayData = {
-            1: { note: "08:00 機場出發。⚠️ 布魯塞爾人多，注意隨身包包。", lat: 50.8503, lon: 4.3517 },
-            2: { note: "09:00 飯店出發。⚠️ 古城石板路顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247 },
-            3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174 },
-            4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792 },
-            5: { note: "08:50 飯店出發。⚠️ 河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312 },
-            6: { note: "08:30 飯店出發。⚠️ 刷 OV Pay。NEMO 科學館適合放電，家長可休息。", lat: 52.3676, lon: 4.9041 },
-            7: { note: "08:20 飯店出發 (博物館09:00)。⚠️ 梵谷博物館嚴格預約制，別遲到。", lat: 52.3676, lon: 4.9041 },
-            8: { note: "09:00 飯店出發。⚠️ 船屋空間狹小，背包建議揹前面。", lat: 52.3676, lon: 4.9041 },
-            9: { note: "08:40 飯店退房。⚠️ 退稅排隊可能很久，請務必提早 3 小時。", lat: 52.3105, lon: 4.7683 }
+            1: { note: "08:00 機場出發。⚠️ 布魯塞爾人多，注意隨身包包。", lat: 50.8503, lon: 4.3517, city: "布魯塞爾" },
+            2: { note: "09:00 飯店出發。⚠️ 古城石板路顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247, city: "布魯日" },
+            3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174, city: "根特" },
+            4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792, city: "鹿特丹" },
+            5: { note: "08:50 飯店出發。⚠️ 河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312, city: "阿姆斯特丹" },
+            6: { note: "08:30 飯店出發。⚠️ 刷 OV Pay。NEMO 科學館適合放電，家長可休息。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
+            7: { note: "08:20 飯店出發 (博物館09:00)。⚠️ 梵谷博物館嚴格預約制，別遲到。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
+            8: { note: "09:00 飯店出發。⚠️ 船屋空間狹小，背包建議揹前面。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
+            9: { note: "08:40 飯店退房。⚠️ 退稅排隊可能很久，請務必提早 3 小時。", lat: 52.3105, lon: 4.7683, city: "阿姆斯特丹" }
         };
 
         function switchTab(day) {
@@ -978,6 +1023,9 @@
             const data = dayData[day];
             document.getElementById('departure-time').innerText = data.note.split('。')[0];
             document.getElementById('note-display').innerText = data.note.split('。').slice(1).join('。') || '請注意集合時間。';
+            
+            document.getElementById('weather-city-label').innerText = data.city;
+            const weatherUrl = `https://www.google.com/search?q=天氣+${encodeURIComponent(data.city)}`;
             
             const wBox = document.getElementById('weather-display');
             wBox.innerHTML = '<span class="loading-dots text-xs text-slate-400">連線中<span>.</span><span>.</span></span>';
@@ -1002,13 +1050,14 @@
                     if (wind > 20) advice += " (風大戴帽)";
 
                     wBox.innerHTML = `
-                        <div class="flex flex-col justify-center h-full">
-                            <div class="flex items-center mb-1">
+                        <a href="${weatherUrl}" target="_blank" class="flex flex-col justify-center h-full hover:bg-white/5 rounded-lg transition-colors cursor-pointer" style="text-decoration: none;">
+                            <div class="flex items-center mb-1 relative">
                                 <i class="fa-solid ${icon} text-xl mr-2 text-yellow-400"></i>
                                 <span class="text-lg font-bold text-white">${temp}°C</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500 absolute right-1 top-1"></i>
                             </div>
                             <span class="text-xs text-teal-300 font-bold">${advice}</span>
-                        </div>`;
+                        </a>`;
                 }
             } catch (e) { wBox.innerHTML = "無法連線"; }
         }
