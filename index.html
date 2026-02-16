@@ -95,9 +95,9 @@
             min-height: 32px;
         }
         .map-link:active { background: rgba(45, 212, 191, 0.2); }
-        
+
         .res-link {
-            color: #f472b6;
+            color: #f472b6; 
             text-decoration: none; 
             font-size: 0.85em; 
             display: inline-flex; 
@@ -105,10 +105,12 @@
             border: 1px solid rgba(244, 114, 182, 0.3); 
             padding: 6px 12px; 
             border-radius: 20px; 
-            background: rgba(244, 114, 182, 0.05);
+            background: rgba(244, 114, 182, 0.1); 
             min-height: 32px;
             margin-left: 8px;
+            font-weight: bold;
         }
+        .res-link:active { background: rgba(244, 114, 182, 0.2); }
 
         .badge { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-right: 6px; font-weight: bold; }
         .bg-food { background: #be185d; color: #ffe4e6; }
@@ -204,10 +206,10 @@
             <button onclick="switchTab(2)" id="btn-2" class="tab-btn">D2 布魯日</button>
             <button onclick="switchTab(3)" id="btn-3" class="tab-btn">D3 根特</button>
             <button onclick="switchTab(4)" id="btn-4" class="tab-btn">D4 鹿特丹</button>
-            <button onclick="switchTab(5)" id="btn-5" class="tab-btn active">D5 小孩堤防</button>
+            <button onclick="switchTab(5)" id="btn-5" class="tab-btn">D5 小孩堤防</button>
             <button onclick="switchTab(6)" id="btn-6" class="tab-btn">D6 風車村</button>
             <button onclick="switchTab(7)" id="btn-7" class="tab-btn">D7 梵谷</button>
-            <button onclick="switchTab(8)" id="btn-8" class="tab-btn">D8 市區</button>
+            <button onclick="switchTab(8)" id="btn-8" class="tab-btn">D8 購物</button>
             <button onclick="switchTab(9)" id="btn-9" class="tab-btn">D9 返程</button>
         </div>
     </div>
@@ -348,7 +350,7 @@
             <!-- Hotel Footer -->
             <div class="glass-panel hotel-panel mt-6">
                 <div class="flex items-center mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest"><i class="fa-solid fa-bed mr-2"></i> 今晚住宿</div>
-                <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton</h3>
+                <h3 class="text-base font-bold text-white mb-1">DoubleTree by Hilton Brussels City</h3>
                 <div class="flex flex-wrap justify-end gap-2 mt-3">
                     <a href="https://www.google.com/maps/search/supermarket+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-cart-shopping mr-1"></i> 超市</a>
                     <a href="https://www.google.com/maps/search/laundromat+near+DoubleTree+by+Hilton+Brussels+City" target="_blank" class="inline-flex items-center bg-slate-700 text-slate-200 px-3 py-2 rounded-full text-xs font-bold border border-slate-600"><i class="fa-solid fa-soap mr-1"></i> 洗衣</a>
@@ -359,6 +361,7 @@
 
         <!-- Day 2 -->
         <div id="day-2" class="day-content hidden">
+            <!-- Content for Day 2 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 2：布魯日童話古城</h2>
                 <p class="text-xs text-slate-400">2/12 (四) · 歐鐵通票 Day 2</p>
@@ -478,6 +481,15 @@
                     </table>
                 </div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">18:30</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：The Lobster House</span>
+                </div>
+                <p class="spot-desc">布魯塞爾海鮮名店。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Lobster+House+Brussels" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
 
             <!-- Hotel Footer -->
             <div class="glass-panel hotel-panel mt-6">
@@ -493,6 +505,7 @@
 
         <!-- Day 3 -->
         <div id="day-3" class="day-content hidden">
+            <!-- Content for Day 3 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 3：根特幽默城堡</h2>
                 <p class="text-xs text-slate-400">2/13 (五) · 歐鐵通票 Day 3</p>
@@ -611,6 +624,7 @@
 
         <!-- Day 4 -->
         <div id="day-4" class="day-content hidden">
+            <!-- Content for Day 4 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 4：安特衛普 ➜ 鹿特丹</h2>
                 <p class="text-xs text-slate-400">2/14 (六) · 歐鐵通票 Day 4</p>
@@ -739,7 +753,7 @@
                         <tr><td class="py-1">回程</td><td class="text-right">13:45 ➜ 14:15</td></tr>
                     </table>
                     <p class="text-[10px] text-slate-400">單程 €9.75 / 來回 €19.50 / 兒童半價</p>
-                    <p class="text-[10px] text-slate-400">組合票: 標準 €32.50 / 兒童 €15</p>
+                    <p class="text-[10px] text-slate-400">組合票 (含門票): 標準 €32.50 / 兒童 €15</p>
                 </div>
 
                 <div class="space-y-2 mb-2">
@@ -796,18 +810,15 @@
                     <span class="text-sm font-bold text-slate-200">晚餐：The Seafood Bar (Beursplein)</span>
                 </div>
                 <p class="spot-desc">離中央車站較近的分店。</p>
-                <div class="flex items-center justify-end mt-3 gap-2">
-                    <a href="https://www.theseafoodbar.com/reservations" target="_blank" class="res-link">📝 訂位</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=The+Seafood+Bar+Beursplein" target="_blank" class="map-link">📍 導航</a>
-                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Seafood+Bar+Beursplein" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">21:40</span>
-                    <span class="text-sm font-bold text-slate-200">Manneken Pis Damrak</span>
+                    <span class="text-sm font-bold text-slate-200">宵夜：尿尿小童薯條</span>
                 </div>
-                <p class="spot-desc">阿姆斯特丹知名尿尿小童薯條。</p>
+                <p class="spot-desc">Manneken Pis Damrak，第一名薯條。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Manneken+Pis+Damrak" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
@@ -826,7 +837,7 @@
         <!-- Day 6 -->
         <div id="day-6" class="day-content hidden">
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
-                <h2 class="text-lg font-bold text-white">Day 6：風車村 & 科學館</h2>
+                <h2 class="text-lg font-bold text-white">Day 6：風車村 & 贊丹</h2>
                 <p class="text-xs text-slate-400">2/16 (一) · 刷 OV Pay</p>
             </div>
 
@@ -873,8 +884,8 @@
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">15:00</span>
-                    <span class="text-sm font-bold text-slate-200">前往贊丹 (Zaandam)</span>
+                    <span class="time-tag">16:30</span>
+                    <span class="text-sm font-bold text-slate-200">贊丹積木飯店 (拍照)</span>
                 </div>
                 <div class="train-info">
                     <div class="train-route">
@@ -882,17 +893,15 @@
                         <span>To:</span> Zaandam
                     </div>
                     <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>15:05 ➜ 15:11</td><td>Sprinter</td></tr>
-                        <tr class="candidate"><td>候選</td><td>15:20 ➜ 15:26</td><td>Sprinter</td></tr>
+                        <tr class="suggested"><td>建議</td><td>16:20 ➜ 16:26</td><td>Sprinter</td></tr>
                     </table>
                 </div>
-                <p class="spot-desc mt-2">看積木飯店 (Inntel Hotels)。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Inntel+Hotels+Amsterdam+Zaandam" target="_blank" class="map-link">📍 導航</a></div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">17:00</span>
+                    <span class="time-tag">18:00</span>
                     <span class="text-sm font-bold text-slate-200">返回阿姆斯特丹</span>
                 </div>
                 <div class="train-info">
@@ -901,20 +910,20 @@
                         <span>To:</span> Amsterdam Centraal
                     </div>
                     <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>17:15 ➜ 17:27</td><td>Sprinter</td></tr>
+                        <tr class="suggested"><td>建議</td><td>17:55 ➜ 18:07</td><td>Sprinter</td></tr>
                     </table>
                 </div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Sea Palace 海上皇宮</span>
+                    <span class="time-tag">19:00</span>
+                    <span class="text-sm font-bold text-slate-200">Loetje Centraal 牛排</span>
                 </div>
-                <p class="spot-desc">中式料理暖胃。📝 建議提早預訂。</p>
+                <p class="spot-desc">招牌牛排 (Biefstuk Bali) 配白麵包。</p>
                 <div class="flex items-center justify-end mt-3 gap-2">
-                    <a href="https://www.seapalace.nl/en/" target="_blank" class="res-link">📝 訂位</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Sea+Palace+Amsterdam" target="_blank" class="map-link">📍 導航</a>
+                    <a href="https://www.loetje.nl/en/" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Loetje+Centraal" target="_blank" class="map-link">📍 導航</a>
                 </div>
             </div>
 
@@ -982,14 +991,11 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Loetje Centraal</span>
+                    <span class="time-tag">17:30</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Cafe De Klos</span>
                 </div>
-                <p class="spot-desc">招牌牛排 (Biefstuk Bali) 配白麵包。📝 建議提早預訂。</p>
-                <div class="flex items-center justify-end mt-3 gap-2">
-                    <a href="https://www.loetje.nl/en/" target="_blank" class="res-link">📝 訂位</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Loetje+Centraal" target="_blank" class="map-link">📍 導航</a>
-                </div>
+                <p class="spot-desc">超人氣炭烤肋排。⚠️ 不接受訂位，請爸爸 16:30 先去排隊。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Cafe+De+Klos" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <!-- Hotel Footer -->
@@ -1007,7 +1013,7 @@
         <!-- Day 8 -->
         <div id="day-8" class="day-content hidden">
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
-                <h2 class="text-lg font-bold text-white">Day 8：船屋 & 購物</h2>
+                <h2 class="text-lg font-bold text-white">Day 8：運河 & 購物</h2>
                 <p class="text-xs text-slate-400">2/18 (三) · 刷 OV Pay</p>
             </div>
 
@@ -1021,24 +1027,41 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">11:00</span>
-                    <span class="text-sm font-bold text-slate-200">辛格花市 (Bloemenmarkt)</span>
+                    <span class="time-tag">10:00</span>
+                    <span class="text-sm font-bold text-slate-200">Van Stapele 餅乾</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Bloemenmarkt" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc">必買軟心巧克力餅乾，建議開門前排隊。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Van+Stapele+Koekmakerij" target="_blank" class="map-link">📍 導航</a></div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">12:30</span>
-                    <span class="text-sm font-bold text-slate-200">九街 & 水壩廣場 & 超市</span>
+                    <span class="time-tag">10:45</span>
+                    <span class="text-sm font-bold text-slate-200">運河散步</span>
                 </div>
-                <div class="mt-3 space-y-2">
-                    <a href="https://www.google.com/maps/search/?api=1&query=De+9+Straatjes" target="_blank" class="block map-link">📍 九街</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Dam+Square" target="_blank" class="block map-link">📍 水壩廣場</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Albert+Heijn+Museumplein" target="_blank" class="block map-link">🛒 AH 超市 (掃貨)</a>
-                </div>
+                <p class="spot-desc">沿著 Singel 或 Herengracht 運河往中央車站方向走。</p>
             </div>
             
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:15</span>
+                    <span class="text-sm font-bold text-slate-200">午餐：Sea Palace 海上皇宮</span>
+                </div>
+                <p class="spot-desc">中式料理暖胃。📝 建議提早預訂。</p>
+                <div class="flex items-center justify-end mt-3 gap-2">
+                    <a href="https://www.seapalace.nl/en/" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Sea+Palace+Amsterdam" target="_blank" class="map-link">📍 導航</a>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">14:00</span>
+                    <span class="text-sm font-bold text-slate-200">九街 & 水壩廣場</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Dam+Square" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">16:30</span>
@@ -1148,11 +1171,11 @@
 
         const dayData = {
             1: { note: "08:00 機場出發。⚠️ 布魯塞爾人多，注意隨身包包。", lat: 50.8503, lon: 4.3517, city: "布魯塞爾" },
-            2: { note: "08:00 飯店出發 (早餐08:15)。⚠️ 古城石板路顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247, city: "布魯日" },
+            2: { note: "08:00 飯店出發 (早餐08:15)。⚠️ 古城路面顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247, city: "布魯日" },
             3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174, city: "根特" },
             4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792, city: "鹿特丹" },
-            5: { note: "08:50 飯店出發。⚠️ 河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312, city: "阿姆斯特丹" },
-            6: { note: "08:30 飯店出發。⚠️ 刷 OV Pay。NEMO 科學館適合放電，家長可休息。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
+            5: { note: "09:30 飯店出發 (船班10:15)。⚠️ 河邊空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312, city: "阿姆斯特丹" },
+            6: { note: "08:15 飯店出發 (早餐08:30)。⚠️ 刷 OV Pay。NEMO 科學館適合放電。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             7: { note: "08:20 飯店出發 (博物館09:00)。⚠️ 梵谷博物館嚴格預約制，別遲到。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             8: { note: "09:00 飯店出發。⚠️ 船屋空間狹小，背包建議揹前面。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             9: { note: "08:40 飯店退房。⚠️ 退稅排隊可能很久，請務必提早 3 小時。", lat: 52.3105, lon: 4.7683, city: "阿姆斯特丹" }
