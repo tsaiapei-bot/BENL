@@ -95,6 +95,20 @@
             min-height: 32px;
         }
         .map-link:active { background: rgba(45, 212, 191, 0.2); }
+        
+        .res-link {
+            color: #f472b6;
+            text-decoration: none; 
+            font-size: 0.85em; 
+            display: inline-flex; 
+            align-items: center; 
+            border: 1px solid rgba(244, 114, 182, 0.3); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            background: rgba(244, 114, 182, 0.05);
+            min-height: 32px;
+            margin-left: 8px;
+        }
 
         .badge { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-right: 6px; font-weight: bold; }
         .bg-food { background: #be185d; color: #ffe4e6; }
@@ -225,7 +239,7 @@
 
         <!-- Day 1 -->
         <div id="day-1" class="day-content hidden">
-            <!-- Content for Day 1 kept -->
+            <!-- Content for Day 1 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 1：抵達 ➜ 布魯塞爾</h2>
                 <p class="text-xs text-slate-400">2/11 (三) · 歐鐵通票 Day 1</p>
@@ -345,7 +359,6 @@
 
         <!-- Day 2 -->
         <div id="day-2" class="day-content hidden">
-            <!-- Content for Day 2 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 2：布魯日童話古城</h2>
                 <p class="text-xs text-slate-400">2/12 (四) · 歐鐵通票 Day 2</p>
@@ -480,7 +493,6 @@
 
         <!-- Day 3 -->
         <div id="day-3" class="day-content hidden">
-            <!-- Content for Day 3 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 3：根特幽默城堡</h2>
                 <p class="text-xs text-slate-400">2/13 (五) · 歐鐵通票 Day 3</p>
@@ -599,7 +611,6 @@
 
         <!-- Day 4 -->
         <div id="day-4" class="day-content hidden">
-            <!-- Content for Day 4 kept from previous context -->
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
                 <h2 class="text-lg font-bold text-white">Day 4：安特衛普 ➜ 鹿特丹</h2>
                 <p class="text-xs text-slate-400">2/14 (六) · 歐鐵通票 Day 4</p>
@@ -717,27 +728,18 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:30</span>
-                    <span class="text-sm font-bold text-slate-200">小孩堤防 (Kinderdijk)</span>
+                    <span class="time-tag">10:15</span>
+                    <span class="text-sm font-bold text-slate-200">小孩堤防 (WaterShuttle)</span>
                 </div>
+                
                 <div class="mb-3 p-3 bg-blue-900/30 rounded-xl border border-blue-500/30">
-                    <p class="text-xs text-blue-300 font-bold mb-2"><i class="fa-solid fa-ferry mr-1"></i> 交通船班時刻 (週日)</p>
-                    <div class="mb-3">
-                        <p class="text-xs text-white font-bold mb-1">選項 A：Waterbus 21 (早鳥/刷卡)</p>
-                        <table class="w-full text-xs text-slate-300">
-                            <tr><td class="py-1">去程</td><td class="text-right">09:30 ➜ 10:04</td></tr>
-                            <tr><td class="py-1">回程</td><td class="text-right">11:03 ➜ 11:40</td></tr>
-                        </table>
-                        <p class="text-[10px] text-slate-500 mt-1">*可中午前回到鹿特丹，時間較充裕。</p>
-                    </div>
-                    <div class="border-t border-white/10 pt-2">
-                        <p class="text-xs text-white font-bold mb-1">選項 B：WaterShuttle (觀光船/PDF時刻)</p>
-                        <table class="w-full text-xs text-slate-300">
-                            <tr><td class="py-1">去程 (首班)</td><td class="text-right">10:15 ➜ 10:45</td></tr>
-                            <tr><td class="py-1">回程</td><td class="text-right">11:45 ➜ 12:15</td></tr>
-                        </table>
-                        <p class="text-[10px] text-slate-500 mt-1">*週日首班較晚，停留時間僅 1 小時。</p>
-                    </div>
+                    <p class="text-xs text-blue-300 font-bold mb-2"><i class="fa-solid fa-ferry mr-1"></i> 船班與票價資訊 (上船買票)</p>
+                    <table class="w-full text-xs text-slate-300 mb-2">
+                        <tr><td class="py-1">去程 (首班)</td><td class="text-right">10:15 ➜ 10:45</td></tr>
+                        <tr><td class="py-1">回程</td><td class="text-right">13:45 ➜ 14:15</td></tr>
+                    </table>
+                    <p class="text-[10px] text-slate-400">單程 €9.75 / 來回 €19.50 / 兒童半價</p>
+                    <p class="text-[10px] text-slate-400">組合票: 標準 €32.50 / 兒童 €15</p>
                 </div>
 
                 <div class="space-y-2 mb-2">
@@ -756,7 +758,7 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:24</span>
+                    <span class="time-tag">15:11</span>
                     <span class="text-sm font-bold text-slate-200">前往阿姆斯特丹</span>
                 </div>
                 <div class="train-info">
@@ -765,16 +767,14 @@
                         <span>To:</span> Amsterdam Centraal
                     </div>
                     <table class="train-table">
-                        <tr class="candidate"><td>候選</td><td>14:11 ➜ 15:26</td><td>IC</td></tr>
-                        <tr class="suggested"><td>建議</td><td>14:24 ➜ 15:40</td><td>IC</td></tr>
-                        <tr class="candidate"><td>候選</td><td>14:41 ➜ 15:58</td><td>IC</td></tr>
+                        <tr class="suggested"><td>建議</td><td>15:11 ➜ 16:26</td><td>IC (無須補差價)</td></tr>
                     </table>
                 </div>
             </div>
             
             <div class="glass-panel border-l-4 border-blue-500">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">15:30</span>
+                    <span class="time-tag">17:00</span>
                     <span class="text-sm font-bold text-slate-200">Mövenpick Hotel 入住</span>
                 </div>
                 <p class="spot-desc">Check-in 與休息。</p>
@@ -783,16 +783,7 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">16:00</span>
-                    <span class="text-sm font-bold text-slate-200">NEMO 頂樓露台</span>
-                </div>
-                <p class="spot-desc">免費觀景台，俯瞰港灣美景。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=NEMO+Science+Museum" target="_blank" class="map-link">📍 導航</a></div>
-            </div>
-            
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">17:30</span>
+                    <span class="time-tag">18:30</span>
                     <span class="text-sm font-bold text-slate-200">OBA 公共圖書館</span>
                 </div>
                 <p class="spot-desc">圖書館頂樓餐廳與觀景台。</p>
@@ -801,11 +792,23 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:30</span>
+                    <span class="time-tag">20:30</span>
                     <span class="text-sm font-bold text-slate-200">晚餐：The Seafood Bar (Beursplein)</span>
                 </div>
                 <p class="spot-desc">離中央車站較近的分店。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Seafood+Bar+Beursplein" target="_blank" class="map-link">📍 導航</a></div>
+                <div class="flex items-center justify-end mt-3 gap-2">
+                    <a href="https://www.theseafoodbar.com/reservations" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=The+Seafood+Bar+Beursplein" target="_blank" class="map-link">📍 導航</a>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">21:40</span>
+                    <span class="text-sm font-bold text-slate-200">Manneken Pis Damrak</span>
+                </div>
+                <p class="spot-desc">阿姆斯特丹知名尿尿小童薯條。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Manneken+Pis+Damrak" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <!-- Hotel Footer -->
@@ -829,7 +832,31 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">09:00</span>
+                    <span class="time-tag">08:30</span>
+                    <span class="text-sm font-bold text-slate-200">早餐：PANCAKES Amsterdam</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=PANCAKES+Amsterdam+Centraal" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">10:00</span>
+                    <span class="text-sm font-bold text-slate-200">Noordermarkt 跳蚤市場</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Noordermarkt" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">11:00</span>
+                    <span class="text-sm font-bold text-slate-200">點心：Winkel 43 蘋果派</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Winkel+43" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">12:30</span>
                     <span class="text-sm font-bold text-slate-200">前往風車村</span>
                 </div>
                 <div class="train-info">
@@ -838,8 +865,7 @@
                         <span>To:</span> Zaandijk Zaanse Schans
                     </div>
                     <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>09:05 ➜ 09:22</td><td>Sprinter</td></tr>
-                        <tr class="candidate"><td>候選</td><td>09:20 ➜ 09:37</td><td>Sprinter</td></tr>
+                        <tr class="suggested"><td>建議</td><td>12:35 ➜ 12:52</td><td>Sprinter</td></tr>
                     </table>
                 </div>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Zaanse+Schans" target="_blank" class="map-link">📍 導航</a></div>
@@ -847,7 +873,7 @@
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">12:00</span>
+                    <span class="time-tag">15:00</span>
                     <span class="text-sm font-bold text-slate-200">前往贊丹 (Zaandam)</span>
                 </div>
                 <div class="train-info">
@@ -856,8 +882,8 @@
                         <span>To:</span> Zaandam
                     </div>
                     <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>12:05 ➜ 12:11</td><td>Sprinter</td></tr>
-                        <tr class="candidate"><td>候選</td><td>12:20 ➜ 12:26</td><td>Sprinter</td></tr>
+                        <tr class="suggested"><td>建議</td><td>15:05 ➜ 15:11</td><td>Sprinter</td></tr>
+                        <tr class="candidate"><td>候選</td><td>15:20 ➜ 15:26</td><td>Sprinter</td></tr>
                     </table>
                 </div>
                 <p class="spot-desc mt-2">看積木飯店 (Inntel Hotels)。</p>
@@ -866,7 +892,7 @@
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:00</span>
+                    <span class="time-tag">17:00</span>
                     <span class="text-sm font-bold text-slate-200">返回阿姆斯特丹</span>
                 </div>
                 <div class="train-info">
@@ -875,34 +901,20 @@
                         <span>To:</span> Amsterdam Centraal
                     </div>
                     <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>14:00 ➜ 14:12</td><td>Sprinter</td></tr>
-                        <tr class="candidate"><td>候選</td><td>14:15 ➜ 14:27</td><td>Sprinter</td></tr>
+                        <tr class="suggested"><td>建議</td><td>17:15 ➜ 17:27</td><td>Sprinter</td></tr>
                     </table>
                 </div>
-            </div>
-
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">NEMO 科學博物館</span>
-                </div>
-                <p class="spot-desc"><span class="badge bg-spot">親子</span>就在飯店對面。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=NEMO+Science+Museum" target="_blank" class="map-link">📍 導航</a></div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">17:00</span>
-                    <span class="text-sm font-bold text-slate-200">下午茶：Winkel 43</span>
-                </div>
-                <p class="spot-desc">週一旁邊有 Noordermarkt 市集，順路可去吃蘋果派。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Winkel+43" target="_blank" class="map-link">📍 導航</a></div>
-            </div>
-
-            <div class="glass-panel">
-                <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Sea Palace 海上皇宮</span>
+                </div>
+                <p class="spot-desc">中式料理暖胃。📝 建議提早預訂。</p>
+                <div class="flex items-center justify-end mt-3 gap-2">
+                    <a href="https://www.seapalace.nl/en/" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Sea+Palace+Amsterdam" target="_blank" class="map-link">📍 導航</a>
                 </div>
             </div>
 
@@ -933,31 +945,51 @@
                 <p class="spot-desc">必看向日葵。務必提早預約。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Van+Gogh+Museum" target="_blank" class="map-link">📍 導航</a></div>
             </div>
+            
+            <div class="glass-panel">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="time-tag">11:30</span>
+                    <span class="text-sm font-bold text-slate-200">Miffy 專賣店</span>
+                </div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=De+Winkel+van+Nijntje+Amsterdam" target="_blank" class="map-link">📍 導航</a></div>
+            </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">12:00</span>
-                    <span class="text-sm font-bold text-slate-200">艾伯特市集</span>
+                    <span class="time-tag">12:30</span>
+                    <span class="text-sm font-bold text-slate-200">午餐：艾伯特市集</span>
                 </div>
                 <p class="spot-desc">必吃現做熱焦糖煎餅。</p>
                 <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Albert+Cuyp+Market" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
-            <div class="glass-panel">
+            <div class="glass-panel border-l-4 border-amber-500">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">海尼根體驗館</span>
+                    <span class="time-tag">13:30</span>
+                    <span class="text-sm font-bold text-slate-200">分流行動</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Heineken+Experience" target="_blank" class="map-link">📍 導航</a></div>
+                <div class="space-y-3 mt-2">
+                    <div class="bg-slate-800/50 p-3 rounded-xl">
+                        <p class="text-sm font-bold text-amber-300 mb-1">🍺 爸爸：海尼根體驗館</p>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Heineken+Experience" target="_blank" class="map-link text-xs">📍 導航</a>
+                    </div>
+                    <div class="bg-slate-800/50 p-3 rounded-xl">
+                        <p class="text-sm font-bold text-teal-300 mb-1">🧪 媽媽+小孩：NEMO 科學博物館</p>
+                        <a href="https://www.google.com/maps/search/?api=1&query=NEMO+Science+Museum" target="_blank" class="map-link text-xs">📍 導航</a>
+                    </div>
+                </div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">17:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Moeders</span>
+                    <span class="time-tag">18:00</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Loetje Centraal</span>
                 </div>
-                <p class="spot-desc">傳統荷蘭燉牛肉。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Restaurant+Moeders" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc">招牌牛排 (Biefstuk Bali) 配白麵包。📝 建議提早預訂。</p>
+                <div class="flex items-center justify-end mt-3 gap-2">
+                    <a href="https://www.loetje.nl/en/" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Loetje+Centraal" target="_blank" class="map-link">📍 導航</a>
+                </div>
             </div>
 
             <!-- Hotel Footer -->
@@ -982,52 +1014,49 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">09:30</span>
-                    <span class="text-sm font-bold text-slate-200">船屋博物館</span>
+                    <span class="text-sm font-bold text-slate-200">早餐：The Pancake Bakery</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Houseboat+Museum" target="_blank" class="map-link">📍 導航</a></div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Pancake+Bakery" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">10:45</span>
-                    <span class="text-sm font-bold text-slate-200">The Pancake Bakery</span>
+                    <span class="time-tag">11:00</span>
+                    <span class="text-sm font-bold text-slate-200">辛格花市 (Bloemenmarkt)</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Pancake+Bakery" target="_blank" class="map-link">📍 導航</a></div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Bloemenmarkt" target="_blank" class="map-link">📍 導航</a></div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">12:30</span>
-                    <span class="text-sm font-bold text-slate-200">九街 & 西教堂</span>
+                    <span class="text-sm font-bold text-slate-200">九街 & 水壩廣場 & 超市</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=De+9+Straatjes" target="_blank" class="map-link">📍 九街</a></div>
+                <div class="mt-3 space-y-2">
+                    <a href="https://www.google.com/maps/search/?api=1&query=De+9+Straatjes" target="_blank" class="block map-link">📍 九街</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Dam+Square" target="_blank" class="block map-link">📍 水壩廣場</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Albert+Heijn+Museumplein" target="_blank" class="block map-link">🛒 AH 超市 (掃貨)</a>
+                </div>
             </div>
             
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:00</span>
-                    <span class="text-sm font-bold text-slate-200">水壩廣場 & 王宮</span>
+                    <span class="time-tag">16:30</span>
+                    <span class="text-sm font-bold text-slate-200">運河遊船 (夕陽)</span>
                 </div>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Dam+Square" target="_blank" class="map-link">📍 導航</a></div>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Lovers+Canal+Cruises" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">15:30</span>
-                    <span class="text-sm font-bold text-slate-200">購物：Miffy, Rituals, AH</span>
+                    <span class="time-tag">18:30</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Moeders (媽媽餐廳)</span>
                 </div>
-                <div class="space-y-3 mt-3">
-                    <a href="https://www.google.com/maps/search/?api=1&query=De+Winkel+van+Nijntje" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🐰 Miffy 專賣店</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Rituals+Amsterdam" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🧴 Rituals 香氛</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Albert+Heijn+Museumplein" target="_blank" class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl active:bg-slate-700">
-                        <span class="text-sm">🛒 AH 超市 (掃貨)</span><i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
-                    </a>
+                <p class="spot-desc">必點荷蘭燉牛肉 (Suddervlees)。📝 建議提早預訂。</p>
+                <div class="flex items-center justify-end mt-3 gap-2">
+                    <a href="https://www.moeders.com/en/home" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Restaurant+Moeders" target="_blank" class="map-link">📍 導航</a>
                 </div>
-                <p class="text-xs text-slate-400 mt-2 italic">*若 Day 6 沒吃到 Winkel 43 蘋果派，今天也可順路去。</p>
             </div>
 
             <!-- Hotel Footer -->
@@ -1119,7 +1148,7 @@
 
         const dayData = {
             1: { note: "08:00 機場出發。⚠️ 布魯塞爾人多，注意隨身包包。", lat: 50.8503, lon: 4.3517, city: "布魯塞爾" },
-            2: { note: "09:00 飯店出發。⚠️ 古城石板路顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247, city: "布魯日" },
+            2: { note: "08:00 飯店出發 (早餐08:15)。⚠️ 古城石板路顛簸，穿舒適平底鞋。", lat: 51.2093, lon: 3.2247, city: "布魯日" },
             3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174, city: "根特" },
             4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792, city: "鹿特丹" },
             5: { note: "08:50 飯店出發。⚠️ 河邊非常空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312, city: "阿姆斯特丹" },
