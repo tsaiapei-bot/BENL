@@ -95,7 +95,7 @@
             min-height: 32px;
         }
         .map-link:active { background: rgba(45, 212, 191, 0.2); }
-        
+
         .res-link {
             color: #f472b6; 
             text-decoration: none; 
@@ -206,10 +206,10 @@
             <button onclick="switchTab(2)" id="btn-2" class="tab-btn">D2 布魯日</button>
             <button onclick="switchTab(3)" id="btn-3" class="tab-btn">D3 根特</button>
             <button onclick="switchTab(4)" id="btn-4" class="tab-btn">D4 鹿特丹</button>
-            <button onclick="switchTab(5)" id="btn-5" class="tab-btn">D5 小孩堤防</button>
-            <button onclick="switchTab(6)" id="btn-6" class="tab-btn active">D6 市集科學</button>
-            <button onclick="switchTab(7)" id="btn-7" class="tab-btn">D7 梵谷公園</button>
-            <button onclick="switchTab(8)" id="btn-8" class="tab-btn">D8 風車運河</button>
+            <button onclick="switchTab(5)" id="btn-5" class="tab-btn active">D5 小孩堤防</button>
+            <button onclick="switchTab(6)" id="btn-6" class="tab-btn">D6 市集科學</button>
+            <button onclick="switchTab(7)" id="btn-7" class="tab-btn">D7 梵谷購物</button>
+            <button onclick="switchTab(8)" id="btn-8" class="tab-btn">D8 風車補考</button>
             <button onclick="switchTab(9)" id="btn-9" class="tab-btn">D9 返程</button>
         </div>
     </div>
@@ -918,7 +918,7 @@
         <!-- Day 7 -->
         <div id="day-7" class="day-content hidden">
             <div class="mb-4 pl-1 border-l-4 border-teal-500">
-                <h2 class="text-lg font-bold text-white">Day 7：梵谷 & 市集</h2>
+                <h2 class="text-lg font-bold text-white">Day 7：梵谷 & 購物</h2>
                 <p class="text-xs text-slate-400">2/17 (二) · 刷 OV Pay</p>
             </div>
 
@@ -959,23 +959,22 @@
                         <a href="https://www.google.com/maps/search/?api=1&query=Heineken+Experience" target="_blank" class="map-link text-xs">📍 導航</a>
                     </div>
                     <div class="bg-slate-800/50 p-3 rounded-xl">
-                        <p class="text-sm font-bold text-teal-300 mb-1">🌳 媽媽+小孩：Vondelpark</p>
-                        <p class="text-xs text-slate-400 mt-1">馮德爾公園放電，內有親子餐廳 Groot Melkhuis。</p>
-                        <a href="https://www.google.com/maps/search/?api=1&query=Vondelpark" target="_blank" class="map-link text-xs">📍 導航</a>
+                        <p class="text-sm font-bold text-teal-300 mb-1">🛍️ 媽媽+小孩：辛格花市 & 女王百貨</p>
+                        <div class="flex gap-2 mt-1">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Bloemenmarkt" target="_blank" class="map-link text-xs">📍 花市</a>
+                            <a href="https://www.google.com/maps/search/?api=1&query=De+Bijenkorf+Amsterdam" target="_blank" class="map-link text-xs">📍 百貨</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">18:00</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Loetje Centraal</span>
+                    <span class="time-tag">17:30</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：Cafe De Klos</span>
                 </div>
-                <p class="spot-desc">招牌牛排 (Biefstuk Bali) 配白麵包。📝 建議提早預訂。</p>
-                <div class="flex items-center justify-end mt-3 gap-2">
-                    <a href="https://www.loetje.nl/en/" target="_blank" class="res-link">📝 訂位</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Loetje+Centraal" target="_blank" class="map-link">📍 導航</a>
-                </div>
+                <p class="spot-desc">超人氣炭烤肋排。⚠️ 不接受訂位，請爸爸 16:30 先去排隊。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Cafe+De+Klos" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <!-- Hotel Footer -->
@@ -1034,27 +1033,26 @@
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:00</span>
-                    <span class="text-sm font-bold text-slate-200">返回阿姆斯特丹</span>
+                    <span class="time-tag">13:30</span>
+                    <span class="text-sm font-bold text-slate-200">返回阿姆斯特丹 & 午餐</span>
                 </div>
-                <div class="train-info">
-                    <div class="train-route">
-                        <span>From:</span> Zaandam<br>
-                        <span>To:</span> Amsterdam Centraal
-                    </div>
-                    <table class="train-table">
-                        <tr class="suggested"><td>建議</td><td>14:00 ➜ 14:12</td><td>Sprinter</td></tr>
-                    </table>
+                <p class="spot-desc">午餐建議：Loetje Centraal 招牌牛排。</p>
+                <div class="flex items-center justify-end mt-2 gap-2">
+                    <a href="https://www.loetje.nl/en/" target="_blank" class="res-link">📝 訂位</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Loetje+Centraal" target="_blank" class="map-link">📍 導航</a>
                 </div>
             </div>
 
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="time-tag">14:30</span>
-                    <span class="text-sm font-bold text-slate-200">Van Stapele 餅乾 & 花市</span>
+                    <span class="time-tag">15:00</span>
+                    <span class="text-sm font-bold text-slate-200">Van Stapele 餅乾 & 九街</span>
                 </div>
-                <p class="spot-desc">必買軟心巧克力餅乾，順遊辛格花市。</p>
-                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=Van+Stapele+Koekmakerij" target="_blank" class="map-link">📍 導航</a></div>
+                <p class="spot-desc">必買軟心巧克力餅乾，逛逛九街特色小店。</p>
+                <div class="flex gap-2 mt-3">
+                     <a href="https://www.google.com/maps/search/?api=1&query=Van+Stapele+Koekmakerij" target="_blank" class="map-link">📍 餅乾</a>
+                     <a href="https://www.google.com/maps/search/?api=1&query=De+9+Straatjes" target="_blank" class="map-link">📍 九街</a>
+                </div>
             </div>
 
             <div class="glass-panel">
@@ -1068,13 +1066,10 @@
             <div class="glass-panel">
                 <div class="flex items-center justify-between mb-2">
                     <span class="time-tag">18:30</span>
-                    <span class="text-sm font-bold text-slate-200">晚餐：Moeders (媽媽餐廳)</span>
+                    <span class="text-sm font-bold text-slate-200">晚餐：The Pancake Bakery</span>
                 </div>
-                <p class="spot-desc">必點荷蘭燉牛肉 (Suddervlees)。📝 建議提早預訂。</p>
-                <div class="flex items-center justify-end mt-3 gap-2">
-                    <a href="https://www.moeders.com/en/home" target="_blank" class="res-link">📝 訂位</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Restaurant+Moeders" target="_blank" class="map-link">📍 導航</a>
-                </div>
+                <p class="spot-desc">安妮之家附近，傳統荷蘭大鬆餅。</p>
+                <div class="mt-3 text-right"><a href="https://www.google.com/maps/search/?api=1&query=The+Pancake+Bakery" target="_blank" class="map-link">📍 導航</a></div>
             </div>
 
             <!-- Hotel Footer -->
@@ -1170,7 +1165,7 @@
             3: { note: "09:00 飯店出發。⚠️ 伯爵城堡樓梯陡峭，上下請牽好小孩。", lat: 51.0543, lon: 3.7174, city: "根特" },
             4: { note: "08:30 飯店退房。⚠️ 安特衛普車站行李櫃位於 Level 0 (刷卡)。", lat: 51.9225, lon: 4.4792, city: "鹿特丹" },
             5: { note: "09:30 飯店出發 (船班10:15)。⚠️ 河邊空曠風大，務必戴帽子保暖！", lat: 51.8892, lon: 4.6312, city: "阿姆斯特丹" },
-            6: { note: "08:15 飯店出發 (早餐09:00)。⚠️ 刷 OV Pay。NEMO 科學館適合放電。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
+            6: { note: "08:30 飯店出發 (早餐09:00)。⚠️ 刷 OV Pay。NEMO 科學館適合放電。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             7: { note: "08:20 飯店出發 (博物館09:00)。⚠️ 梵谷博物館嚴格預約制，別遲到。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             8: { note: "08:30 飯店出發 (風車村)。⚠️ 辛格花市早點去人較少，注意隨身物品。", lat: 52.3676, lon: 4.9041, city: "阿姆斯特丹" },
             9: { note: "08:40 飯店退房。⚠️ 退稅排隊可能很久，請務必提早 3 小時。", lat: 52.3105, lon: 4.7683, city: "阿姆斯特丹" }
