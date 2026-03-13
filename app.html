@@ -311,13 +311,12 @@
         options.forEach(opt => {
             let btn = document.createElement('button');
             btn.className = 'option-btn';
-            btn.dataset.word = opt; // 記錄這個按鈕代表的單字
+            btn.dataset.word = opt; 
             btn.innerText = opt;
             btn.onclick = () => {
                 if (isProcessing) return;
                 isProcessing = true; 
 
-                // 抓取所有的選項按鈕
                 let allBtns = container.querySelectorAll('.option-btn');
 
                 if (opt === currentVocab.word) {
@@ -330,11 +329,9 @@
                     currentScore = Math.max(0, currentScore - 5);
                     document.getElementById('current-score-1').innerText = currentScore;
                     
-                    // 把選錯的按鈕變紅並打 X
                     btn.classList.add('wrong-ans');
                     btn.innerHTML += " ❌";
 
-                    // 找出正確答案的按鈕變綠並打 O
                     allBtns.forEach(b => {
                         if (b.dataset.word === currentVocab.word) {
                             b.classList.add('correct-ans');
@@ -468,10 +465,13 @@
         isProcessing = true;
 
         let input = document.getElementById('g3-input').value.trim().toLowerCase();
+        
+        // 答對了直接跳下一題，移除成功動畫與等待時間
         if (input === currentVocab.word) {
             currentScore += 20; 
             document.getElementById('current-score-3').innerText = currentScore;
-            showSuccessFeedback(3, () => { currentQuestionIndex++; loadGame3(); });
+            currentQuestionIndex++; 
+            loadGame3(); 
         } else {
             currentScore = Math.max(0, currentScore - 10);
             document.getElementById('current-score-3').innerText = currentScore;
@@ -569,7 +569,7 @@
                     btn.classList.remove('wrong-shake');
                     selectedMatchBtn = null;
                     isProcessing = false;
-                }, 1000); // 震動與警告持續 1 秒
+                }, 1000); 
             }
         }
     }
