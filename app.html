@@ -35,9 +35,12 @@
         .icon { font-size: 40px; margin-bottom: 10px; }
 
         .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; }
-        .hint-text { font-size: 18px; color: #ff5722; text-align: center; margin-bottom: 10px; font-weight: bold; }
-        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 90%; margin: 10px auto; display: block; }
+        .hint-text { font-size: 18px; color: #ff5722; text-align: center; margin-bottom: 10px; font-weight: bold; min-height: 25px;}
+        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 90%; margin: 10px auto 0; display: block; transition: background 0.2s;}
         
+        /* 錯誤提示文字區塊 */
+        .correction-text { color: #d32f2f; font-size: 18px; font-weight: bold; text-align: center; margin-top: 10px; display: none; background: #ffebee; padding: 10px; border-radius: 10px; width: 85%; margin-left: auto; margin-right: auto; }
+
         .options { display: flex; flex-direction: column; gap: 10px; }
         .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: background 0.2s; }
         
@@ -49,10 +52,9 @@
         .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
         .match-btn.matched { visibility: hidden; }
 
-        /* 遊戲內即時回饋訊息框 */
         .feedback-msg { min-height: 40px; font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 15px; border-radius: 10px; padding: 10px; display: none; transition: opacity 0.3s; }
-        .feedback-msg.error { background: #ffebee; color: #d32f2f; display: block; }
         .feedback-msg.success { background: #e8f5e9; color: #388e3c; display: block; }
+        .feedback-msg.error { background: #ffebee; color: #d32f2f; display: block; }
 
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
@@ -75,7 +77,7 @@
                 <span id="welcome-msg">Hi, 玩家! 🐾</span>
                 <span>🏆 總積分: <span id="highest-score-display">0</span></span>
             </div>
-            <button id="difficulty-btn" class="btn-difficulty" onclick="toggleDifficulty()">🟢 當前難度：簡單 (有提示)</button>
+            <button id="difficulty-btn" class="btn-difficulty" onclick="toggleDifficulty()">🟢 關卡：第一關 (有提示, 10題)</button>
         </div>
         <div class="grid-container">
             <div class="game-card g1" onclick="startGame(1)"><div class="icon">🔍</div>英文小偵探</div>
@@ -87,44 +89,45 @@
 
     <div id="screen-game1" class="screen">
         <div class="score-board">
-            <span>題數: <span id="q-index-1">1</span>/10</span>
+            <span>題數: <span id="q-index-1">1</span>/<span class="total-q-display">10</span></span>
             <span>分數: <span id="current-score-1">0</span></span>
         </div>
         <div id="feedback-1" class="feedback-msg"></div>
         <div class="question-box" id="q1-text">讀取中...</div>
         <div class="options" id="options-container"></div>
+        <button id="g1-next-btn" class="btn-action" style="display:none; background:#ff9800;" onclick="nextGame1()">下一題</button>
         <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game2" class="screen">
         <div class="score-board">
-            <span>題數: <span id="q-index-2">1</span>/10</span>
+            <span>題數: <span id="q-index-2">1</span>/<span class="total-q-display">10</span></span>
             <span>分數: <span id="current-score-2">0</span></span>
         </div>
-        <div class="hint-text" id="g2-hint-zh">中文提示</div>
-        <div id="feedback-2" class="feedback-msg"></div>
+        <div class="hint-text" id="g2-hint-zh"></div>
         <div class="question-box" id="g2-pattern" style="letter-spacing: 5px; font-size: 30px;">c _ _ e</div>
         <input type="text" id="g2-input" placeholder="拼出完整單字..." autocomplete="off">
-        <button class="btn-action" onclick="checkGame2()">送出答案</button>
+        <button id="g2-submit" class="btn-action" onclick="checkGame2()">送出答案</button>
+        <div id="g2-correction" class="correction-text">正確答案是：</div>
         <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game3" class="screen">
         <div class="score-board">
-            <span>題數: <span id="q-index-3">1</span>/10</span>
+            <span>題數: <span id="q-index-3">1</span>/<span class="total-q-display">10</span></span>
             <span>分數: <span id="current-score-3">0</span></span>
         </div>
         <div class="hint-text" id="g3-hint"></div>
-        <div id="feedback-3" class="feedback-msg"></div>
         <div class="audio-btn" onclick="playAudio()">🔊</div>
         <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
-        <button class="btn-action" onclick="checkGame3()">送出答案</button>
+        <button id="g3-submit" class="btn-action" onclick="checkGame3()">送出答案</button>
+        <div id="g3-correction" class="correction-text">正確答案是：</div>
         <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game4" class="screen">
         <div class="score-board">
-            <span>進度: <span id="q-index-4">0</span>/10 組</span>
+            <span>進度: <span id="q-index-4">0</span>/<span class="total-q-display">10</span> 組</span>
             <span>分數: <span id="current-score-4">0</span></span>
         </div>
         <div id="feedback-4" class="feedback-msg"></div>
@@ -173,23 +176,26 @@
     let currentScore = 0;
     let currentQuestionIndex = 0;
     let currentVocab = null;
-    let isEasyMode = true; 
-    const TOTAL_QUESTIONS = 10; 
-    let isProcessing = false; // 防止連續點擊
+    
+    // 三個難度階級：1(簡單10題), 2(困難10題), 3(魔王20題)
+    let difficultyLevel = 1; 
+    let TOTAL_QUESTIONS = 10; 
+    let questionPool = []; // 儲存不重複的題庫
+    
+    // 阻擋連續點擊與等待切換狀態
+    let isProcessing = false; 
+    let g2WaitingNext = false;
+    let g3WaitingNext = false;
 
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
-        // 切換畫面時清空所有反饋訊息
         document.querySelectorAll('.feedback-msg').forEach(fb => { fb.style.display = 'none'; fb.className = 'feedback-msg'; });
     }
 
     function login() {
         const input = document.getElementById('playerNameInput').value.trim();
-        if (input === "") { 
-            document.getElementById('login-error').style.display = 'block';
-            return; 
-        }
+        if (input === "") { document.getElementById('login-error').style.display = 'block'; return; }
         document.getElementById('login-error').style.display = 'none';
         playerName = input;
         document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
@@ -198,16 +204,20 @@
     }
 
     function toggleDifficulty() {
-        isEasyMode = !isEasyMode;
+        difficultyLevel = (difficultyLevel % 3) + 1;
         const btn = document.getElementById('difficulty-btn');
-        if (isEasyMode) {
-            btn.innerText = "🟢 當前難度：簡單 (有提示)";
+        if (difficultyLevel === 1) {
+            btn.innerText = "🟢 關卡：第一關 (有提示, 10題)";
             btn.style.background = "var(--green)";
             btn.style.borderColor = "#88c970";
+        } else if (difficultyLevel === 2) {
+            btn.innerText = "🟠 關卡：第二關 (無提示, 10題)";
+            btn.style.background = "#ffbca4"; 
+            btn.style.borderColor = "#ff9800";
         } else {
-            btn.innerText = "🔴 當前難度：挑戰 (無提示)";
-            btn.style.background = "#ff9800";
-            btn.style.borderColor = "#e65100";
+            btn.innerText = "🔴 關卡：第三關 (無提示, 20題全上)";
+            btn.style.background = "#ff8a80"; 
+            btn.style.borderColor = "#d32f2f";
         }
     }
 
@@ -228,48 +238,63 @@
         currentScore = 0;
         currentQuestionIndex = 0;
         isProcessing = false;
+        
+        // 根據難度設定總題數，並洗牌抽題
+        TOTAL_QUESTIONS = (difficultyLevel === 3) ? 20 : 10;
+        questionPool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
+        
+        // 更新畫面上顯示的總題數
+        document.querySelectorAll('.total-q-display').forEach(el => el.innerText = TOTAL_QUESTIONS);
         document.getElementById(`current-score-${gameId}`).innerText = currentScore;
+        
+        // 重置按鈕狀態
+        g2WaitingNext = false;
+        g3WaitingNext = false;
+        if(document.getElementById('g2-submit')) {
+            document.getElementById('g2-submit').innerText = "送出答案";
+            document.getElementById('g2-submit').style.background = "var(--blue)";
+            document.getElementById('g2-correction').style.display = 'none';
+        }
+        if(document.getElementById('g3-submit')) {
+            document.getElementById('g3-submit').innerText = "送出答案";
+            document.getElementById('g3-submit').style.background = "var(--blue)";
+            document.getElementById('g3-correction').style.display = 'none';
+        }
+
         showScreen(`screen-game${gameId}`);
         
         if (gameId === 1) loadGame1();
         if (gameId === 2) loadGame2();
         if (gameId === 3) loadGame3();
-        if (gameId === 4) {
-            game4TotalMatched = 0; 
-            loadGame4();
-        }
+        if (gameId === 4) { game4TotalMatched = 0; loadGame4(); }
     }
 
-    function getRandomVocab() {
-        return vocabList[Math.floor(Math.random() * vocabList.length)];
-    }
-
-    // 顯示遊戲內回饋訊息的共用函數
-    function showFeedback(gameId, isCorrect, message, callback) {
+    // 答對時的共用動畫回饋 (答錯由各遊戲自己控制手動跳轉)
+    function showSuccessFeedback(gameId, callback) {
         let fb = document.getElementById(`feedback-${gameId}`);
-        fb.innerHTML = message;
-        fb.className = `feedback-msg ${isCorrect ? 'success' : 'error'}`;
-        
-        // 設定 1.5 秒後執行下一步
+        fb.innerHTML = "🎉 答對了！太棒了！";
+        fb.className = 'feedback-msg success';
         setTimeout(() => {
             fb.style.display = 'none';
             if (callback) callback();
-        }, 1500);
+        }, 1200);
     }
 
     // --- 遊戲 1: 英文小偵探 ---
     function loadGame1() {
         if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
         document.getElementById('q-index-1').innerText = currentQuestionIndex + 1;
+        document.getElementById('g1-next-btn').style.display = 'none';
         isProcessing = false;
         
-        currentVocab = getRandomVocab();
+        currentVocab = questionPool[currentQuestionIndex];
         document.getElementById('q1-text').innerText = currentVocab.def;
 
         let options = [currentVocab.word];
-        while (options.length < 4) {
-            let randomWrong = getRandomVocab().word;
-            if (!options.includes(randomWrong)) options.push(randomWrong);
+        let randomPool = [...vocabList].sort(() => Math.random() - 0.5);
+        for(let v of randomPool) {
+            if (options.length >= 4) break;
+            if (v.word !== currentVocab.word && !options.includes(v.word)) options.push(v.word);
         }
         options.sort(() => Math.random() - 0.5);
 
@@ -281,22 +306,33 @@
             btn.innerText = opt;
             btn.onclick = () => {
                 if (isProcessing) return;
-                isProcessing = true; // 鎖定點擊
+                isProcessing = true; 
 
                 if (opt === currentVocab.word) {
                     currentScore += 10; 
                     document.getElementById('current-score-1').innerText = currentScore;
-                    btn.style.background = '#e8f5e9'; // 標示正確綠色
-                    showFeedback(1, true, "答對了！🎉", () => { currentQuestionIndex++; loadGame1(); });
+                    btn.style.background = '#e8f5e9'; 
+                    showSuccessFeedback(1, () => { currentQuestionIndex++; loadGame1(); });
                 } else {
                     currentScore = Math.max(0, currentScore - 5);
                     document.getElementById('current-score-1').innerText = currentScore;
-                    btn.style.background = '#ffebee'; // 標示錯誤紅色
-                    showFeedback(1, false, `答錯囉！<br>正確答案是：${currentVocab.word} (${currentVocab.zh})`, () => { currentQuestionIndex++; loadGame1(); });
+                    btn.style.background = '#ffebee'; 
+                    
+                    // 答錯：顯示錯誤回饋，並秀出「下一題」按鈕
+                    let fb = document.getElementById('feedback-1');
+                    fb.innerHTML = `正確答案是：${currentVocab.word} (${currentVocab.zh})`;
+                    fb.className = 'feedback-msg error';
+                    document.getElementById('g1-next-btn').style.display = 'block';
                 }
             };
             container.appendChild(btn);
         });
+    }
+
+    function nextGame1() {
+        document.getElementById('feedback-1').style.display = 'none';
+        currentQuestionIndex++; 
+        loadGame1();
     }
 
     // --- 遊戲 2: 殘影解碼器 ---
@@ -305,17 +341,22 @@
         document.getElementById('q-index-2').innerText = currentQuestionIndex + 1;
         isProcessing = false;
         
-        currentVocab = getRandomVocab();
-        document.getElementById('g2-hint-zh').innerText = "💡 中文意思: " + currentVocab.zh;
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        let hintEl = document.getElementById('g2-hint-zh');
+        if (difficultyLevel === 1) {
+            hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
+        } else {
+            hintEl.innerText = ""; // 第二關與第三關無提示
+        }
         
         let word = currentVocab.word;
         let displayPattern = "";
-        
         for (let i = 0; i < word.length; i++) {
             if (word[i] === " ") {
                 displayPattern += "  ";
-            } else if (isEasyMode && (i === 0 || i === word.length - 1)) {
-                displayPattern += word[i] + " ";
+            } else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) {
+                displayPattern += word[i] + " "; // 只有第一關顯示頭尾
             } else {
                 displayPattern += "_ ";
             }
@@ -326,6 +367,17 @@
     }
 
     function checkGame2() {
+        if (g2WaitingNext) {
+            // 切換下一題
+            g2WaitingNext = false;
+            document.getElementById('g2-submit').innerText = "送出答案";
+            document.getElementById('g2-submit').style.background = "var(--blue)";
+            document.getElementById('g2-correction').style.display = 'none';
+            currentQuestionIndex++;
+            loadGame2();
+            return;
+        }
+
         if (isProcessing) return;
         isProcessing = true;
 
@@ -333,11 +385,22 @@
         if (input === currentVocab.word) {
             currentScore += 15; 
             document.getElementById('current-score-2').innerText = currentScore;
-            showFeedback(2, true, "拼對了！太厲害了！🎉", () => { currentQuestionIndex++; loadGame2(); });
+            showSuccessFeedback(2, () => { currentQuestionIndex++; loadGame2(); });
         } else {
             currentScore = Math.max(0, currentScore - 5);
             document.getElementById('current-score-2').innerText = currentScore;
-            showFeedback(2, false, `拼錯囉！<br>正確答案是：${currentVocab.word}`, () => { currentQuestionIndex++; loadGame2(); });
+            
+            // 答錯邏輯：顯示紅字正確答案，按鈕變更為下一題
+            let correctionDiv = document.getElementById('g2-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong>`;
+            correctionDiv.style.display = 'block';
+            
+            let submitBtn = document.getElementById('g2-submit');
+            submitBtn.innerText = "下一題";
+            submitBtn.style.background = "#ff9800"; // 橘色醒目提示
+            
+            g2WaitingNext = true;
+            isProcessing = false; // 解除鎖定讓玩家可以按下一題
         }
     }
 
@@ -347,15 +410,15 @@
         document.getElementById('q-index-3').innerText = currentQuestionIndex + 1;
         isProcessing = false;
         
-        currentVocab = getRandomVocab();
+        currentVocab = questionPool[currentQuestionIndex];
         document.getElementById('g3-input').value = "";
         
         let hintElement = document.getElementById('g3-hint');
-        if (isEasyMode) {
+        if (difficultyLevel === 1) {
             let hintWord = currentVocab.word.charAt(0) + " " + "_ ".repeat(currentVocab.word.length - 1);
             hintElement.innerText = `💡 提示: ${hintWord} (${currentVocab.zh})`;
         } else {
-            hintElement.innerText = "仔細聽發音，拼出完整單字！";
+            hintElement.innerText = "仔細聽發音，拼出完整單字！"; // 第二關與第三關無提示
         }
 
         playAudio(); 
@@ -370,6 +433,17 @@
     }
 
     function checkGame3() {
+        if (g3WaitingNext) {
+            // 切換下一題
+            g3WaitingNext = false;
+            document.getElementById('g3-submit').innerText = "送出答案";
+            document.getElementById('g3-submit').style.background = "var(--blue)";
+            document.getElementById('g3-correction').style.display = 'none';
+            currentQuestionIndex++;
+            loadGame3();
+            return;
+        }
+
         if (isProcessing) return;
         isProcessing = true;
 
@@ -377,11 +451,22 @@
         if (input === currentVocab.word) {
             currentScore += 20; 
             document.getElementById('current-score-3').innerText = currentScore;
-            showFeedback(3, true, "聽力滿分！🎉", () => { currentQuestionIndex++; loadGame3(); });
+            showSuccessFeedback(3, () => { currentQuestionIndex++; loadGame3(); });
         } else {
             currentScore = Math.max(0, currentScore - 10);
             document.getElementById('current-score-3').innerText = currentScore;
-            showFeedback(3, false, `聽錯或拼錯囉！<br>正確答案是：${currentVocab.word} (${currentVocab.zh})`, () => { currentQuestionIndex++; loadGame3(); });
+            
+            // 答錯邏輯：顯示紅字正確答案，按鈕變更為下一題
+            let correctionDiv = document.getElementById('g3-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong> (${currentVocab.zh})`;
+            correctionDiv.style.display = 'block';
+            
+            let submitBtn = document.getElementById('g3-submit');
+            submitBtn.innerText = "下一題";
+            submitBtn.style.background = "#ff9800"; // 橘色醒目提示
+            
+            g3WaitingNext = true;
+            isProcessing = false; // 解除鎖定讓玩家可以按下一題
         }
     }
 
@@ -395,8 +480,10 @@
         document.getElementById('q-index-4').innerText = game4TotalMatched;
         isProcessing = false;
         
-        matchPairsLeft = 5;
-        let pool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, 5); 
+        // 依照題數切分進度，每次最多抓 5 組
+        matchPairsLeft = Math.min(5, TOTAL_QUESTIONS - game4TotalMatched);
+        let pool = questionPool.slice(game4TotalMatched, game4TotalMatched + matchPairsLeft); 
+        
         let buttonsData = [];
         pool.forEach(v => {
             buttonsData.push({ text: v.word, type: 'en', pairId: v.word });
@@ -442,20 +529,25 @@
                 selectedMatchBtn = null;
 
                 if (game4TotalMatched >= TOTAL_QUESTIONS || matchPairsLeft === 0) {
-                    isProcessing = true; // 等待刷新時鎖住
+                    isProcessing = true; 
                     setTimeout(() => loadGame4(), 600); 
                 }
             } else {
-                // 配對失敗：顯示錯誤並鎖定畫面 1.5 秒
+                // 配對失敗：顯示錯誤提示 1.5 秒
                 isProcessing = true;
                 currentScore = Math.max(0, currentScore - 5);
                 document.getElementById('current-score-4').innerText = currentScore;
                 
-                showFeedback(4, false, `哎呀！「${selectedMatchBtn.innerText}」不是「${btn.innerText}」喔！`, () => {
+                let fb = document.getElementById('feedback-4');
+                fb.innerHTML = `哎呀！「${selectedMatchBtn.innerText}」不是「${btn.innerText}」喔！`;
+                fb.className = 'feedback-msg error';
+                
+                setTimeout(() => {
+                    fb.style.display = 'none';
                     selectedMatchBtn.classList.remove('selected');
                     selectedMatchBtn = null;
                     isProcessing = false;
-                });
+                }, 1500);
             }
         }
     }
