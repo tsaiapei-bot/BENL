@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hurray! 英語闖關小基地</title>
+    <style>
+        :root {
+            --primary-bg: #f4f9f9;
+            --blue: #a0d8ef;
+            --yellow: #ffdf85;
+            --green: #bceca2;
+            --orange: #ffbca4;
+            --text-dark: #4a4a4a;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .screen.active {
+            display: flex;
+        }
+        h1, h2 { text-align: center; margin-top: 10px; }
+        
+        /* 共用元件 */
+        .cat-mascot { font-size: 80px; text-align: center; margin: 20px 0; animation: bounce 2s infinite; }
+        .score-board { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #ff5722; }
+        .btn-home { margin-top: auto; padding: 15px; border-radius: 15px; border: none; background: #eee; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-home:active { background: #ddd; }
+        input[type="text"] { width: 90%; padding: 15px; font-size: 20px; border: 3px solid var(--blue); border-radius: 15px; margin: 10px auto; display: block; text-align: center; box-sizing: border-box; }
+        
+        /* 登入畫面 */
+        .btn-start { background: var(--orange); color: white; border: none; padding: 15px 30px; font-size: 24px; border-radius: 30px; cursor: pointer; margin: 20px auto 0; display: block; font-weight: bold; box-shadow: 0 5px 0 #e09b83; }
+        .btn-start:active { transform: translateY(5px); box-shadow: 0 0 0 #e09b83; }
+
+        /* 大廳畫面 */
+        .header-info { display: flex; justify-content: space-between; align-items: center; background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; }
+        .game-card { border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; text-align: center; padding: 10px; transition: transform 0.2s; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
+        .game-card:active { transform: scale(0.95); }
+        .game-card.g1 { background: var(--blue); } .game-card.g2 { background: var(--yellow); } .game-card.g3 { background: var(--green); } .game-card.g4 { background: var(--orange); }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+
+        /* 遊戲共用區塊 */
+        .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; }
+        .hint-text { font-size: 18px; color: #666; text-align: center; margin-bottom: 10px; }
+        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        /* 遊戲 1 (選擇題) */
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: background 0.2s; }
+        
+        /* 遊戲 3 (聽力) */
+        .audio-btn { font-size: 60px; text-align: center; cursor: pointer; margin: 20px 0; transition: transform 0.2s; }
+        .audio-btn:active { transform: scale(0.9); }
+
+        /* 遊戲 4 (配對) */
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .match-btn { background: white; border: 3px solid #ccc; padding: 15px 5px; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; text-align: center; word-break: break-all; }
+        .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
+        .match-btn.matched { visibility: hidden; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <div id="screen-login" class="screen active">
+        <div class="cat-mascot">😽</div>
+        <h2>喵～這裡是秘密基地！<br>請問你叫什麼名字？</h2>
+        <input type="text" id="playerNameInput" placeholder="輸入名字..." autocomplete="off">
+        <button class="btn-start" onclick="login()">開始探險</button>
+    </div>
+
+    <div id="screen-home" class="screen">
+        <div class="header-info">
+            <span id="welcome-msg">Hi, 玩家! 🐾</span>
+            <span>🏆 積分: <span id="highest-score-display">0</span></span>
+        </div>
+        <div class="grid-container">
+            <div class="game-card g1" onclick="startGame(1)"><div class="icon">🔍</div>英文小偵探</div>
+            <div class="game-card g2" onclick="startGame(2)"><div class="icon">🧩</div>殘影解碼器</div>
+            <div class="game-card g3" onclick="startGame(3)"><div class="icon">🎧</div>聽音守衛隊</div>
+            <div class="game-card g4" onclick="startGame(4)"><div class="icon">🔗</div>雙語消消樂</div>
+        </div>
+    </div>
+
+    <div id="screen-game1" class="screen">
+        <div class="score-board">當前分數: <span id="current-score-1">0</span></div>
+        <div class="question-box" id="q1-text">讀取中...</div>
+        <div class="options" id="options-container"></div>
+        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+    </div>
+
+    <div id="screen-game2" class="screen">
+        <div class="score-board">當前分數: <span id="current-score-2">0</span></div>
+        <div class="hint-text" id="g2-hint-zh">中文提示</div>
+        <div class="question-box" id="g2-pattern" style="letter-spacing: 5px; font-size: 30px;">c _ _ e</div>
+        <input type="text" id="g2-input" placeholder="拼出完整單字..." autocomplete="off">
+        <button class="btn-action" onclick="checkGame2()">送出答案</button>
+        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+    </div>
+
+    <div id="screen-game3" class="screen">
+        <div class="score-board">當前分數: <span id="current-score-3">0</span></div>
+        <div class="hint-text">點擊喇叭聽發音，並拼出單字</div>
+        <div class="audio-btn" onclick="playAudio()">🔊</div>
+        <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
+        <button class="btn-action" onclick="checkGame3()">送出答案</button>
+        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+    </div>
+
+    <div id="screen-game4" class="screen">
+        <div class="score-board">當前分數: <span id="current-score-4">0</span></div>
+        <div class="hint-text">找出相對應的中文與英文！</div>
+        <div class="match-grid" id="match-container"></div>
+        <button class="btn-home" onclick="goHome()">🏠 結算並回大廳</button>
+    </div>
+
+</div>
+
+<script>
+    // 完整 20 個單字題庫
+    const vocabList = [
+        { word: "carton", def: "A box made of plastic or thick paper.", zh: "塑膠盒、硬紙盒" },
+        { word: "diary", def: "A book where you write down your daily thoughts.", zh: "日記" },
+        { word: "paper", def: "Material you write or draw on.", zh: "紙張" },
+        { word: "blow", def: "To send out air from your mouth.", zh: "吹" },
+        { word: "shelf", def: "A flat board used to hold things.", zh: "架子" },
+        { word: "machine", def: "A piece of equipment with moving parts.", zh: "機器" },
+        { word: "stationery store", def: "A shop where you buy pens, paper, and notebooks.", zh: "文具店" },
+        { word: "rescue", def: "To save someone from danger.", zh: "搶救" },
+        { word: "workbook", def: "A book with exercises for students.", zh: "作業本" },
+        { word: "notebook", def: "A book of blank pages for writing notes.", zh: "筆記本" },
+        { word: "actually", def: "In fact or really.", zh: "其實/事實上" },
+        { word: "perhaps", def: "Used to say that something may happen; maybe.", zh: "也許" },
+        { word: "frightening", def: "Making you feel afraid or nervous.", zh: "害怕的" },
+        { word: "prepare", def: "To get ready for something.", zh: "準備" },
+        { word: "bracelet", def: "A piece of jewelry worn around the wrist.", zh: "手鐲" },
+        { word: "pajamas", def: "Comfortable clothes you wear to sleep.", zh: "睡衣" },
+        { word: "foggy", def: "Not clear because of fog.", zh: "模糊的" },
+        { word: "sore", def: "A painful place on your body.", zh: "疼痛處、潰瘍" },
+        { word: "cave", def: "A large hole in the side of a hill or under the ground.", zh: "洞穴" },
+        { word: "sledge", def: "A vehicle used for traveling over snow.", zh: "雪橇" }
+    ];
+
+    let playerName = "";
+    let totalScore = parseInt(localStorage.getItem('hurrayTotalScore')) || 0;
+    let currentScore = 0;
+    let currentQuestionIndex = 0;
+    let currentVocab = null;
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function login() {
+        const input = document.getElementById('playerNameInput').value.trim();
+        if (input === "") { alert("喵！請先輸入名字唷！"); return; }
+        playerName = input;
+        document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
+        document.getElementById('highest-score-display').innerText = totalScore;
+        showScreen('screen-home');
+    }
+
+    function goHome() {
+        totalScore += currentScore; // 累加積分
+        localStorage.setItem('hurrayTotalScore', totalScore);
+        document.getElementById('highest-score-display').innerText = totalScore;
+        showScreen('screen-home');
+    }
+
+    function startGame(gameId) {
+        currentScore = 0;
+        currentQuestionIndex = 0;
+        document.getElementById(`current-score-${gameId}`).innerText = currentScore;
+        showScreen(`screen-game${gameId}`);
+        
+        if (gameId === 1) loadGame1();
+        if (gameId === 2) loadGame2();
+        if (gameId === 3) loadGame3();
+        if (gameId === 4) loadGame4();
+    }
+
+    function getRandomVocab() {
+        return vocabList[Math.floor(Math.random() * vocabList.length)];
+    }
+
+    // --- 遊戲 1: 英文小偵探 ---
+    function loadGame1() {
+        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        currentVocab = getRandomVocab();
+        document.getElementById('q1-text').innerText = currentVocab.def;
+
+        let options = [currentVocab.word];
+        while (options.length < 4) {
+            let randomWrong = getRandomVocab().word;
+            if (!options.includes(randomWrong)) options.push(randomWrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => {
+                if (opt === currentVocab.word) {
+                    currentScore += 100; currentQuestionIndex++; loadGame1();
+                } else {
+                    alert(`答錯囉。正確答案是：${currentVocab.word}`);
+                    currentScore = Math.max(0, currentScore - 20);
+                }
+                document.getElementById('current-score-1').innerText = currentScore;
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    // --- 遊戲 2: 殘影解碼器 ---
+    function loadGame2() {
+        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        currentVocab = getRandomVocab();
+        document.getElementById('g2-hint-zh').innerText = "提示: " + currentVocab.zh;
+        
+        let word = currentVocab.word;
+        // 處理包含空格的單字（如 stationery store）
+        let displayPattern = "";
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === " ") {
+                displayPattern += "  ";
+            } else if (i === 0 || i === word.length - 1) {
+                displayPattern += word[i] + " ";
+            } else {
+                displayPattern += "_ ";
+            }
+        }
+        
+        document.getElementById('g2-pattern').innerText = displayPattern.trim();
+        document.getElementById('g2-input').value = "";
+    }
+
+    function checkGame2() {
+        let input = document.getElementById('g2-input').value.trim().toLowerCase();
+        if (input === currentVocab.word) {
+            currentScore += 150; document.getElementById('current-score-2').innerText = currentScore;
+            currentQuestionIndex++; loadGame2();
+        } else {
+            alert("拼錯囉，再試一次！");
+            currentScore = Math.max(0, currentScore - 10);
+            document.getElementById('current-score-2').innerText = currentScore;
+        }
+    }
+
+    // --- 遊戲 3: 聽音守衛隊 ---
+    function loadGame3() {
+        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        currentVocab = getRandomVocab();
+        document.getElementById('g3-input').value = "";
+        playAudio(); // 自動播一次
+    }
+
+    function playAudio() {
+        if ('speechSynthesis' in window) {
+            let msg = new SpeechSynthesisUtterance(currentVocab.word);
+            msg.lang = 'en-US';
+            window.speechSynthesis.speak(msg);
+        } else {
+            alert("你的瀏覽器不支援語音播放喔！");
+        }
+    }
+
+    function checkGame3() {
+        let input = document.getElementById('g3-input').value.trim().toLowerCase();
+        if (input === currentVocab.word) {
+            currentScore += 200; document.getElementById('current-score-3').innerText = currentScore;
+            currentQuestionIndex++; loadGame3();
+        } else {
+            alert("聽錯或拼錯囉，可以再點喇叭聽一次！");
+            currentScore = Math.max(0, currentScore - 20);
+            document.getElementById('current-score-3').innerText = currentScore;
+        }
+    }
+
+    // --- 遊戲 4: 雙語消消樂 ---
+    let selectedMatchBtn = null;
+    let matchPairsLeft = 4;
+
+    function loadGame4() {
+        matchPairsLeft = 4;
+        let pool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, 4); // 抽 4 組
+        let buttonsData = [];
+        pool.forEach(v => {
+            buttonsData.push({ text: v.word, type: 'en', pairId: v.word });
+            buttonsData.push({ text: v.zh, type: 'zh', pairId: v.word });
+        });
+        buttonsData.sort(() => Math.random() - 0.5); // 打亂順序
+
+        const container = document.getElementById('match-container');
+        container.innerHTML = "";
+        buttonsData.forEach(data => {
+            let btn = document.createElement('button');
+            btn.className = 'match-btn';
+            btn.innerText = data.text;
+            btn.dataset.pairId = data.pairId;
+            btn.onclick = () => handleMatchClick(btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleMatchClick(btn) {
+        if (btn.classList.contains('matched')) return;
+
+        if (!selectedMatchBtn) {
+            // 第一次點擊
+            selectedMatchBtn = btn;
+            btn.classList.add('selected');
+        } else {
+            // 第二次點擊
+            if (selectedMatchBtn === btn) {
+                btn.classList.remove('selected');
+                selectedMatchBtn = null;
+                return;
+            }
+
+            if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
+                // 配對成功
+                btn.classList.add('matched');
+                selectedMatchBtn.classList.add('matched');
+                currentScore += 50;
+                matchPairsLeft--;
+                if (matchPairsLeft === 0) {
+                    setTimeout(() => loadGame4(), 500); // 下一局
+                }
+            } else {
+                // 配對失敗
+                selectedMatchBtn.classList.remove('selected');
+                currentScore = Math.max(0, currentScore - 10);
+            }
+            selectedMatchBtn = null;
+            document.getElementById('current-score-4').innerText = currentScore;
+        }
+    }
+</script>
+
+</body>
+</html>
