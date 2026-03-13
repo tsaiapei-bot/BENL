@@ -363,12 +363,9 @@
         
         currentVocab = questionPool[currentQuestionIndex];
         
+        // 永遠顯示中文提示
         let hintEl = document.getElementById('g2-hint-zh');
-        if (difficultyLevel === 1) {
-            hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
-        } else {
-            hintEl.innerText = ""; 
-        }
+        hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
         
         let word = currentVocab.word;
         let displayPattern = "";
@@ -376,8 +373,10 @@
             if (word[i] === " ") {
                 displayPattern += "  ";
             } else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) {
+                // 初階難度：保留前後字母
                 displayPattern += word[i] + " "; 
             } else {
+                // 中階與高階：只有底線
                 displayPattern += "_ ";
             }
         }
@@ -466,7 +465,6 @@
 
         let input = document.getElementById('g3-input').value.trim().toLowerCase();
         
-        // 答對了直接跳下一題，移除成功動畫與等待時間
         if (input === currentVocab.word) {
             currentScore += 20; 
             document.getElementById('current-score-3').innerText = currentScore;
