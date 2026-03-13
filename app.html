@@ -34,29 +34,28 @@
         .game-card.g1 { background: var(--blue); } .game-card.g2 { background: var(--yellow); } .game-card.g3 { background: var(--green); } .game-card.g4 { background: var(--orange); }
         .icon { font-size: 40px; margin-bottom: 10px; }
 
-        .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; }
+        .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .hint-text { font-size: 18px; color: #ff5722; text-align: center; margin-bottom: 10px; font-weight: bold; min-height: 25px;}
         .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 90%; margin: 10px auto 0; display: block; transition: background 0.2s;}
         
-        /* 錯誤提示文字區塊 */
         .correction-text { color: #d32f2f; font-size: 18px; font-weight: bold; text-align: center; margin-top: 10px; display: none; background: #ffebee; padding: 10px; border-radius: 10px; width: 85%; margin-left: auto; margin-right: auto; }
 
         .options { display: flex; flex-direction: column; gap: 10px; }
         .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: all 0.2s; }
         
-        /* 遊戲 1 對錯顏色標示 */
         .option-btn.correct-ans { background-color: #e8f5e9 !important; border-color: #4caf50 !important; font-weight: bold; color: #2e7d32; }
         .option-btn.wrong-ans { background-color: #ffebee !important; border-color: #f44336 !important; color: #d32f2f; text-decoration: line-through; }
 
         .audio-btn { font-size: 60px; text-align: center; cursor: pointer; margin: 20px 0; transition: transform 0.2s; }
         .audio-btn:active { transform: scale(0.9); }
+        .audio-btn-small { font-size: 30px; cursor: pointer; transition: transform 0.2s; flex-shrink: 0; }
+        .audio-btn-small:active { transform: scale(0.9); }
 
         .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .match-btn { background: white; border: 3px solid #ccc; padding: 15px 5px; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; text-align: center; word-break: break-all; transition: all 0.2s; }
         .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
         .match-btn.matched { visibility: hidden; }
 
-        /* 遊戲 4 震動警告動畫 */
         .wrong-shake { animation: shake 0.5s; background-color: #ffebee !important; border-color: #d32f2f !important; color: #d32f2f; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -105,7 +104,10 @@
             <span>分數: <span id="current-score-1">0</span></span>
         </div>
         <div id="feedback-1" class="feedback-msg"></div>
-        <div class="question-box" id="q1-text">讀取中...</div>
+        <div class="question-box">
+            <div id="q1-text" style="flex: 1;">讀取中...</div>
+            <div class="audio-btn-small" onclick="playGame1Audio()">🔊</div>
+        </div>
         <div class="options" id="options-container"></div>
         <button id="g1-next-btn" class="btn-action" style="display:none; background:#ff9800;" onclick="nextGame1()">下一題</button>
         <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
@@ -117,6 +119,7 @@
             <span>分數: <span id="current-score-2">0</span></span>
         </div>
         <div class="hint-text" id="g2-hint-zh"></div>
+        <div id="feedback-2" class="feedback-msg"></div>
         <div class="question-box" id="g2-pattern" style="letter-spacing: 5px; font-size: 30px;">c _ _ e</div>
         <input type="text" id="g2-input" placeholder="拼出完整單字..." autocomplete="off">
         <button id="g2-submit" class="btn-action" onclick="checkGame2()">送出答案</button>
@@ -130,6 +133,7 @@
             <span>分數: <span id="current-score-3">0</span></span>
         </div>
         <div class="hint-text" id="g3-hint"></div>
+        <div id="feedback-3" class="feedback-msg"></div>
         <div class="audio-btn" onclick="playAudio()">🔊</div>
         <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
         <button id="g3-submit" class="btn-action" onclick="checkGame3()">送出答案</button>
@@ -203,6 +207,7 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
         document.querySelectorAll('.feedback-msg').forEach(fb => { fb.style.display = 'none'; fb.className = 'feedback-msg'; });
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel(); // 切換畫面時停止語音
     }
 
     function login() {
@@ -278,14 +283,51 @@
         if (gameId === 4) { game4TotalMatched = 0; loadGame4(); }
     }
 
-    function showSuccessFeedback(gameId, callback) {
+    // 🌟 核心功能：答對後將每個字母唸出來，再唸一次單字
+    function playSpellingAudio(word, callback) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            
+            // 將單字拆解成逐個字母 (去除空格避免語音中斷)
+            // 加上 "- " 是為了讓語音引擎在唸字母時有稍微的停頓
+            let spellLetters = word.replace(/\s+/g, '').split('').join('- '); 
+            let fullSpellingText = spellLetters + ", " + word; // 例如: "c- a- v- e, cave"
+            
+            let msg = new SpeechSynthesisUtterance(fullSpellingText);
+            msg.lang = 'en-US';
+            msg.rate = 0.8; // 稍微放慢速度，讓妹妹每個字母都聽得清楚
+            
+            let called = false;
+            let finish = () => {
+                if (!called) {
+                    called = true;
+                    if (callback) callback();
+                }
+            };
+            
+            msg.onend = finish;
+            msg.onerror = finish;
+            window.speechSynthesis.speak(msg);
+
+            // 防呆保護機制：萬一瀏覽器語音卡住，會自動強制觸發下一題
+            setTimeout(finish, word.length * 400 + 1500); 
+        } else {
+            // 不支援語音的設備就直接等 1.2 秒
+            if (callback) setTimeout(callback, 1200);
+        }
+    }
+
+    function showSuccessFeedbackWithSpelling(gameId, word, callback) {
         let fb = document.getElementById(`feedback-${gameId}`);
-        fb.innerHTML = "🎉 答對了！太棒了！";
-        fb.className = 'feedback-msg success';
-        setTimeout(() => {
-            fb.style.display = 'none';
+        if(fb) {
+            fb.innerHTML = "🎉 答對了！太棒了！";
+            fb.className = 'feedback-msg success';
+        }
+        
+        playSpellingAudio(word, () => {
+            if(fb) fb.style.display = 'none';
             if (callback) callback();
-        }, 1200);
+        });
     }
 
     // --- 遊戲 1: 英文小偵探 ---
@@ -297,6 +339,8 @@
         
         currentVocab = questionPool[currentQuestionIndex];
         document.getElementById('q1-text').innerText = currentVocab.def;
+
+        playGame1Audio();
 
         let options = [currentVocab.word];
         let randomPool = [...vocabList].sort(() => Math.random() - 0.5);
@@ -316,6 +360,7 @@
             btn.onclick = () => {
                 if (isProcessing) return;
                 isProcessing = true; 
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
 
                 let allBtns = container.querySelectorAll('.option-btn');
 
@@ -324,7 +369,9 @@
                     document.getElementById('current-score-1').innerText = currentScore;
                     btn.classList.add('correct-ans');
                     btn.innerHTML += " ✅";
-                    showSuccessFeedback(1, () => { currentQuestionIndex++; loadGame1(); });
+                    
+                    // 🌟 答對時呼叫拼字語音
+                    showSuccessFeedbackWithSpelling(1, currentVocab.word, () => { currentQuestionIndex++; loadGame1(); });
                 } else {
                     currentScore = Math.max(0, currentScore - 5);
                     document.getElementById('current-score-1').innerText = currentScore;
@@ -349,6 +396,15 @@
         });
     }
 
+    function playGame1Audio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); 
+            let msg = new SpeechSynthesisUtterance(currentVocab.def);
+            msg.lang = 'en-US';
+            window.speechSynthesis.speak(msg);
+        }
+    }
+
     function nextGame1() {
         document.getElementById('feedback-1').style.display = 'none';
         currentQuestionIndex++; 
@@ -363,7 +419,6 @@
         
         currentVocab = questionPool[currentQuestionIndex];
         
-        // 永遠顯示中文提示
         let hintEl = document.getElementById('g2-hint-zh');
         hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
         
@@ -373,10 +428,8 @@
             if (word[i] === " ") {
                 displayPattern += "  ";
             } else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) {
-                // 初階難度：保留前後字母
                 displayPattern += word[i] + " "; 
             } else {
-                // 中階與高階：只有底線
                 displayPattern += "_ ";
             }
         }
@@ -400,10 +453,13 @@
         isProcessing = true;
 
         let input = document.getElementById('g2-input').value.trim().toLowerCase();
+        
         if (input === currentVocab.word) {
             currentScore += 15; 
             document.getElementById('current-score-2').innerText = currentScore;
-            showSuccessFeedback(2, () => { currentQuestionIndex++; loadGame2(); });
+            
+            // 🌟 答對時呼叫拼字語音，唸完再自動跳下一題
+            showSuccessFeedbackWithSpelling(2, currentVocab.word, () => { currentQuestionIndex++; loadGame2(); });
         } else {
             currentScore = Math.max(0, currentScore - 5);
             document.getElementById('current-score-2').innerText = currentScore;
@@ -443,6 +499,7 @@
 
     function playAudio() {
         if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
             let msg = new SpeechSynthesisUtterance(currentVocab.word);
             msg.lang = 'en-US';
             window.speechSynthesis.speak(msg);
@@ -464,12 +521,14 @@
         isProcessing = true;
 
         let input = document.getElementById('g3-input').value.trim().toLowerCase();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
         
         if (input === currentVocab.word) {
             currentScore += 20; 
             document.getElementById('current-score-3').innerText = currentScore;
-            currentQuestionIndex++; 
-            loadGame3(); 
+            
+            // 🌟 答對時呼叫拼字語音
+            showSuccessFeedbackWithSpelling(3, currentVocab.word, () => { currentQuestionIndex++; loadGame3(); });
         } else {
             currentScore = Math.max(0, currentScore - 10);
             document.getElementById('current-score-3').innerText = currentScore;
@@ -534,6 +593,7 @@
 
             if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
                 // 配對成功
+                let matchedWord = selectedMatchBtn.dataset.pairId;
                 btn.classList.add('matched');
                 selectedMatchBtn.classList.add('matched');
                 currentScore += 10;
@@ -544,10 +604,16 @@
                 document.getElementById('current-score-4').innerText = currentScore;
                 selectedMatchBtn = null;
 
-                if (game4TotalMatched >= TOTAL_QUESTIONS || matchPairsLeft === 0) {
-                    isProcessing = true; 
-                    setTimeout(() => loadGame4(), 600); 
-                }
+                // 🌟 答對時呼叫拼字語音，這段期間會鎖定按鈕，等唸完再釋放或重整題目
+                isProcessing = true;
+                playSpellingAudio(matchedWord, () => {
+                    isProcessing = false;
+                    if (game4TotalMatched >= TOTAL_QUESTIONS || matchPairsLeft === 0) {
+                        isProcessing = true; 
+                        setTimeout(() => loadGame4(), 300); 
+                    }
+                });
+
             } else {
                 // 配對失敗：加入震動動畫與紅框警告
                 isProcessing = true;
