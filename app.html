@@ -71,7 +71,7 @@
 
         /* 遊戲共用區塊 */
         .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; }
-        .hint-text { font-size: 18px; color: #666; text-align: center; margin-bottom: 10px; }
+        .hint-text { font-size: 18px; color: #666; text-align: center; margin-bottom: 10px; font-weight: bold; transition: color 0.3s; }
         .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
         /* 遊戲 1 (選擇題) */
@@ -133,7 +133,7 @@
 
     <div id="screen-game3" class="screen">
         <div class="score-board">當前分數: <span id="current-score-3">0</span></div>
-        <div class="hint-text">點擊喇叭聽發音，並拼出單字</div>
+        <div class="hint-text" id="g3-hint">點擊喇叭聽發音，並拼出單字</div>
         <div class="audio-btn" onclick="playAudio()">🔊</div>
         <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
         <button class="btn-action" onclick="checkGame3()">送出答案</button>
@@ -256,7 +256,6 @@
         document.getElementById('g2-hint-zh').innerText = "提示: " + currentVocab.zh;
         
         let word = currentVocab.word;
-        // 處理包含空格的單字（如 stationery store）
         let displayPattern = "";
         for (let i = 0; i < word.length; i++) {
             if (word[i] === " ") {
@@ -289,6 +288,12 @@
         if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
         currentVocab = getRandomVocab();
         document.getElementById('g3-input').value = "";
+        
+        // 每次換新題目時，重置提示文字和顏色
+        let hintElement = document.getElementById('g3-hint');
+        hintElement.innerText = "點擊喇叭聽發音，並拼出單字";
+        hintElement.style.color = "#666"; 
+
         playAudio(); // 自動播一次
     }
 
@@ -308,7 +313,12 @@
             currentScore += 200; document.getElementById('current-score-3').innerText = currentScore;
             currentQuestionIndex++; loadGame3();
         } else {
-            alert("聽錯或拼錯囉，可以再點喇叭聽一次！");
+            // 拼錯時：顯示中文提示，並把字體變成橘色吸引注意
+            let hintElement = document.getElementById('g3-hint');
+            hintElement.innerText = "💡 提示：這個字的意思是「" + currentVocab.zh + "」";
+            hintElement.style.color = "#ff5722";
+
+            alert("聽錯或拼錯囉，看看上面的中文提示，再點喇叭聽一次！");
             currentScore = Math.max(0, currentScore - 20);
             document.getElementById('current-score-3').innerText = currentScore;
         }
@@ -344,11 +354,9 @@
         if (btn.classList.contains('matched')) return;
 
         if (!selectedMatchBtn) {
-            // 第一次點擊
             selectedMatchBtn = btn;
             btn.classList.add('selected');
         } else {
-            // 第二次點擊
             if (selectedMatchBtn === btn) {
                 btn.classList.remove('selected');
                 selectedMatchBtn = null;
@@ -356,16 +364,14 @@
             }
 
             if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
-                // 配對成功
                 btn.classList.add('matched');
                 selectedMatchBtn.classList.add('matched');
                 currentScore += 50;
                 matchPairsLeft--;
                 if (matchPairsLeft === 0) {
-                    setTimeout(() => loadGame4(), 500); // 下一局
+                    setTimeout(() => loadGame4(), 500);
                 }
             } else {
-                // 配對失敗
                 selectedMatchBtn.classList.remove('selected');
                 currentScore = Math.max(0, currentScore - 10);
             }
