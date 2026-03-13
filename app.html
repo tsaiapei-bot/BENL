@@ -42,8 +42,12 @@
         .correction-text { color: #d32f2f; font-size: 18px; font-weight: bold; text-align: center; margin-top: 10px; display: none; background: #ffebee; padding: 10px; border-radius: 10px; width: 85%; margin-left: auto; margin-right: auto; }
 
         .options { display: flex; flex-direction: column; gap: 10px; }
-        .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: background 0.2s; }
+        .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: all 0.2s; }
         
+        /* 遊戲 1 對錯顏色標示 */
+        .option-btn.correct-ans { background-color: #e8f5e9 !important; border-color: #4caf50 !important; font-weight: bold; color: #2e7d32; }
+        .option-btn.wrong-ans { background-color: #ffebee !important; border-color: #f44336 !important; color: #d32f2f; text-decoration: line-through; }
+
         .audio-btn { font-size: 60px; text-align: center; cursor: pointer; margin: 20px 0; transition: transform 0.2s; }
         .audio-btn:active { transform: scale(0.9); }
 
@@ -51,6 +55,14 @@
         .match-btn { background: white; border: 3px solid #ccc; padding: 15px 5px; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; text-align: center; word-break: break-all; transition: all 0.2s; }
         .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
         .match-btn.matched { visibility: hidden; }
+
+        /* 遊戲 4 震動警告動畫 */
+        .wrong-shake { animation: shake 0.5s; background-color: #ffebee !important; border-color: #d32f2f !important; color: #d32f2f; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
 
         .feedback-msg { min-height: 40px; font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 15px; border-radius: 10px; padding: 10px; display: none; transition: opacity 0.3s; }
         .feedback-msg.success { background: #e8f5e9; color: #388e3c; display: block; }
@@ -180,7 +192,7 @@
     // 三個難度階級：1(簡單10題), 2(困難10題), 3(魔王20題)
     let difficultyLevel = 1; 
     let TOTAL_QUESTIONS = 10; 
-    let questionPool = []; // 儲存不重複的題庫
+    let questionPool = []; 
     
     // 阻擋連續點擊與等待切換狀態
     let isProcessing = false; 
@@ -239,15 +251,12 @@
         currentQuestionIndex = 0;
         isProcessing = false;
         
-        // 根據難度設定總題數，並洗牌抽題
         TOTAL_QUESTIONS = (difficultyLevel === 3) ? 20 : 10;
         questionPool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
         
-        // 更新畫面上顯示的總題數
         document.querySelectorAll('.total-q-display').forEach(el => el.innerText = TOTAL_QUESTIONS);
         document.getElementById(`current-score-${gameId}`).innerText = currentScore;
         
-        // 重置按鈕狀態
         g2WaitingNext = false;
         g3WaitingNext = false;
         if(document.getElementById('g2-submit')) {
@@ -269,7 +278,6 @@
         if (gameId === 4) { game4TotalMatched = 0; loadGame4(); }
     }
 
-    // 答對時的共用動畫回饋 (答錯由各遊戲自己控制手動跳轉)
     function showSuccessFeedback(gameId, callback) {
         let fb = document.getElementById(`feedback-${gameId}`);
         fb.innerHTML = "🎉 答對了！太棒了！";
@@ -303,24 +311,39 @@
         options.forEach(opt => {
             let btn = document.createElement('button');
             btn.className = 'option-btn';
+            btn.dataset.word = opt; // 記錄這個按鈕代表的單字
             btn.innerText = opt;
             btn.onclick = () => {
                 if (isProcessing) return;
                 isProcessing = true; 
 
+                // 抓取所有的選項按鈕
+                let allBtns = container.querySelectorAll('.option-btn');
+
                 if (opt === currentVocab.word) {
                     currentScore += 10; 
                     document.getElementById('current-score-1').innerText = currentScore;
-                    btn.style.background = '#e8f5e9'; 
+                    btn.classList.add('correct-ans');
+                    btn.innerHTML += " ✅";
                     showSuccessFeedback(1, () => { currentQuestionIndex++; loadGame1(); });
                 } else {
                     currentScore = Math.max(0, currentScore - 5);
                     document.getElementById('current-score-1').innerText = currentScore;
-                    btn.style.background = '#ffebee'; 
                     
-                    // 答錯：顯示錯誤回饋，並秀出「下一題」按鈕
+                    // 把選錯的按鈕變紅並打 X
+                    btn.classList.add('wrong-ans');
+                    btn.innerHTML += " ❌";
+
+                    // 找出正確答案的按鈕變綠並打 O
+                    allBtns.forEach(b => {
+                        if (b.dataset.word === currentVocab.word) {
+                            b.classList.add('correct-ans');
+                            b.innerHTML += " ✅";
+                        }
+                    });
+                    
                     let fb = document.getElementById('feedback-1');
-                    fb.innerHTML = `正確答案是：${currentVocab.word} (${currentVocab.zh})`;
+                    fb.innerHTML = `答錯囉！請看綠色正確答案`;
                     fb.className = 'feedback-msg error';
                     document.getElementById('g1-next-btn').style.display = 'block';
                 }
@@ -347,7 +370,7 @@
         if (difficultyLevel === 1) {
             hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
         } else {
-            hintEl.innerText = ""; // 第二關與第三關無提示
+            hintEl.innerText = ""; 
         }
         
         let word = currentVocab.word;
@@ -356,7 +379,7 @@
             if (word[i] === " ") {
                 displayPattern += "  ";
             } else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) {
-                displayPattern += word[i] + " "; // 只有第一關顯示頭尾
+                displayPattern += word[i] + " "; 
             } else {
                 displayPattern += "_ ";
             }
@@ -368,7 +391,6 @@
 
     function checkGame2() {
         if (g2WaitingNext) {
-            // 切換下一題
             g2WaitingNext = false;
             document.getElementById('g2-submit').innerText = "送出答案";
             document.getElementById('g2-submit').style.background = "var(--blue)";
@@ -390,17 +412,16 @@
             currentScore = Math.max(0, currentScore - 5);
             document.getElementById('current-score-2').innerText = currentScore;
             
-            // 答錯邏輯：顯示紅字正確答案，按鈕變更為下一題
             let correctionDiv = document.getElementById('g2-correction');
             correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong>`;
             correctionDiv.style.display = 'block';
             
             let submitBtn = document.getElementById('g2-submit');
             submitBtn.innerText = "下一題";
-            submitBtn.style.background = "#ff9800"; // 橘色醒目提示
+            submitBtn.style.background = "#ff9800"; 
             
             g2WaitingNext = true;
-            isProcessing = false; // 解除鎖定讓玩家可以按下一題
+            isProcessing = false; 
         }
     }
 
@@ -418,7 +439,7 @@
             let hintWord = currentVocab.word.charAt(0) + " " + "_ ".repeat(currentVocab.word.length - 1);
             hintElement.innerText = `💡 提示: ${hintWord} (${currentVocab.zh})`;
         } else {
-            hintElement.innerText = "仔細聽發音，拼出完整單字！"; // 第二關與第三關無提示
+            hintElement.innerText = "仔細聽發音，拼出完整單字！"; 
         }
 
         playAudio(); 
@@ -434,7 +455,6 @@
 
     function checkGame3() {
         if (g3WaitingNext) {
-            // 切換下一題
             g3WaitingNext = false;
             document.getElementById('g3-submit').innerText = "送出答案";
             document.getElementById('g3-submit').style.background = "var(--blue)";
@@ -456,17 +476,16 @@
             currentScore = Math.max(0, currentScore - 10);
             document.getElementById('current-score-3').innerText = currentScore;
             
-            // 答錯邏輯：顯示紅字正確答案，按鈕變更為下一題
             let correctionDiv = document.getElementById('g3-correction');
             correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong> (${currentVocab.zh})`;
             correctionDiv.style.display = 'block';
             
             let submitBtn = document.getElementById('g3-submit');
             submitBtn.innerText = "下一題";
-            submitBtn.style.background = "#ff9800"; // 橘色醒目提示
+            submitBtn.style.background = "#ff9800"; 
             
             g3WaitingNext = true;
-            isProcessing = false; // 解除鎖定讓玩家可以按下一題
+            isProcessing = false; 
         }
     }
 
@@ -480,7 +499,6 @@
         document.getElementById('q-index-4').innerText = game4TotalMatched;
         isProcessing = false;
         
-        // 依照題數切分進度，每次最多抓 5 組
         matchPairsLeft = Math.min(5, TOTAL_QUESTIONS - game4TotalMatched);
         let pool = questionPool.slice(game4TotalMatched, game4TotalMatched + matchPairsLeft); 
         
@@ -533,10 +551,13 @@
                     setTimeout(() => loadGame4(), 600); 
                 }
             } else {
-                // 配對失敗：顯示錯誤提示 1.5 秒
+                // 配對失敗：加入震動動畫與紅框警告
                 isProcessing = true;
                 currentScore = Math.max(0, currentScore - 5);
                 document.getElementById('current-score-4').innerText = currentScore;
+                
+                selectedMatchBtn.classList.add('wrong-shake');
+                btn.classList.add('wrong-shake');
                 
                 let fb = document.getElementById('feedback-4');
                 fb.innerHTML = `哎呀！「${selectedMatchBtn.innerText}」不是「${btn.innerText}」喔！`;
@@ -544,10 +565,11 @@
                 
                 setTimeout(() => {
                     fb.style.display = 'none';
-                    selectedMatchBtn.classList.remove('selected');
+                    selectedMatchBtn.classList.remove('selected', 'wrong-shake');
+                    btn.classList.remove('wrong-shake');
                     selectedMatchBtn = null;
                     isProcessing = false;
-                }, 1500);
+                }, 1000); // 震動與警告持續 1 秒
             }
         }
     }
