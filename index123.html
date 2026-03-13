@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hurray! 英語闖關小基地</title>
+    <style>
+        :root {
+            --primary-bg: #f4f9f9;
+            --blue: #a0d8ef;
+            --yellow: #ffdf85;
+            --green: #bceca2;
+            --orange: #ffbca4;
+            --text-dark: #4a4a4a;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .screen.active {
+            display: flex;
+        }
+        h1, h2 { text-align: center; margin-top: 10px; }
+        
+        /* 登入畫面 */
+        .cat-mascot { font-size: 80px; text-align: center; margin: 20px 0; animation: bounce 2s infinite; }
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            font-size: 20px;
+            border: 3px solid var(--blue);
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            text-align: center;
+        }
+        .btn-start {
+            background: var(--orange);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #e09b83;
+        }
+        .btn-start:active { transform: translateY(5px); box-shadow: 0 0 0 #e09b83; }
+
+        /* 大廳畫面 */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex-grow: 1;
+        }
+        .game-card {
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+        }
+        .game-card:active { transform: scale(0.95); }
+        .game-card.g1 { background: var(--blue); }
+        .game-card.g2 { background: var(--yellow); }
+        .game-card.g3 { background: var(--green); }
+        .game-card.g4 { background: var(--orange); }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+
+        /* 遊戲畫面 */
+        .question-box {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            background: white;
+            border: 3px solid var(--blue);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .option-btn:hover { background: var(--blue); color: white; }
+        .score-board { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #ff5722; }
+        
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <div id="screen-login" class="screen active">
+        <div class="cat-mascot">😽</div>
+        <h2>喵～這裡是秘密基地！<br>請問你叫什麼名字？</h2>
+        <input type="text" id="playerNameInput" placeholder="輸入名字..." autocomplete="off">
+        <button class="btn-start" onclick="login()">開始探險</button>
+    </div>
+
+    <div id="screen-home" class="screen">
+        <div class="header-info">
+            <span id="welcome-msg">Hi, 玩家! 🐾</span>
+            <span>🏆 最高分: <span id="highest-score-display">0</span></span>
+        </div>
+        <div class="grid-container">
+            <div class="game-card g1" onclick="startGame(1)">
+                <div class="icon">🔍</div>
+                英文小偵探
+            </div>
+            <div class="game-card g2" onclick="alert('拼字遊戲開發中！先玩玩看第一關吧！')">
+                <div class="icon">🧩</div>
+                殘影解碼器
+            </div>
+            <div class="game-card g3" onclick="alert('聽力遊戲開發中！先玩玩看第一關吧！')">
+                <div class="icon">🎧</div>
+                聽音守衛隊
+            </div>
+            <div class="game-card g4" onclick="alert('配對遊戲開發中！先玩玩看第一關吧！')">
+                <div class="icon">🔗</div>
+                雙語消消樂
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-game1" class="screen">
+        <div class="score-board">當前分數: <span id="current-score">0</span></div>
+        <div class="question-box" id="question-text">讀取題目中...</div>
+        <div class="options" id="options-container">
+            </div>
+        <button style="margin-top:20px; padding:10px; border-radius:10px; border:none; background:#ddd;" onclick="goHome()">🏠 回大廳</button>
+    </div>
+
+</div>
+
+<script>
+    // 題庫資料 (為示範簡潔，先放入 6 個單字，後續可完整補齊 41-60)
+    const vocabList = [
+        { word: "diary", def: "A book where you write down your daily thoughts." },
+        { word: "carton", def: "A box made of plastic or thick paper." },
+        { word: "rescue", def: "To save someone from danger." },
+        { word: "pajamas", def: "Clothes you wear to sleep." },
+        { word: "cave", def: "A large hole in the side of a hill or under the ground." },
+        { word: "bracelet", def: "A piece of jewelry that you wear around your wrist." }
+    ];
+
+    let playerName = "";
+    let highestScore = localStorage.getItem('hurrayHighestScore') || 0;
+    let currentScore = 0;
+    let currentQuestionIndex = 0;
+    let currentCorrectAnswer = "";
+
+    // 切換畫面邏輯
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    // 登入邏輯
+    function login() {
+        const input = document.getElementById('playerNameInput').value.trim();
+        if (input === "") {
+            alert("喵！請先輸入名字唷！");
+            return;
+        }
+        playerName = input;
+        document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
+        document.getElementById('highest-score-display').innerText = highestScore;
+        showScreen('screen-home');
+    }
+
+    function goHome() {
+        showScreen('screen-home');
+    }
+
+    // 遊戲 1 邏輯
+    function startGame(gameId) {
+        if (gameId === 1) {
+            currentScore = 0;
+            currentQuestionIndex = 0;
+            document.getElementById('current-score').innerText = currentScore;
+            showScreen('screen-game1');
+            loadNextQuestion();
+        }
+    }
+
+    function loadNextQuestion() {
+        if (currentQuestionIndex >= 5) { // 示範設定玩 5 題結束
+            endGame();
+            return;
+        }
+
+        // 隨機抽一個正確答案
+        const correctVocab = vocabList[Math.floor(Math.random() * vocabList.length)];
+        currentCorrectAnswer = correctVocab.word;
+        document.getElementById('question-text').innerText = correctVocab.def;
+
+        // 產生選項 (1個正確 + 3個隨機錯誤)
+        let options = [correctVocab.word];
+        while (options.length < 4) {
+            const randomWrong = vocabList[Math.floor(Math.random() * vocabList.length)].word;
+            if (!options.includes(randomWrong)) {
+                options.push(randomWrong);
+            }
+        }
+        
+        // 打亂選項順序
+        options.sort(() => Math.random() - 0.5);
+
+        // 渲染按鈕
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedWord) {
+        if (selectedWord === currentCorrectAnswer) {
+            currentScore += 100;
+            document.getElementById('current-score').innerText = currentScore;
+            currentQuestionIndex++;
+            loadNextQuestion();
+        } else {
+            alert(`哎呀！答錯囉。正確答案是：${currentCorrectAnswer}`);
+            currentScore = Math.max(0, currentScore - 20); // 扣 20 分
+            document.getElementById('current-score').innerText = currentScore;
+        }
+    }
+
+    function endGame() {
+        alert(`闖關完成！\n你獲得了 ${currentScore} 分！🐾`);
+        if (currentScore > highestScore) {
+            highestScore = currentScore;
+            localStorage.setItem('hurrayHighestScore', highestScore); // 存入瀏覽器快取
+            document.getElementById('highest-score-display').innerText = highestScore;
+        }
+        goHome();
+    }
+</script>
+
+</body>
+</html>
