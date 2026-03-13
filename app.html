@@ -6,83 +6,44 @@
     <title>Hurray! 英語闖關小基地</title>
     <style>
         :root {
-            --primary-bg: #f4f9f9;
-            --blue: #a0d8ef;
-            --yellow: #ffdf85;
-            --green: #bceca2;
-            --orange: #ffbca4;
-            --text-dark: #4a4a4a;
+            --primary-bg: #f4f9f9; --blue: #a0d8ef; --yellow: #ffdf85; 
+            --green: #bceca2; --orange: #ffbca4; --text-dark: #4a4a4a;
         }
-        body {
-            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Microsoft JhengHei', sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        #app-container {
-            width: 100%;
-            max-width: 400px;
-            height: 100vh;
-            max-height: 800px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .screen {
-            display: none;
-            flex-direction: column;
-            padding: 20px;
-            height: 100%;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .screen.active {
-            display: flex;
-        }
+        body { font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Microsoft JhengHei', sans-serif; background-color: var(--primary-bg); color: var(--text-dark); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        #app-container { width: 100%; max-width: 400px; height: 100vh; max-height: 800px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        .screen { display: none; flex-direction: column; padding: 20px; height: 100%; box-sizing: border-box; overflow-y: auto; }
+        .screen.active { display: flex; }
         h1, h2 { text-align: center; margin-top: 10px; }
         
-        /* 共用元件 */
         .cat-mascot { font-size: 80px; text-align: center; margin: 20px 0; animation: bounce 2s infinite; }
-        .score-board { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #ff5722; }
+        .score-board { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #ff5722; background: #fff3cd; padding: 10px 15px; border-radius: 10px; }
         .btn-home { margin-top: auto; padding: 15px; border-radius: 15px; border: none; background: #eee; font-size: 18px; font-weight: bold; cursor: pointer; }
         .btn-home:active { background: #ddd; }
         input[type="text"] { width: 90%; padding: 15px; font-size: 20px; border: 3px solid var(--blue); border-radius: 15px; margin: 10px auto; display: block; text-align: center; box-sizing: border-box; }
         
-        /* 登入畫面 */
         .btn-start { background: var(--orange); color: white; border: none; padding: 15px 30px; font-size: 24px; border-radius: 30px; cursor: pointer; margin: 20px auto 0; display: block; font-weight: bold; box-shadow: 0 5px 0 #e09b83; }
         .btn-start:active { transform: translateY(5px); box-shadow: 0 0 0 #e09b83; }
 
-        /* 大廳畫面 */
-        .header-info { display: flex; justify-content: space-between; align-items: center; background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; }
+        .header-info { display: flex; flex-direction: column; gap: 10px; background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .btn-difficulty { background: var(--green); color: var(--text-dark); border: 2px solid #88c970; padding: 10px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.3s; }
+        
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; }
         .game-card { border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; text-align: center; padding: 10px; transition: transform 0.2s; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
         .game-card:active { transform: scale(0.95); }
         .game-card.g1 { background: var(--blue); } .game-card.g2 { background: var(--yellow); } .game-card.g3 { background: var(--green); } .game-card.g4 { background: var(--orange); }
         .icon { font-size: 40px; margin-bottom: 10px; }
 
-        /* 遊戲共用區塊 */
         .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; }
-        .hint-text { font-size: 18px; color: #666; text-align: center; margin-bottom: 10px; font-weight: bold; transition: color 0.3s; }
-        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .hint-text { font-size: 18px; color: #ff5722; text-align: center; margin-bottom: 10px; font-weight: bold; }
+        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 90%; margin: 10px auto; display: block; }
         
-        /* 遊戲 1 (選擇題) */
         .options { display: flex; flex-direction: column; gap: 10px; }
         .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: background 0.2s; }
         
-        /* 遊戲 3 (聽力) */
         .audio-btn { font-size: 60px; text-align: center; cursor: pointer; margin: 20px 0; transition: transform 0.2s; }
         .audio-btn:active { transform: scale(0.9); }
 
-        /* 遊戲 4 (配對) */
         .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .match-btn { background: white; border: 3px solid #ccc; padding: 15px 5px; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; text-align: center; word-break: break-all; }
         .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
@@ -104,8 +65,11 @@
 
     <div id="screen-home" class="screen">
         <div class="header-info">
-            <span id="welcome-msg">Hi, 玩家! 🐾</span>
-            <span>🏆 積分: <span id="highest-score-display">0</span></span>
+            <div class="header-top">
+                <span id="welcome-msg">Hi, 玩家! 🐾</span>
+                <span>🏆 總積分: <span id="highest-score-display">0</span></span>
+            </div>
+            <button id="difficulty-btn" class="btn-difficulty" onclick="toggleDifficulty()">🟢 當前難度：簡單 (有提示)</button>
         </div>
         <div class="grid-container">
             <div class="game-card g1" onclick="startGame(1)"><div class="icon">🔍</div>英文小偵探</div>
@@ -116,35 +80,47 @@
     </div>
 
     <div id="screen-game1" class="screen">
-        <div class="score-board">當前分數: <span id="current-score-1">0</span></div>
+        <div class="score-board">
+            <span>題數: <span id="q-index-1">1</span>/10</span>
+            <span>分數: <span id="current-score-1">0</span></span>
+        </div>
         <div class="question-box" id="q1-text">讀取中...</div>
         <div class="options" id="options-container"></div>
-        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game2" class="screen">
-        <div class="score-board">當前分數: <span id="current-score-2">0</span></div>
+        <div class="score-board">
+            <span>題數: <span id="q-index-2">1</span>/10</span>
+            <span>分數: <span id="current-score-2">0</span></span>
+        </div>
         <div class="hint-text" id="g2-hint-zh">中文提示</div>
         <div class="question-box" id="g2-pattern" style="letter-spacing: 5px; font-size: 30px;">c _ _ e</div>
         <input type="text" id="g2-input" placeholder="拼出完整單字..." autocomplete="off">
         <button class="btn-action" onclick="checkGame2()">送出答案</button>
-        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game3" class="screen">
-        <div class="score-board">當前分數: <span id="current-score-3">0</span></div>
-        <div class="hint-text" id="g3-hint">點擊喇叭聽發音，並拼出單字</div>
+        <div class="score-board">
+            <span>題數: <span id="q-index-3">1</span>/10</span>
+            <span>分數: <span id="current-score-3">0</span></span>
+        </div>
+        <div class="hint-text" id="g3-hint"></div>
         <div class="audio-btn" onclick="playAudio()">🔊</div>
         <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
         <button class="btn-action" onclick="checkGame3()">送出答案</button>
-        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
     <div id="screen-game4" class="screen">
-        <div class="score-board">當前分數: <span id="current-score-4">0</span></div>
+        <div class="score-board">
+            <span>進度: <span id="q-index-4">0</span>/10 組</span>
+            <span>分數: <span id="current-score-4">0</span></span>
+        </div>
         <div class="hint-text">找出相對應的中文與英文！</div>
         <div class="match-grid" id="match-container"></div>
-        <button class="btn-home" onclick="goHome()">🏠 結算並回大廳</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
     </div>
 
 </div>
@@ -179,6 +155,8 @@
     let currentScore = 0;
     let currentQuestionIndex = 0;
     let currentVocab = null;
+    let isEasyMode = true; // 難度變數
+    const TOTAL_QUESTIONS = 10; // 固定 10 題
 
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -192,6 +170,21 @@
         document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
         document.getElementById('highest-score-display').innerText = totalScore;
         showScreen('screen-home');
+    }
+
+    // 難度切換邏輯
+    function toggleDifficulty() {
+        isEasyMode = !isEasyMode;
+        const btn = document.getElementById('difficulty-btn');
+        if (isEasyMode) {
+            btn.innerText = "🟢 當前難度：簡單 (有提示)";
+            btn.style.background = "var(--green)";
+            btn.style.borderColor = "#88c970";
+        } else {
+            btn.innerText = "🔴 當前難度：挑戰 (無提示)";
+            btn.style.background = "#ff9800";
+            btn.style.borderColor = "#e65100";
+        }
     }
 
     function goHome() {
@@ -210,7 +203,10 @@
         if (gameId === 1) loadGame1();
         if (gameId === 2) loadGame2();
         if (gameId === 3) loadGame3();
-        if (gameId === 4) loadGame4();
+        if (gameId === 4) {
+            game4TotalMatched = 0; // 重置配對題數
+            loadGame4();
+        }
     }
 
     function getRandomVocab() {
@@ -219,7 +215,9 @@
 
     // --- 遊戲 1: 英文小偵探 ---
     function loadGame1() {
-        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { alert(`闖關成功！共獲得 ${currentScore} 分！`); goHome(); return; }
+        document.getElementById('q-index-1').innerText = currentQuestionIndex + 1;
+        
         currentVocab = getRandomVocab();
         document.getElementById('q1-text').innerText = currentVocab.def;
 
@@ -238,12 +236,14 @@
             btn.innerText = opt;
             btn.onclick = () => {
                 if (opt === currentVocab.word) {
-                    currentScore += 100; currentQuestionIndex++; loadGame1();
+                    currentScore += 10; 
                 } else {
-                    alert(`答錯囉。正確答案是：${currentVocab.word}`);
-                    currentScore = Math.max(0, currentScore - 20);
+                    alert(`答錯囉！\n正確答案是：${currentVocab.word} (${currentVocab.zh})`);
+                    currentScore = Math.max(0, currentScore - 5);
                 }
                 document.getElementById('current-score-1').innerText = currentScore;
+                currentQuestionIndex++; 
+                loadGame1(); // 無論對錯，直接進入下一題
             };
             container.appendChild(btn);
         });
@@ -251,16 +251,20 @@
 
     // --- 遊戲 2: 殘影解碼器 ---
     function loadGame2() {
-        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { alert(`闖關成功！共獲得 ${currentScore} 分！`); goHome(); return; }
+        document.getElementById('q-index-2').innerText = currentQuestionIndex + 1;
+        
         currentVocab = getRandomVocab();
-        document.getElementById('g2-hint-zh').innerText = "提示: " + currentVocab.zh;
+        document.getElementById('g2-hint-zh').innerText = "💡 中文意思: " + currentVocab.zh;
         
         let word = currentVocab.word;
         let displayPattern = "";
+        
+        // 難度判斷：簡單版給頭尾，困難版全空白
         for (let i = 0; i < word.length; i++) {
             if (word[i] === " ") {
                 displayPattern += "  ";
-            } else if (i === 0 || i === word.length - 1) {
+            } else if (isEasyMode && (i === 0 || i === word.length - 1)) {
                 displayPattern += word[i] + " ";
             } else {
                 displayPattern += "_ ";
@@ -274,27 +278,34 @@
     function checkGame2() {
         let input = document.getElementById('g2-input').value.trim().toLowerCase();
         if (input === currentVocab.word) {
-            currentScore += 150; document.getElementById('current-score-2').innerText = currentScore;
-            currentQuestionIndex++; loadGame2();
+            currentScore += 15; 
         } else {
-            alert("拼錯囉，再試一次！");
-            currentScore = Math.max(0, currentScore - 10);
-            document.getElementById('current-score-2').innerText = currentScore;
+            alert(`拼錯囉！\n正確答案是：${currentVocab.word}`);
+            currentScore = Math.max(0, currentScore - 5);
         }
+        document.getElementById('current-score-2').innerText = currentScore;
+        currentQuestionIndex++; 
+        loadGame2(); // 答錯扣分後直接下一題
     }
 
     // --- 遊戲 3: 聽音守衛隊 ---
     function loadGame3() {
-        if (currentQuestionIndex >= 5) { alert(`闖關成功！獲得 ${currentScore} 分！`); goHome(); return; }
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { alert(`闖關成功！共獲得 ${currentScore} 分！`); goHome(); return; }
+        document.getElementById('q-index-3').innerText = currentQuestionIndex + 1;
+        
         currentVocab = getRandomVocab();
         document.getElementById('g3-input').value = "";
         
-        // 每次換新題目時，重置提示文字和顏色
+        // 難度判斷：簡單版給中文與字首提示
         let hintElement = document.getElementById('g3-hint');
-        hintElement.innerText = "點擊喇叭聽發音，並拼出單字";
-        hintElement.style.color = "#666"; 
+        if (isEasyMode) {
+            let hintWord = currentVocab.word.charAt(0) + " " + "_ ".repeat(currentVocab.word.length - 1);
+            hintElement.innerText = `💡 提示: ${hintWord} (${currentVocab.zh})`;
+        } else {
+            hintElement.innerText = "仔細聽發音，拼出完整單字！";
+        }
 
-        playAudio(); // 自動播一次
+        playAudio(); 
     }
 
     function playAudio() {
@@ -302,41 +313,39 @@
             let msg = new SpeechSynthesisUtterance(currentVocab.word);
             msg.lang = 'en-US';
             window.speechSynthesis.speak(msg);
-        } else {
-            alert("你的瀏覽器不支援語音播放喔！");
         }
     }
 
     function checkGame3() {
         let input = document.getElementById('g3-input').value.trim().toLowerCase();
         if (input === currentVocab.word) {
-            currentScore += 200; document.getElementById('current-score-3').innerText = currentScore;
-            currentQuestionIndex++; loadGame3();
+            currentScore += 20; 
         } else {
-            // 拼錯時：顯示中文提示，並把字體變成橘色吸引注意
-            let hintElement = document.getElementById('g3-hint');
-            hintElement.innerText = "💡 提示：這個字的意思是「" + currentVocab.zh + "」";
-            hintElement.style.color = "#ff5722";
-
-            alert("聽錯或拼錯囉，看看上面的中文提示，再點喇叭聽一次！");
-            currentScore = Math.max(0, currentScore - 20);
-            document.getElementById('current-score-3').innerText = currentScore;
+            alert(`聽錯或拼錯囉！\n正確答案是：${currentVocab.word} (${currentVocab.zh})`);
+            currentScore = Math.max(0, currentScore - 10);
         }
+        document.getElementById('current-score-3').innerText = currentScore;
+        currentQuestionIndex++; 
+        loadGame3(); // 直接下一題
     }
 
     // --- 遊戲 4: 雙語消消樂 ---
     let selectedMatchBtn = null;
-    let matchPairsLeft = 4;
+    let matchPairsLeft = 5; // 每次顯示 5 組
+    let game4TotalMatched = 0; // 紀錄已成功配對幾組
 
     function loadGame4() {
-        matchPairsLeft = 4;
-        let pool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, 4); // 抽 4 組
+        if (game4TotalMatched >= TOTAL_QUESTIONS) { alert(`配對大師！共獲得 ${currentScore} 分！`); goHome(); return; }
+        document.getElementById('q-index-4').innerText = game4TotalMatched;
+        
+        matchPairsLeft = 5;
+        let pool = [...vocabList].sort(() => Math.random() - 0.5).slice(0, 5); 
         let buttonsData = [];
         pool.forEach(v => {
             buttonsData.push({ text: v.word, type: 'en', pairId: v.word });
             buttonsData.push({ text: v.zh, type: 'zh', pairId: v.word });
         });
-        buttonsData.sort(() => Math.random() - 0.5); // 打亂順序
+        buttonsData.sort(() => Math.random() - 0.5); 
 
         const container = document.getElementById('match-container');
         container.innerHTML = "";
@@ -364,19 +373,29 @@
             }
 
             if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
+                // 配對成功
                 btn.classList.add('matched');
                 selectedMatchBtn.classList.add('matched');
-                currentScore += 50;
+                currentScore += 10;
+                game4TotalMatched++;
                 matchPairsLeft--;
-                if (matchPairsLeft === 0) {
-                    setTimeout(() => loadGame4(), 500);
+                
+                document.getElementById('q-index-4').innerText = game4TotalMatched;
+                document.getElementById('current-score-4').innerText = currentScore;
+
+                if (game4TotalMatched >= TOTAL_QUESTIONS) {
+                    setTimeout(() => loadGame4(), 500); // 滿 10 題觸發結束
+                } else if (matchPairsLeft === 0) {
+                    setTimeout(() => loadGame4(), 500); // 換下一批 5 組
                 }
             } else {
+                // 配對失敗：扣分並顯示錯誤
+                alert(`配對錯誤！\n「${selectedMatchBtn.innerText}」和「${btn.innerText}」配不起來喔！`);
                 selectedMatchBtn.classList.remove('selected');
-                currentScore = Math.max(0, currentScore - 10);
+                currentScore = Math.max(0, currentScore - 5);
+                document.getElementById('current-score-4').innerText = currentScore;
             }
             selectedMatchBtn = null;
-            document.getElementById('current-score-4').innerText = currentScore;
         }
     }
 </script>
