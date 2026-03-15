@@ -28,7 +28,6 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .btn-difficulty { background: var(--green); color: var(--text-dark); border: 2px solid #88c970; padding: 10px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.3s; }
         
-        /* 6 宮格大廳 */
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; padding-bottom: 10px; overflow-y: auto;}
         .game-card { border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; text-align: center; padding: 15px 10px; transition: transform 0.2s; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
         .game-card:active { transform: scale(0.95); }
@@ -71,12 +70,8 @@
         /* 🎙️ 遊戲 5：專屬麥克風按鈕設計 */
         .mic-btn-wrapper { width: 80px; height: 80px; line-height: 80px; text-align: center; border-radius: 50%; margin: 10px auto; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 40px; cursor: pointer; transition: all 0.3s; user-select: none;}
         .mic-btn-wrapper:active { transform: scale(0.9); }
-        
-        /* 綠色光圈：提示可以說話 */
         .mic-ready { animation: pulse-green 1.5s infinite; border: 3px solid #4caf50; background: #e8f5e9; box-shadow: 0 0 20px rgba(76,175,80,0.6); }
         @keyframes pulse-green { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        
-        /* 紅色光圈：正在錄音 */
         .mic-recording { animation: pulse-red 1s infinite; border: 3px solid #f44336; background: #ffebee; box-shadow: 0 0 20px rgba(244,67,54,0.6); }
         @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
@@ -90,8 +85,9 @@
     <div id="screen-login" class="screen active">
         <div class="cat-mascot">😽</div>
         <h2>喵～這裡是秘密基地！<br>請問你叫什麼名字？</h2>
-        <input type="text" id="playerNameInput" placeholder="輸入名字..." autocomplete="off">
+        <input type="text" id="playerNameInput" placeholder="輸入你的名字..." autocomplete="off">
         <div id="login-error" style="color:red; text-align:center; display:none; font-weight:bold;">喵！請先輸入名字唷！</div>
+        <p style="text-align:center; font-size:14px; color:#888;">分數與熟練單字將會專屬記憶在你的名字下</p>
         <button class="btn-start" onclick="login()">開始探險</button>
     </div>
 
@@ -111,6 +107,7 @@
             <div class="game-card g5" onclick="startGame(5)"><div class="icon">🎤</div>拼讀麥克風</div>
             <div class="game-card wb" onclick="openWordBank()"><div class="icon">📖</div>熟練單字本</div>
         </div>
+        <button class="btn-home" style="margin-top: 10px; background:#ddd;" onclick="logout()">🚪 登出換人玩</button>
     </div>
 
     <div id="screen-wordbank" class="screen">
@@ -235,8 +232,9 @@
     ];
 
     let playerName = "";
-    let totalScore = parseInt(localStorage.getItem('hurrayTotalScore')) || 0;
-    let masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords')) || []; 
+    let totalScore = 0;
+    let masteredWords = []; 
+    
     let currentScore = 0;
     let currentQuestionIndex = 0;
     let currentVocab = null;
@@ -269,10 +267,24 @@
         const input = document.getElementById('playerNameInput').value.trim();
         if (input === "") { document.getElementById('login-error').style.display = 'block'; return; }
         document.getElementById('login-error').style.display = 'none';
+        
+        // 將玩家名字存入變數
         playerName = input;
+        
+        // 🌟 改良：依據玩家名字讀取專屬的分數跟單字本
+        totalScore = parseInt(localStorage.getItem('hurrayTotalScore_' + playerName)) || 0;
+        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_' + playerName)) || [];
+
         document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
         document.getElementById('highest-score-display').innerText = totalScore;
         showScreen('screen-home');
+    }
+
+    // 登出功能
+    function logout() {
+        playerName = "";
+        document.getElementById('playerNameInput').value = "";
+        showScreen('screen-login');
     }
 
     function openWordBank() {
@@ -291,7 +303,9 @@
                     masteredWords.push(v.word);
                     item.className = 'wb-item mastered'; item.querySelector('.wb-status').innerText = '✅';
                 }
-                localStorage.setItem('hurrayMasteredWords', JSON.stringify(masteredWords));
+                
+                // 🌟 改良：依據玩家名字儲存專屬單字本
+                localStorage.setItem('hurrayMasteredWords_' + playerName, JSON.stringify(masteredWords));
                 updateWbCount();
             };
             container.appendChild(item);
@@ -321,7 +335,10 @@
 
     function goHome() {
         totalScore += currentScore; currentScore = 0;
-        localStorage.setItem('hurrayTotalScore', totalScore);
+        
+        // 🌟 改良：依據玩家名字儲存專屬分數
+        localStorage.setItem('hurrayTotalScore_' + playerName, totalScore);
+        
         document.getElementById('highest-score-display').innerText = totalScore;
         showScreen('screen-home');
     }
@@ -358,7 +375,6 @@
         if (gameId === 5) loadGame5();
     }
 
-    // 發音動畫 (拼寫每個字母 + 唸完整單字)
     function playSpellingAudio(word, callback) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
@@ -650,19 +666,17 @@
         
         statusEl.innerText = "🔊 系統發音中...";
         statusEl.style.color = "#673ab7";
-        micBtn.className = 'mic-btn-wrapper'; // 重置麥克風按鈕狀態
+        micBtn.className = 'mic-btn-wrapper'; 
         
         document.getElementById('g5-submit').style.display = 'none';
 
         playGame5InstructionAudio();
     }
 
-    // 🌟 先唸中文，再唸英文，完成後亮起麥克風提示
     function playGame5InstructionAudio() {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             
-            // 重置麥克風提示
             document.getElementById('g5-status').innerText = "🔊 系統發音中...";
             document.getElementById('g5-status').style.color = "#673ab7";
             document.getElementById('g5-mic-btn').className = 'mic-btn-wrapper';
@@ -674,10 +688,9 @@
             msgEn.lang = 'en-US';
             
             msgEn.onend = () => { 
-                // 發音結束，提示妹妹可以按麥克風了
                 document.getElementById('g5-status').innerText = "👉 換你囉！請點擊麥克風開始唸"; 
                 document.getElementById('g5-status').style.color = "#4caf50";
-                document.getElementById('g5-mic-btn').classList.add('mic-ready'); // 加上綠色跳動光圈
+                document.getElementById('g5-mic-btn').classList.add('mic-ready'); 
             };
             
             window.speechSynthesis.speak(msgZh);
@@ -693,7 +706,7 @@
         
         try {
             recognition.start();
-            micBtn.className = 'mic-btn-wrapper mic-recording'; // 切換成紅色錄音光圈
+            micBtn.className = 'mic-btn-wrapper mic-recording'; 
             status.innerText = "🎧 正在聆聽... 請說話";
             status.style.color = "#f44336";
             
