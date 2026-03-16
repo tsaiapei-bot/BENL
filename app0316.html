@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hurray! 英語闖關小基地</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        :root {
+            --primary-bg: #f4f9f9; --blue: #a0d8ef; --yellow: #ffdf85; 
+            --green: #bceca2; --orange: #ffbca4; --purple: #d1c4e9; --text-dark: #4a4a4a;
+        }
+        body { font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Microsoft JhengHei', sans-serif; background-color: var(--primary-bg); color: var(--text-dark); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        #app-container { width: 100%; max-width: 400px; height: 100vh; max-height: 850px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        .screen { display: none; flex-direction: column; padding: 20px; height: 100%; box-sizing: border-box; overflow-y: auto; }
+        .screen.active { display: flex; }
+        h1, h2 { text-align: center; margin-top: 10px; }
+        
+        .cat-mascot { font-size: 80px; text-align: center; margin: 20px 0; animation: bounce 2s infinite; }
+        .score-board { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #ff5722; background: #fff3cd; padding: 10px 15px; border-radius: 10px; }
+        .btn-home { margin-top: auto; padding: 15px; border-radius: 15px; border: none; background: #eee; font-size: 18px; font-weight: bold; cursor: pointer; flex-shrink: 0;}
+        .btn-home:active { background: #ddd; }
+        input[type="text"] { width: 90%; padding: 15px; font-size: 20px; border: 3px solid var(--blue); border-radius: 15px; margin: 10px auto; display: block; text-align: center; box-sizing: border-box; }
+        
+        .btn-start { background: var(--orange); color: white; border: none; padding: 15px 30px; font-size: 24px; border-radius: 30px; cursor: pointer; margin: 20px auto 0; display: block; font-weight: bold; box-shadow: 0 5px 0 #e09b83; }
+        .btn-start:active { transform: translateY(5px); box-shadow: 0 0 0 #e09b83; }
+
+        .header-info { display: flex; flex-direction: column; gap: 10px; background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; position: relative;}
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .btn-difficulty { background: var(--green); color: var(--text-dark); border: 2px solid #88c970; padding: 10px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.3s; }
+        
+        .btn-parent-lock { position: absolute; top: -5px; right: -5px; background: none; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; }
+        .btn-parent-lock:hover { opacity: 1; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; padding-bottom: 10px; overflow-y: auto;}
+        .game-card { border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; text-align: center; padding: 15px 10px; transition: transform 0.2s; box-shadow: 0 5px 0 rgba(0,0,0,0.1); }
+        .game-card:active { transform: scale(0.95); }
+        .game-card.g1 { background: var(--blue); } .game-card.g2 { background: var(--yellow); } .game-card.g3 { background: var(--green); } .game-card.g4 { background: var(--orange); } .game-card.g5 { background: var(--purple); } .game-card.wb { background: #e0e0e0; }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+
+        .question-box { background: #f0f0f0; padding: 20px; border-radius: 15px; font-size: 22px; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .hint-text { font-size: 18px; color: #ff5722; text-align: center; margin-bottom: 10px; font-weight: bold; min-height: 25px;}
+        .btn-action { background: var(--blue); color: white; border: none; padding: 15px; font-size: 20px; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 90%; margin: 10px auto 0; display: block; transition: background 0.2s;}
+        
+        .correction-text { color: #d32f2f; font-size: 18px; font-weight: bold; text-align: center; margin-top: 10px; display: none; background: #ffebee; padding: 10px; border-radius: 10px; width: 85%; margin-left: auto; margin-right: auto; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background: white; border: 3px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 20px; cursor: pointer; transition: all 0.2s; }
+        .option-btn.correct-ans { background-color: #e8f5e9 !important; border-color: #4caf50 !important; font-weight: bold; color: #2e7d32; }
+        .option-btn.wrong-ans { background-color: #ffebee !important; border-color: #f44336 !important; color: #d32f2f; text-decoration: line-through; }
+
+        .audio-btn { font-size: 60px; text-align: center; cursor: pointer; margin: 10px 0; transition: transform 0.2s; user-select: none; }
+        .audio-btn:active { transform: scale(0.9); }
+        .audio-btn-small { font-size: 30px; cursor: pointer; transition: transform 0.2s; flex-shrink: 0; user-select: none; }
+        .audio-btn-small:active { transform: scale(0.9); }
+
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .match-btn { background: white; border: 3px solid #ccc; padding: 15px 5px; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; text-align: center; word-break: break-all; transition: all 0.2s; }
+        .match-btn.selected { border-color: var(--orange); background: #fff3cd; transform: scale(1.05); }
+        .match-btn.matched { visibility: hidden; }
+        .wrong-shake { animation: shake 0.5s; background-color: #ffebee !important; border-color: #d32f2f !important; color: #d32f2f; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+        .feedback-msg { min-height: 40px; font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 15px; border-radius: 10px; padding: 10px; display: none; transition: opacity 0.3s; }
+        .feedback-msg.success { background: #e8f5e9; color: #388e3c; display: block; }
+        .feedback-msg.error { background: #ffebee; color: #d32f2f; display: block; }
+
+        .wb-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-grow: 1; margin-bottom: 15px; padding-right: 5px; }
+        .wb-item { display: flex; justify-content: space-between; align-items: center; background: white; border: 2px solid var(--blue); padding: 15px; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .wb-item.mastered { background: #e0e0e0; border-color: #9e9e9e; color: #757575; text-decoration: line-through; }
+        .wb-status { font-size: 24px; }
+
+        .mic-btn-wrapper { width: 80px; height: 80px; line-height: 80px; text-align: center; border-radius: 50%; margin: 10px auto; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 40px; cursor: pointer; transition: all 0.3s; user-select: none;}
+        .mic-btn-wrapper:active { transform: scale(0.9); }
+        .mic-ready { animation: pulse-green 1.5s infinite; border: 3px solid #4caf50; background: #e8f5e9; box-shadow: 0 0 20px rgba(76,175,80,0.6); }
+        @keyframes pulse-green { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .mic-recording { animation: pulse-red 1s infinite; border: 3px solid #f44336; background: #ffebee; box-shadow: 0 0 20px rgba(244,67,54,0.6); }
+        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+        /* 🌟 家長後台專用樣式優化 🌟 */
+        .parent-panel { background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;}
+        .parent-input { padding: 10px; border-radius: 10px; border: 2px solid #a0d8ef; font-size: 16px; width: 100%; box-sizing: border-box;}
+        
+        /* 捲動式單字列表區塊 */
+        .parent-list-container { 
+            background: #f9f9f9; border: 2px solid #ccc; border-radius: 10px; padding: 10px; 
+            max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;
+        }
+        .parent-list-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: white; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .action-btns { display: flex; gap: 5px; }
+        .action-btns button { border: none; border-radius: 5px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-edit { background: var(--yellow); color: #333;}
+        .btn-del { background: #ff8a80; color: white; }
+        
+        .file-upload-btn { background: #4caf50; color: white; padding: 12px; border-radius: 10px; text-align: center; display: block; font-weight: bold; cursor: pointer; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <div id="screen-login" class="screen active">
+        <div class="cat-mascot">😽</div>
+        <h2>喵～這裡是秘密基地！<br>請問你叫什麼名字？</h2>
+        <input type="text" id="playerNameInput" placeholder="輸入你的名字..." autocomplete="off">
+        <div id="login-error" style="color:red; text-align:center; display:none; font-weight:bold;">喵！請先輸入名字唷！</div>
+        <p style="text-align:center; font-size:14px; color:#888;">分數與熟練單字將會專屬記憶在你的名字下</p>
+        <button class="btn-start" onclick="login()">開始探險</button>
+    </div>
+
+    <div id="screen-home" class="screen">
+        <div class="header-info">
+            <button class="btn-parent-lock" onclick="openParentMode()" title="家長後台">⚙️</button>
+            <div class="header-top">
+                <span id="welcome-msg">Hi, 玩家! 🐾</span>
+                <span>🏆 總積分: <span id="highest-score-display">0</span></span>
+            </div>
+            <button id="difficulty-btn" class="btn-difficulty" onclick="toggleDifficulty()">🟢 關卡：第一關 (有提示, 10題)</button>
+        </div>
+        <div class="grid-container">
+            <div class="game-card g1" onclick="startGame(1)"><div class="icon">🔍</div>英文小偵探</div>
+            <div class="game-card g2" onclick="startGame(2)"><div class="icon">🧩</div>殘影解碼器</div>
+            <div class="game-card g3" onclick="startGame(3)"><div class="icon">🎧</div>聽音守衛隊</div>
+            <div class="game-card g4" onclick="startGame(4)"><div class="icon">🔗</div>雙語消消樂</div>
+            <div class="game-card g5" onclick="startGame(5)"><div class="icon">🎤</div>拼讀麥克風</div>
+            <div class="game-card wb" onclick="openWordBank()"><div class="icon">📖</div>熟練單字本</div>
+        </div>
+        <button class="btn-home" style="margin-top: 10px; background:#ddd;" onclick="logout()">🚪 登出換人玩</button>
+    </div>
+
+    <div id="screen-parent" class="screen">
+        <h2 style="margin-top:0; margin-bottom: 5px;">⚙️ 家長題庫中心</h2>
+        <div style="text-align:center; color:#f44336; font-weight:bold; margin-bottom:10px;">目前單字：<span id="parent-word-count">0</span> / 20</div>
+        
+        <div class="parent-panel">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="add-word-en" class="parent-input" placeholder="輸入英文..." autocomplete="off">
+                <input type="text" id="add-word-zh" class="parent-input" placeholder="輸入中文..." autocomplete="off">
+            </div>
+            <button class="btn-action" style="margin:0; width:100%; background: #81d4fa; color: #333;" onclick="manuallyAddWord()">➕ 手動新增單字</button>
+            <hr style="border:0; border-top:1px dashed #ccc; width:100%;">
+            <label class="file-upload-btn">
+                📷 拍照 / 掃描考卷自動匯入
+                <input type="file" accept="image/*" style="display:none;" onchange="handleOCR(event)">
+            </label>
+            <div id="ocr-status" style="font-size:14px; text-align:center; font-weight:bold; display:none;"></div>
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <button class="btn-action" style="margin:0; width:50%; font-size:14px; background:#607d8b;" onclick="exportVocabCode()">📤 匯出代碼</button>
+                <button class="btn-action" style="margin:0; width:50%; font-size:14px; background:#795548;" onclick="importVocabCode()">📥 匯入代碼</button>
+            </div>
+        </div>
+
+        <div class="parent-list-container" id="parent-vocab-list">
+            </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="btn-action" style="flex:1; background:#f44336; margin:0;" onclick="clearAllVocab()">🗑️ 清空所有單字</button>
+            <button class="btn-action" style="flex:1; background:#ff9800; margin:0;" onclick="resetDefaultVocab()">🔄 恢復預設20字</button>
+        </div>
+        
+        <button class="btn-home" style="flex-shrink: 0;" onclick="goHome()">🏠 儲存並回大廳</button>
+    </div>
+
+    <div id="screen-wordbank" class="screen">
+        <h2>📖 熟練單字本</h2>
+        <p style="text-align:center; color:#666; margin-top:0;">點擊單字標記為「已熟練」，就不會出現在遊戲中囉！<br><span id="wb-count" style="color:var(--orange); font-weight:bold;">目前學習中：0 個單字</span></p>
+        <div class="wb-list" id="wb-container"></div>
+        <button class="btn-home" onclick="goHome()">🏠 回大廳</button>
+    </div>
+
+    <div id="screen-game1" class="screen">
+        <div class="score-board">
+            <span>題數: <span id="q-index-1">1</span>/<span class="total-q-display">10</span></span>
+            <span>分數: <span id="current-score-1">0</span></span>
+        </div>
+        <div id="feedback-1" class="feedback-msg"></div>
+        <div class="question-box">
+            <div id="q1-text" style="flex: 1;">讀取中...</div>
+            <div class="audio-btn-small" onclick="playGame1Audio()">🔊</div>
+        </div>
+        <div class="options" id="options-container"></div>
+        <button id="g1-next-btn" class="btn-action" style="display:none; background:#ff9800;" onclick="nextGame1()">下一題</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
+    </div>
+
+    <div id="screen-game2" class="screen">
+        <div class="score-board">
+            <span>題數: <span id="q-index-2">1</span>/<span class="total-q-display">10</span></span>
+            <span>分數: <span id="current-score-2">0</span></span>
+        </div>
+        <div class="hint-text" id="g2-hint-zh"></div>
+        <div id="feedback-2" class="feedback-msg"></div>
+        <div class="question-box" id="g2-pattern" style="letter-spacing: 5px; font-size: 30px;">c _ _ e</div>
+        <input type="text" id="g2-input" placeholder="拼出完整單字..." autocomplete="off">
+        <button id="g2-submit" class="btn-action" onclick="checkGame2()">送出答案</button>
+        <div id="g2-correction" class="correction-text">正確答案是：</div>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
+    </div>
+
+    <div id="screen-game3" class="screen">
+        <div class="score-board">
+            <span>題數: <span id="q-index-3">1</span>/<span class="total-q-display">10</span></span>
+            <span>分數: <span id="current-score-3">0</span></span>
+        </div>
+        <div class="hint-text" id="g3-hint"></div>
+        <div id="feedback-3" class="feedback-msg"></div>
+        <div class="audio-btn" onclick="playAudio()">🔊</div>
+        <input type="text" id="g3-input" placeholder="聽到了什麼？" autocomplete="off">
+        <button id="g3-submit" class="btn-action" onclick="checkGame3()">送出答案</button>
+        <div id="g3-correction" class="correction-text">正確答案是：</div>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
+    </div>
+
+    <div id="screen-game4" class="screen">
+        <div class="score-board">
+            <span>進度: <span id="q-index-4">0</span>/<span class="total-q-display">10</span> 組</span>
+            <span>分數: <span id="current-score-4">0</span></span>
+        </div>
+        <div id="feedback-4" class="feedback-msg"></div>
+        <div class="hint-text">找出相對應的中文與英文！</div>
+        <div class="match-grid" id="match-container"></div>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
+    </div>
+
+    <div id="screen-game5" class="screen">
+        <div class="score-board">
+            <span>題數: <span id="q-index-5">1</span>/<span class="total-q-display">10</span></span>
+            <span>分數: <span id="current-score-5">0</span></span>
+        </div>
+        <div id="feedback-5" class="feedback-msg"></div>
+        <div class="question-box" style="position:relative;">
+            <div style="flex:1;">
+                <div id="g5-pattern" style="letter-spacing: 5px; font-size: 30px; margin-bottom: 10px;">c a v e</div>
+                <div id="g5-zh" style="font-size: 20px; font-weight: bold; color:#333;">洞穴</div>
+            </div>
+            <div class="audio-btn-small" onclick="playGame5InstructionAudio()" title="再聽一次">🔊</div>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <div id="g5-status" style="font-size:16px; font-weight:bold; color:#673ab7; margin-bottom:10px; height: 25px;">🔊 系統發音中...</div>
+            <div id="g5-mic-btn" class="mic-btn-wrapper" onclick="startVoiceRecognition()" title="點擊麥克風說話">🎙️</div>
+        </div>
+        <button id="g5-submit" class="btn-action" style="display:none; background:#ff9800; margin-top:15px;" onclick="skipGame5()">唸不出來？跳下一題</button>
+        <button class="btn-home" onclick="goHome()">🏠 放棄回大廳</button>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <div class="cat-mascot">🏆</div>
+        <h2>太棒了！闖關完成！</h2>
+        <div style="background:#fff3cd; padding:20px; border-radius:15px; text-align:center; font-size:24px; font-weight:bold; color:#ff5722; margin: 20px 0;">
+            本次獲得分數：<br><span id="result-score" style="font-size: 40px;">0</span>
+        </div>
+        <button class="btn-start" onclick="goHome()">領取積分回大廳</button>
+    </div>
+
+</div>
+
+<script>
+    const defaultVocabList = [
+        { word: "carton", def: "A box made of plastic or thick paper.", zh: "塑膠盒、硬紙盒" },
+        { word: "diary", def: "A book where you write down your daily thoughts.", zh: "日記" },
+        { word: "paper", def: "Material you write or draw on.", zh: "紙張" },
+        { word: "blow", def: "To send out air from your mouth.", zh: "吹" },
+        { word: "shelf", def: "A flat board used to hold things.", zh: "架子" },
+        { word: "machine", def: "A piece of equipment with moving parts.", zh: "機器" },
+        { word: "stationery store", def: "A shop where you buy pens, paper, and notebooks.", zh: "文具店" },
+        { word: "rescue", def: "To save someone from danger.", zh: "搶救" },
+        { word: "workbook", def: "A book with exercises for students.", zh: "作業本" },
+        { word: "notebook", def: "A book of blank pages for writing notes.", zh: "筆記本" },
+        { word: "actually", def: "In fact or really.", zh: "其實/事實上" },
+        { word: "perhaps", def: "Used to say that something may happen; maybe.", zh: "也許" },
+        { word: "frightening", def: "Making you feel afraid or nervous.", zh: "害怕的" },
+        { word: "prepare", def: "To get ready for something.", zh: "準備" },
+        { word: "bracelet", def: "A piece of jewelry worn around the wrist.", zh: "手鐲" },
+        { word: "pajamas", def: "Comfortable clothes you wear to sleep.", zh: "睡衣" },
+        { word: "foggy", def: "Not clear because of fog.", zh: "模糊的" },
+        { word: "sore", def: "A painful place on your body.", zh: "疼痛處、潰瘍" },
+        { word: "cave", def: "A large hole in the side of a hill or under the ground.", zh: "洞穴" },
+        { word: "sledge", def: "A vehicle used for traveling over snow.", zh: "雪橇" }
+    ];
+
+    let myVocabList = JSON.parse(localStorage.getItem('hurrayCustomVocab')) || [...defaultVocabList];
+
+    let playerName = "";
+    let totalScore = 0;
+    let masteredWords = []; 
+    
+    let currentScore = 0;
+    let currentQuestionIndex = 0;
+    let currentVocab = null;
+    let difficultyLevel = 1; 
+    let TOTAL_QUESTIONS = 10; 
+    let questionPool = []; 
+    let isProcessing = false; 
+    let g2WaitingNext = false;
+    let g3WaitingNext = false;
+
+    let recognition;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US'; recognition.interimResults = false; recognition.maxAlternatives = 1;
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        document.querySelectorAll('.feedback-msg').forEach(fb => { fb.style.display = 'none'; fb.className = 'feedback-msg'; });
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
+        if (recognition && screenId !== 'screen-game5') recognition.stop();
+    }
+
+    function login() {
+        const input = document.getElementById('playerNameInput').value.trim();
+        if (input === "") { document.getElementById('login-error').style.display = 'block'; return; }
+        document.getElementById('login-error').style.display = 'none';
+        
+        playerName = input;
+        totalScore = parseInt(localStorage.getItem('hurrayTotalScore_' + playerName)) || 0;
+        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_' + playerName)) || [];
+
+        document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
+        document.getElementById('highest-score-display').innerText = totalScore;
+        showScreen('screen-home');
+    }
+
+    function logout() {
+        playerName = ""; document.getElementById('playerNameInput').value = ""; showScreen('screen-login');
+    }
+
+    // ==========================================
+    // 🌟 家長後台管理區塊 (含獨立列表與按鈕)
+    // ==========================================
+    function openParentMode() {
+        let ans = prompt("家長驗證：請輸入 8 x 7 的答案");
+        if (ans === "56") { renderParentList(); showScreen('screen-parent'); } 
+        else if (ans !== null) { alert("密碼錯誤喔！"); }
+    }
+
+    function renderParentList() {
+        const list = document.getElementById('parent-vocab-list');
+        const countSpan = document.getElementById('parent-word-count');
+        list.innerHTML = "";
+        countSpan.innerText = myVocabList.length;
+        
+        if (myVocabList.length >= 20) { countSpan.style.color = "#d32f2f"; } 
+        else { countSpan.style.color = "#4caf50"; }
+
+        // 🌟 這裡會動態產生每一個單字，以及右側的專屬刪除/修改按鈕
+        myVocabList.forEach((v, index) => {
+            let item = document.createElement('div');
+            item.className = "parent-list-item";
+            item.innerHTML = `
+                <div style="flex:1;"><strong>${v.word}</strong> <span style="font-size:14px; color:#666;">(${v.zh})</span></div>
+                <div class="action-btns">
+                    <button class="btn-edit" onclick="editWord(${index})">✏️</button>
+                    <button class="btn-del" onclick="deleteWord(${index})">🗑️</button>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function manuallyAddWord() {
+        if (myVocabList.length >= 20) { alert("單字表已經達到 20 字上限囉！請先刪除舊單字。"); return; }
+        let enInput = document.getElementById('add-word-en');
+        let zhInput = document.getElementById('add-word-zh');
+        let en = enInput.value.trim().toLowerCase();
+        let zh = zhInput.value.trim();
+
+        if (en === "" || zh === "") { alert("請完整輸入英文與中文喔！"); return; }
+        if (!/^[a-z\s]+$/.test(en)) { alert("英文單字只能包含字母與空格喔！"); return; }
+
+        myVocabList.push({ word: en, zh: zh, def: "" });
+        saveVocabList();
+        enInput.value = ""; zhInput.value = "";
+    }
+
+    // 單一單字刪除功能
+    function deleteWord(index) {
+        if (confirm(`確定要刪除「${myVocabList[index].word}」嗎？`)) {
+            myVocabList.splice(index, 1);
+            saveVocabList();
+        }
+    }
+
+    // 單一單字修改功能
+    function editWord(index) {
+        let current = myVocabList[index];
+        let newEn = prompt(`修改英文 (原：${current.word})`, current.word);
+        if (newEn === null) return;
+        let newZh = prompt(`修改中文 (原：${current.zh})`, current.zh);
+        if (newZh === null) return;
+        
+        newEn = newEn.trim().toLowerCase();
+        newZh = newZh.trim();
+        if (newEn !== "" && newZh !== "") {
+            myVocabList[index].word = newEn;
+            myVocabList[index].zh = newZh;
+            saveVocabList();
+        }
+    }
+
+    // 🌟 一鍵清空題庫
+    function clearAllVocab() {
+        if (confirm("⚠️ 確定要清空所有的單字嗎？\n這樣題庫會空空如也，遊戲會沒辦法玩喔！")) {
+            myVocabList = [];
+            saveVocabList();
+        }
+    }
+
+    function saveVocabList() {
+        localStorage.setItem('hurrayCustomVocab', JSON.stringify(myVocabList));
+        masteredWords = masteredWords.filter(w => myVocabList.some(v => v.word === w));
+        localStorage.setItem('hurrayMasteredWords_' + playerName, JSON.stringify(masteredWords));
+        renderParentList(); // 重新繪製列表
+    }
+
+    function resetDefaultVocab() {
+        if (confirm("確定要清空你輸入的資料，恢復成預設的 20 個單字嗎？")) {
+            myVocabList = [...defaultVocabList];
+            saveVocabList();
+        }
+    }
+
+    function exportVocabCode() {
+        let code = btoa(encodeURIComponent(JSON.stringify(myVocabList))); 
+        navigator.clipboard.writeText(code).then(() => {
+            alert("已複製題庫代碼！請傳給另一台設備，點擊「📥 匯入代碼」貼上。");
+        }).catch(() => {
+            prompt("請手動複製以下代碼：", code);
+        });
+    }
+
+    function importVocabCode() {
+        let code = prompt("請貼上另一台設備匯出的題庫代碼：");
+        if (!code) return;
+        try {
+            let importedList = JSON.parse(decodeURIComponent(atob(code)));
+            if (Array.isArray(importedList) && importedList.length > 0) {
+                myVocabList = importedList.slice(0, 20); 
+                saveVocabList();
+                alert(`匯入成功！共載入 ${myVocabList.length} 個單字。`);
+            }
+        } catch (e) {
+            alert("代碼格式錯誤，匯入失敗喔！");
+        }
+    }
+
+    async function handleOCR(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const statusText = document.getElementById('ocr-status');
+        statusText.style.display = 'block';
+        statusText.innerText = "⏳ AI 正在讀取照片，請稍候...";
+        statusText.style.color = "#ff9800";
+
+        try {
+            const { data: { text } } = await Tesseract.recognize(file, 'eng+chi_tra');
+            let lines = text.split('\n');
+            let addedCount = 0;
+            
+            lines.forEach(line => {
+                if (myVocabList.length >= 20) return; 
+                let cleanLine = line.replace(/^\d+[\.\、\s]*/, '').trim();
+                if (cleanLine.length > 2 && /[a-zA-Z]/.test(cleanLine) && /[\u4e00-\u9fa5]/.test(cleanLine)) {
+                    let parts = cleanLine.split(/\s+/);
+                    let eng = parts.filter(p => /[a-zA-Z]/.test(p)).join(' ').toLowerCase();
+                    let zh = parts.filter(p => /[\u4e00-\u9fa5]/.test(p)).join(' ');
+                    
+                    if (eng && zh && !myVocabList.some(v => v.word === eng)) {
+                        myVocabList.push({ word: eng, zh: zh, def: "" });
+                        addedCount++;
+                    }
+                }
+            });
+
+            saveVocabList();
+            statusText.innerText = `✅ 辨識完成！成功自動匯入 ${addedCount} 個新單字。請確認是否有錯字需要修改。`;
+            statusText.style.color = "#4caf50";
+        } catch (error) {
+            statusText.innerText = "❌ 掃描失敗，請試著拍清楚一點，或手動輸入。";
+            statusText.style.color = "#d32f2f";
+        }
+        event.target.value = ''; 
+    }
+    // ==========================================
+
+    function openWordBank() {
+        const container = document.getElementById('wb-container');
+        container.innerHTML = "";
+        myVocabList.forEach(v => {
+            let item = document.createElement('div');
+            let isMastered = masteredWords.includes(v.word);
+            item.className = `wb-item ${isMastered ? 'mastered' : ''}`;
+            item.innerHTML = `<div>${v.word} <span style="font-size:14px; font-weight:normal;">(${v.zh})</span></div><div class="wb-status">${isMastered ? '✅' : '⚪'}</div>`;
+            item.onclick = () => {
+                if (masteredWords.includes(v.word)) {
+                    masteredWords = masteredWords.filter(w => w !== v.word);
+                    item.className = 'wb-item'; item.querySelector('.wb-status').innerText = '⚪';
+                } else {
+                    masteredWords.push(v.word);
+                    item.className = 'wb-item mastered'; item.querySelector('.wb-status').innerText = '✅';
+                }
+                localStorage.setItem('hurrayMasteredWords_' + playerName, JSON.stringify(masteredWords));
+                updateWbCount();
+            };
+            container.appendChild(item);
+        });
+        updateWbCount();
+        showScreen('screen-wordbank');
+    }
+
+    function updateWbCount() {
+        let activeCount = myVocabList.length - masteredWords.length;
+        document.getElementById('wb-count').innerText = `目前學習中：${activeCount} 個單字`;
+    }
+
+    function getActiveVocabList() { return myVocabList.filter(v => !masteredWords.includes(v.word)); }
+
+    function toggleDifficulty() {
+        difficultyLevel = (difficultyLevel % 3) + 1;
+        const btn = document.getElementById('difficulty-btn');
+        if (difficultyLevel === 1) {
+            btn.innerText = "🟢 關卡：第一關 (有提示, 10題)"; btn.style.background = "var(--green)"; btn.style.borderColor = "#88c970";
+        } else if (difficultyLevel === 2) {
+            btn.innerText = "🟠 關卡：第二關 (無提示, 10題)"; btn.style.background = "#ffbca4"; btn.style.borderColor = "#ff9800";
+        } else {
+            btn.innerText = "🔴 關卡：第三關 (無提示, 全部單字)"; btn.style.background = "#ff8a80"; btn.style.borderColor = "#d32f2f";
+        }
+    }
+
+    function goHome() {
+        totalScore += currentScore; currentScore = 0;
+        localStorage.setItem('hurrayTotalScore_' + playerName, totalScore);
+        document.getElementById('highest-score-display').innerText = totalScore;
+        showScreen('screen-home');
+    }
+
+    function finishGame() {
+        document.getElementById('result-score').innerText = currentScore;
+        showScreen('screen-result');
+    }
+
+    function startGame(gameId) {
+        let activeVocab = getActiveVocabList();
+        if (activeVocab.length < 4) {
+            alert(`⚠️ 目前學習中的單字只剩 ${activeVocab.length} 個，這樣遊戲沒辦法玩喔！\n請先到「📖 熟練單字本」解除一些單字，或去後台新增單字。`);
+            return;
+        }
+        currentScore = 0; currentQuestionIndex = 0; isProcessing = false;
+        TOTAL_QUESTIONS = (difficultyLevel === 3) ? activeVocab.length : Math.min(10, activeVocab.length);
+        questionPool = [...activeVocab].sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
+        
+        document.querySelectorAll('.total-q-display').forEach(el => el.innerText = TOTAL_QUESTIONS);
+        document.getElementById(`current-score-${gameId}`).innerText = currentScore;
+        
+        g2WaitingNext = false; g3WaitingNext = false;
+        
+        if(document.getElementById('g2-submit')) { document.getElementById('g2-submit').innerText = "送出答案"; document.getElementById('g2-submit').style.background = "var(--blue)"; document.getElementById('g2-correction').style.display = 'none'; }
+        if(document.getElementById('g3-submit')) { document.getElementById('g3-submit').innerText = "送出答案"; document.getElementById('g3-submit').style.background = "var(--blue)"; document.getElementById('g3-correction').style.display = 'none'; }
+
+        showScreen(`screen-game${gameId}`);
+        
+        if (gameId === 1) loadGame1();
+        if (gameId === 2) loadGame2();
+        if (gameId === 3) loadGame3();
+        if (gameId === 4) { game4TotalMatched = 0; loadGame4(); }
+        if (gameId === 5) loadGame5();
+    }
+
+    function playSpellingAudio(word, callback) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let spellLetters = word.replace(/\s+/g, '').split('').join('- '); 
+            let fullSpellingText = spellLetters + ", " + word; 
+            let msg = new SpeechSynthesisUtterance(fullSpellingText);
+            msg.lang = 'en-US'; msg.rate = 0.8; 
+            
+            let called = false;
+            let finish = () => { if (!called) { called = true; if (callback) callback(); } };
+            msg.onend = finish; msg.onerror = finish;
+            window.speechSynthesis.speak(msg);
+            setTimeout(finish, word.length * 400 + 1500); 
+        } else {
+            if (callback) setTimeout(callback, 1200);
+        }
+    }
+
+    function showSuccessFeedbackWithSpelling(gameId, word, callback) {
+        let fb = document.getElementById(`feedback-${gameId}`);
+        if(fb) { fb.innerHTML = "🎉 答對了！太棒了！"; fb.className = 'feedback-msg success'; }
+        playSpellingAudio(word, () => {
+            if(fb) fb.style.display = 'none';
+            if (callback) callback();
+        });
+    }
+
+    function loadGame1() {
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-1').innerText = currentQuestionIndex + 1;
+        document.getElementById('g1-next-btn').style.display = 'none';
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        if (currentVocab.def && currentVocab.def !== "") {
+            document.getElementById('q1-text').innerText = currentVocab.def;
+        } else {
+            document.getElementById('q1-text').innerText = "選出這個意思的英文：\n【 " + currentVocab.zh + " 】";
+        }
+
+        playGame1Audio();
+
+        let options = [currentVocab.word];
+        let activeVocab = getActiveVocabList();
+        let randomPool = [...activeVocab, ...myVocabList].sort(() => Math.random() - 0.5); 
+        for(let v of randomPool) {
+            if (options.length >= 4 || options.length >= myVocabList.length) break;
+            if (v.word !== currentVocab.word && !options.includes(v.word)) options.push(v.word);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn'; btn.dataset.word = opt; btn.innerText = opt;
+            btn.onclick = () => {
+                if (isProcessing) return;
+                isProcessing = true; 
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
+
+                let allBtns = container.querySelectorAll('.option-btn');
+
+                if (opt === currentVocab.word) {
+                    currentScore += 10; document.getElementById('current-score-1').innerText = currentScore;
+                    btn.classList.add('correct-ans'); btn.innerHTML += " ✅";
+                    showSuccessFeedbackWithSpelling(1, currentVocab.word, () => { currentQuestionIndex++; loadGame1(); });
+                } else {
+                    currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-1').innerText = currentScore;
+                    btn.classList.add('wrong-ans'); btn.innerHTML += " ❌";
+                    allBtns.forEach(b => { if (b.dataset.word === currentVocab.word) { b.classList.add('correct-ans'); b.innerHTML += " ✅"; } });
+                    
+                    let fb = document.getElementById('feedback-1');
+                    fb.innerHTML = `答錯囉！請看綠色正確答案`; fb.className = 'feedback-msg error';
+                    document.getElementById('g1-next-btn').style.display = 'block';
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function playGame1Audio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); 
+            let textToRead = (currentVocab.def && currentVocab.def !== "") ? currentVocab.def : currentVocab.word;
+            let msg = new SpeechSynthesisUtterance(textToRead);
+            msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function nextGame1() {
+        document.getElementById('feedback-1').style.display = 'none'; currentQuestionIndex++; loadGame1();
+    }
+
+    function loadGame2() {
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-2').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        let hintEl = document.getElementById('g2-hint-zh');
+        hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
+        
+        let word = currentVocab.word;
+        let displayPattern = "";
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === " ") { displayPattern += "  "; } 
+            else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) { displayPattern += word[i] + " "; } 
+            else { displayPattern += "_ "; }
+        }
+        
+        document.getElementById('g2-pattern').innerText = displayPattern.trim();
+        document.getElementById('g2-input').value = "";
+    }
+
+    function checkGame2() {
+        if (g2WaitingNext) {
+            g2WaitingNext = false;
+            document.getElementById('g2-submit').innerText = "送出答案";
+            document.getElementById('g2-submit').style.background = "var(--blue)";
+            document.getElementById('g2-correction').style.display = 'none';
+            currentQuestionIndex++; loadGame2(); return;
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let input = document.getElementById('g2-input').value.trim().toLowerCase();
+        if (input === currentVocab.word) {
+            currentScore += 15; document.getElementById('current-score-2').innerText = currentScore;
+            showSuccessFeedbackWithSpelling(2, currentVocab.word, () => { currentQuestionIndex++; loadGame2(); });
+        } else {
+            currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-2').innerText = currentScore;
+            
+            let correctionDiv = document.getElementById('g2-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong>`; correctionDiv.style.display = 'block';
+            
+            let submitBtn = document.getElementById('g2-submit');
+            submitBtn.innerText = "下一題"; submitBtn.style.background = "#ff9800"; 
+            
+            g2WaitingNext = true; isProcessing = false; 
+        }
+    }
+
+    function loadGame3() {
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-3').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        document.getElementById('g3-input').value = "";
+        
+        let hintElement = document.getElementById('g3-hint');
+        if (difficultyLevel === 1) {
+            let hintWord = currentVocab.word.charAt(0) + " " + "_ ".repeat(currentVocab.word.length - 1);
+            hintElement.innerText = `💡 提示: ${hintWord} (${currentVocab.zh})`;
+        } else {
+            hintElement.innerText = "仔細聽發音，拼出完整單字！"; 
+        }
+        playAudio(); 
+    }
+
+    function playAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(currentVocab.word);
+            msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function checkGame3() {
+        if (g3WaitingNext) {
+            g3WaitingNext = false;
+            document.getElementById('g3-submit').innerText = "送出答案";
+            document.getElementById('g3-submit').style.background = "var(--blue)";
+            document.getElementById('g3-correction').style.display = 'none';
+            currentQuestionIndex++; loadGame3(); return;
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let input = document.getElementById('g3-input').value.trim().toLowerCase();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
+        
+        if (input === currentVocab.word) {
+            currentScore += 20; document.getElementById('current-score-3').innerText = currentScore;
+            showSuccessFeedbackWithSpelling(3, currentVocab.word, () => { currentQuestionIndex++; loadGame3(); });
+        } else {
+            currentScore = Math.max(0, currentScore - 10); document.getElementById('current-score-3').innerText = currentScore;
+            let correctionDiv = document.getElementById('g3-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong> (${currentVocab.zh})`;
+            correctionDiv.style.display = 'block';
+            let submitBtn = document.getElementById('g3-submit');
+            submitBtn.innerText = "下一題"; submitBtn.style.background = "#ff9800"; 
+            g3WaitingNext = true; isProcessing = false; 
+        }
+    }
+
+    let selectedMatchBtn = null;
+    let matchPairsLeft = 5; 
+    let game4TotalMatched = 0; 
+
+    function loadGame4() {
+        if (game4TotalMatched >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-4').innerText = game4TotalMatched;
+        isProcessing = false;
+        
+        matchPairsLeft = Math.min(5, TOTAL_QUESTIONS - game4TotalMatched);
+        let pool = questionPool.slice(game4TotalMatched, game4TotalMatched + matchPairsLeft); 
+        let buttonsData = [];
+        pool.forEach(v => {
+            buttonsData.push({ text: v.word, type: 'en', pairId: v.word });
+            buttonsData.push({ text: v.zh, type: 'zh', pairId: v.word });
+        });
+        buttonsData.sort(() => Math.random() - 0.5); 
+
+        const container = document.getElementById('match-container');
+        container.innerHTML = "";
+        buttonsData.forEach(data => {
+            let btn = document.createElement('button');
+            btn.className = 'match-btn'; btn.innerText = data.text; btn.dataset.pairId = data.pairId;
+            btn.onclick = () => handleMatchClick(btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleMatchClick(btn) {
+        if (isProcessing || btn.classList.contains('matched')) return;
+
+        if (!selectedMatchBtn) {
+            selectedMatchBtn = btn; btn.classList.add('selected');
+        } else {
+            if (selectedMatchBtn === btn) { btn.classList.remove('selected'); selectedMatchBtn = null; return; }
+
+            if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
+                let matchedWord = selectedMatchBtn.dataset.pairId;
+                btn.classList.add('matched'); selectedMatchBtn.classList.add('matched');
+                currentScore += 10; game4TotalMatched++; matchPairsLeft--;
+                
+                document.getElementById('q-index-4').innerText = game4TotalMatched;
+                document.getElementById('current-score-4').innerText = currentScore;
+                selectedMatchBtn = null;
+
+                isProcessing = true;
+                playSpellingAudio(matchedWord, () => {
+                    isProcessing = false;
+                    if (game4TotalMatched >= TOTAL_QUESTIONS || matchPairsLeft === 0) {
+                        isProcessing = true; setTimeout(() => loadGame4(), 300); 
+                    }
+                });
+
+            } else {
+                isProcessing = true;
+                currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-4').innerText = currentScore;
+                
+                selectedMatchBtn.classList.add('wrong-shake'); btn.classList.add('wrong-shake');
+                let fb = document.getElementById('feedback-4');
+                fb.innerHTML = `哎呀！「${selectedMatchBtn.innerText}」不是「${btn.innerText}」喔！`; fb.className = 'feedback-msg error';
+                
+                setTimeout(() => {
+                    fb.style.display = 'none';
+                    selectedMatchBtn.classList.remove('selected', 'wrong-shake'); btn.classList.remove('wrong-shake');
+                    selectedMatchBtn = null; isProcessing = false;
+                }, 1000); 
+            }
+        }
+    }
+
+    function loadGame5() {
+        if (!recognition) { alert("哎呀！你的瀏覽器不支援麥克風功能喔！建議使用 Chrome 瀏覽器。"); goHome(); return; }
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-5').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        document.getElementById('g5-zh').innerText = currentVocab.zh;
+        let word = currentVocab.word;
+        let displayPattern = "";
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === " ") { displayPattern += "  "; } 
+            else if (difficultyLevel === 1) { displayPattern += word[i] + " "; } 
+            else if (difficultyLevel === 2 && (i === 0 || i === word.length - 1)) { displayPattern += word[i] + " "; } 
+            else { displayPattern += "_ "; } 
+        }
+        document.getElementById('g5-pattern').innerText = displayPattern.trim();
+        
+        let statusEl = document.getElementById('g5-status');
+        let micBtn = document.getElementById('g5-mic-btn');
+        
+        statusEl.innerText = "🔊 系統發音中...";
+        statusEl.style.color = "#673ab7";
+        micBtn.className = 'mic-btn-wrapper'; 
+        
+        document.getElementById('g5-submit').style.display = 'none';
+
+        playGame5InstructionAudio();
+    }
+
+    function playGame5InstructionAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            
+            document.getElementById('g5-status').innerText = "🔊 系統發音中...";
+            document.getElementById('g5-status').style.color = "#673ab7";
+            document.getElementById('g5-mic-btn').className = 'mic-btn-wrapper';
+            
+            let msgZh = new SpeechSynthesisUtterance(currentVocab.zh);
+            msgZh.lang = 'zh-TW';
+            
+            let msgEn = new SpeechSynthesisUtterance(currentVocab.word);
+            msgEn.lang = 'en-US';
+            
+            msgEn.onend = () => { 
+                document.getElementById('g5-status').innerText = "👉 換你囉！請點擊麥克風開始唸"; 
+                document.getElementById('g5-status').style.color = "#4caf50";
+                document.getElementById('g5-mic-btn').classList.add('mic-ready'); 
+            };
+            
+            window.speechSynthesis.speak(msgZh);
+            window.speechSynthesis.speak(msgEn);
+        }
+    }
+
+    function startVoiceRecognition() {
+        if (isProcessing) return;
+        
+        let micBtn = document.getElementById('g5-mic-btn');
+        let status = document.getElementById('g5-status');
+        
+        try {
+            recognition.start();
+            micBtn.className = 'mic-btn-wrapper mic-recording'; 
+            status.innerText = "🎧 正在聆聽... 請說話";
+            status.style.color = "#f44336";
+            
+            recognition.onresult = function(event) {
+                micBtn.className = 'mic-btn-wrapper';
+                let transcript = event.results[0][0].transcript.toLowerCase();
+                
+                let cleanTranscript = transcript.replace(/[^a-z]/g, '');
+                let cleanWord = currentVocab.word.replace(/[^a-z]/g, '');
+                
+                if (cleanTranscript.includes(cleanWord)) {
+                    status.innerText = `聽到了：${transcript}`;
+                    isProcessing = true;
+                    currentScore += 20; 
+                    document.getElementById('current-score-5').innerText = currentScore;
+                    
+                    showSuccessFeedbackWithSpelling(5, currentVocab.word, () => {
+                        currentQuestionIndex++; loadGame5();
+                    });
+                } else {
+                    status.innerText = `聽成了：「${transcript}」 哎呀！再聽一次試試看！`;
+                    status.style.color = "#ff9800";
+                    document.getElementById('g5-submit').style.display = 'block'; 
+                    currentScore = Math.max(0, currentScore - 5);
+                    document.getElementById('current-score-5').innerText = currentScore;
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                micBtn.className = 'mic-btn-wrapper';
+                status.innerText = "聽不清楚，可以點喇叭重聽，或再按一次麥克風！";
+                document.getElementById('g5-submit').style.display = 'block';
+            };
+
+        } catch(e) {}
+    }
+
+    function skipGame5() {
+        currentQuestionIndex++;
+        loadGame5();
+    }
+</script>
+
+</body>
+</html>
