@@ -81,22 +81,21 @@
         .parent-panel { 
             background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 10px; 
             display: flex; flex-direction: column; gap: 10px;
-            flex-shrink: 0; /* 確保上方操作區不會被擠壓 */
+            flex-shrink: 0; 
         }
         .parent-input { padding: 10px; border-radius: 10px; border: 2px solid #a0d8ef; font-size: 16px; width: 100%; box-sizing: border-box;}
         
-        /* 🌟 重大修復：捲動式單字列表區塊 🌟 */
         .parent-list-container { 
             background: #f9f9f9; border: 2px solid #ccc; border-radius: 10px; padding: 10px; 
-            flex-grow: 1; /* 讓列表自動填滿剩下的高度 */
-            min-height: 200px; /* 加上保底高度，絕對不會縮到看不見 */
+            flex-grow: 1; 
+            min-height: 200px; 
             overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px;
         }
         
         .parent-list-item { 
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
             background: white; border: 2px solid #eee; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            flex-shrink: 0; /* 確保每張單字卡片不會被擠壓 */
+            flex-shrink: 0; 
         }
         
         .action-btns { display: flex; gap: 10px; width: 100%; justify-content: flex-end;}
@@ -169,7 +168,8 @@
             </div>
         </div>
 
-        <div class="parent-list-container" id="parent-vocab-list"></div>
+        <div class="parent-list-container" id="parent-vocab-list">
+            </div>
 
         <div style="display:flex; gap:10px; margin-bottom:10px; flex-shrink: 0;">
             <button class="btn-action" style="flex:1; background:#f44336; margin:0;" onclick="clearAllVocab()">🗑️ 清空題庫</button>
@@ -273,30 +273,32 @@
 </div>
 
 <script>
+    // 🌟 更新單元 5 的 20 個單字
     const defaultVocabList = [
-        { word: "scary", def: "Making you feel afraid.", zh: "駭人的、恐怖的" },
-        { word: "scared", def: "Feeling afraid or worried.", zh: "感覺害怕的、感覺恐懼的" },
-        { word: "lake", def: "A big area of water with land all around it.", zh: "湖泊" },
-        { word: "river", def: "A long, natural stream of water.", zh: "河流" },
-        { word: "pond", def: "A small area of still water.", zh: "池塘" },
-        { word: "ocean", def: "A very large body of salt water.", zh: "海洋" },
-        { word: "thirsty", def: "Feeling a need to drink water.", zh: "口渴的" },
-        { word: "in front of", def: "Placed right before something else.", zh: "在...前面" },
-        { word: "behind", def: "At the back of something.", zh: "在...後面" },
-        { word: "above", def: "In a higher place.", zh: "在...上面" },
-        { word: "fur", def: "The soft hair on an animal's body.", zh: "毛皮" },
-        { word: "program", def: "A set of instructions for a computer.", zh: "程序" },
-        { word: "half", def: "One of two equal parts.", zh: "一半" },
-        { word: "amazing", def: "Very surprising and wonderful.", zh: "神奇的" },
-        { word: "beetle", def: "An insect with a hard shell.", zh: "甲蟲" },
-        { word: "rucksack", def: "A bag carried on the back.", zh: "背包" },
-        { word: "furry", def: "Covered with soft animal hair.", zh: "毛茸茸的" },
-        { word: "chemist", def: "A scientist who studies chemistry.", zh: "化學家" },
-        { word: "skyscraper", def: "A very tall building in a city.", zh: "摩天大樓" },
-        { word: "get to", def: "To obtain or reach something.", zh: "得到" }
+        { word: "high", def: "Producing a sound that is sharp and piercing.", zh: "高音的、聲音尖銳的" },
+        { word: "low", def: "Producing a sound that is deep.", zh: "低音的、聲音低沉的" },
+        { word: "excited", def: "Feeling very happy and enthusiastic.", zh: "激動的、興奮的" },
+        { word: "sleepy", def: "Feeling tired and wanting to rest.", zh: "昏昏欲睡的" },
+        { word: "wolf", def: "A wild animal that looks like a large dog.", zh: "狼" },
+        { word: "feelings", def: "Emotional states or reactions.", zh: "感覺" },
+        { word: "right", def: "Correct or true.", zh: "正確的、對的" },
+        { word: "wrong", def: "Not correct or not true.", zh: "錯誤的、錯的" },
+        { word: "trumpet", def: "A brass musical instrument you blow into.", zh: "喇叭" },
+        { word: "piano", def: "A large musical instrument with black and white keys.", zh: "鋼琴" },
+        { word: "poor", def: "Having very little money.", zh: "窮困的" },
+        { word: "bin", def: "A container for putting trash in.", zh: "箱子" },
+        { word: "improve", def: "To make something better.", zh: "提升" },
+        { word: "quarter", def: "One of four equal parts.", zh: "四分之一" },
+        { word: "artist", def: "A person who creates art, like paintings.", zh: "藝術家" },
+        { word: "hill", def: "A raised area of land, smaller than a mountain.", zh: "山丘" },
+        { word: "repair", def: "To fix something that is broken.", zh: "修理" },
+        { word: "quite", def: "Very or to a certain degree.", zh: "相當" },
+        { word: "century", def: "A period of 100 years.", zh: "世紀" },
+        { word: "in a minute", def: "Happening very soon.", zh: "立刻,馬上" }
     ];
 
-    let myVocabList = JSON.parse(localStorage.getItem('hurrayCustomVocab_unit4')) || [...defaultVocabList];
+    // 🌟 升級儲存代碼為 unit5 確保吃到新單字
+    let myVocabList = JSON.parse(localStorage.getItem('hurrayCustomVocab_unit5')) || [...defaultVocabList];
 
     let playerName = "";
     let totalScore = 0;
@@ -334,7 +336,7 @@
         
         playerName = input;
         totalScore = parseInt(localStorage.getItem('hurrayTotalScore_' + playerName)) || 0;
-        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_unit4_' + playerName)) || [];
+        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_unit5_' + playerName)) || [];
 
         document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
         document.getElementById('highest-score-display').innerText = totalScore;
@@ -437,9 +439,9 @@
     }
 
     function saveVocabList() {
-        localStorage.setItem('hurrayCustomVocab_unit4', JSON.stringify(myVocabList));
+        localStorage.setItem('hurrayCustomVocab_unit5', JSON.stringify(myVocabList));
         masteredWords = masteredWords.filter(w => myVocabList.some(v => v.word === w));
-        localStorage.setItem('hurrayMasteredWords_unit4_' + playerName, JSON.stringify(masteredWords));
+        localStorage.setItem('hurrayMasteredWords_unit5_' + playerName, JSON.stringify(masteredWords));
         renderParentList(); 
     }
 
@@ -530,7 +532,7 @@
                     masteredWords.push(v.word);
                     item.className = 'wb-item mastered'; item.querySelector('.wb-status').innerText = '✅';
                 }
-                localStorage.setItem('hurrayMasteredWords_unit4_' + playerName, JSON.stringify(masteredWords));
+                localStorage.setItem('hurrayMasteredWords_unit5_' + playerName, JSON.stringify(masteredWords));
                 updateWbCount();
             };
             container.appendChild(item);
