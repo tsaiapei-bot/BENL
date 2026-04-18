@@ -627,4 +627,352 @@
 
     function loadGame1() {
         if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
-        document
+        document.getElementById('q-index-1').innerText = currentQuestionIndex + 1;
+        document.getElementById('g1-next-btn').style.display = 'none';
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        if (currentVocab.def && currentVocab.def !== "") {
+            document.getElementById('q1-text').innerText = currentVocab.def;
+        } else {
+            document.getElementById('q1-text').innerText = "選出這個意思的英文：\n【 " + currentVocab.zh + " 】";
+        }
+
+        playGame1Audio();
+
+        let options = [currentVocab.word];
+        let activeVocab = getActiveVocabList();
+        let randomPool = [...activeVocab, ...myVocabList].sort(() => Math.random() - 0.5); 
+        for(let v of randomPool) {
+            if (options.length >= 4 || options.length >= myVocabList.length) break;
+            if (v.word !== currentVocab.word && !options.includes(v.word)) options.push(v.word);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn'; btn.dataset.word = opt; btn.innerText = opt;
+            btn.onclick = () => {
+                if (isProcessing) return;
+                isProcessing = true; 
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
+
+                let allBtns = container.querySelectorAll('.option-btn');
+
+                if (opt === currentVocab.word) {
+                    currentScore += 10; document.getElementById('current-score-1').innerText = currentScore;
+                    btn.classList.add('correct-ans'); btn.innerHTML += " ✅";
+                    showSuccessFeedbackWithSpelling(1, currentVocab.word, () => { currentQuestionIndex++; loadGame1(); });
+                } else {
+                    currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-1').innerText = currentScore;
+                    btn.classList.add('wrong-ans'); btn.innerHTML += " ❌";
+                    allBtns.forEach(b => { if (b.dataset.word === currentVocab.word) { b.classList.add('correct-ans'); b.innerHTML += " ✅"; } });
+                    
+                    let fb = document.getElementById('feedback-1');
+                    fb.innerHTML = `答錯囉！請看綠色正確答案`; fb.className = 'feedback-msg error';
+                    document.getElementById('g1-next-btn').style.display = 'block';
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function playGame1Audio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); 
+            let textToRead = (currentVocab.def && currentVocab.def !== "") ? currentVocab.def : currentVocab.word;
+            let msg = new SpeechSynthesisUtterance(textToRead);
+            msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function nextGame1() {
+        document.getElementById('feedback-1').style.display = 'none'; currentQuestionIndex++; loadGame1();
+    }
+
+    function loadGame2() {
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-2').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        let hintEl = document.getElementById('g2-hint-zh');
+        hintEl.innerText = "💡 中文意思: " + currentVocab.zh;
+        
+        let word = currentVocab.word;
+        let displayPattern = "";
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === " ") { displayPattern += "  "; } 
+            else if (difficultyLevel === 1 && (i === 0 || i === word.length - 1)) { displayPattern += word[i] + " "; } 
+            else { displayPattern += "_ "; }
+        }
+        
+        document.getElementById('g2-pattern').innerText = displayPattern.trim();
+        document.getElementById('g2-input').value = "";
+    }
+
+    function checkGame2() {
+        if (g2WaitingNext) {
+            g2WaitingNext = false;
+            document.getElementById('g2-submit').innerText = "送出答案";
+            document.getElementById('g2-submit').style.background = "var(--blue)";
+            document.getElementById('g2-correction').style.display = 'none';
+            currentQuestionIndex++; loadGame2(); return;
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let input = document.getElementById('g2-input').value.trim().toLowerCase();
+        if (input === currentVocab.word) {
+            currentScore += 15; document.getElementById('current-score-2').innerText = currentScore;
+            showSuccessFeedbackWithSpelling(2, currentVocab.word, () => { currentQuestionIndex++; loadGame2(); });
+        } else {
+            currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-2').innerText = currentScore;
+            
+            let correctionDiv = document.getElementById('g2-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong>`; correctionDiv.style.display = 'block';
+            
+            let submitBtn = document.getElementById('g2-submit');
+            submitBtn.innerText = "下一題"; submitBtn.style.background = "#ff9800"; 
+            
+            g2WaitingNext = true; isProcessing = false; 
+        }
+    }
+
+    function loadGame3() {
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-3').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        currentVocab = questionPool[currentQuestionIndex];
+        document.getElementById('g3-input').value = "";
+        
+        let hintElement = document.getElementById('g3-hint');
+        if (difficultyLevel === 1) {
+            let hintWord = currentVocab.word.charAt(0) + " " + "_ ".repeat(currentVocab.word.length - 1);
+            hintElement.innerText = `💡 提示: ${hintWord} (${currentVocab.zh})`;
+        } else {
+            hintElement.innerText = "仔細聽發音，拼出完整單字！"; 
+        }
+        playAudio(); 
+    }
+
+    function playAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(currentVocab.word);
+            msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function checkGame3() {
+        if (g3WaitingNext) {
+            g3WaitingNext = false;
+            document.getElementById('g3-submit').innerText = "送出答案";
+            document.getElementById('g3-submit').style.background = "var(--blue)";
+            document.getElementById('g3-correction').style.display = 'none';
+            currentQuestionIndex++; loadGame3(); return;
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let input = document.getElementById('g3-input').value.trim().toLowerCase();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel(); 
+        
+        if (input === currentVocab.word) {
+            currentScore += 20; document.getElementById('current-score-3').innerText = currentScore;
+            showSuccessFeedbackWithSpelling(3, currentVocab.word, () => { currentQuestionIndex++; loadGame3(); });
+        } else {
+            currentScore = Math.max(0, currentScore - 10); document.getElementById('current-score-3').innerText = currentScore;
+            let correctionDiv = document.getElementById('g3-correction');
+            correctionDiv.innerHTML = `答錯囉！<br>正確答案是：<strong>${currentVocab.word}</strong> (${currentVocab.zh})`;
+            correctionDiv.style.display = 'block';
+            let submitBtn = document.getElementById('g3-submit');
+            submitBtn.innerText = "下一題"; submitBtn.style.background = "#ff9800"; 
+            g3WaitingNext = true; isProcessing = false; 
+        }
+    }
+
+    let selectedMatchBtn = null;
+    let matchPairsLeft = 5; 
+    let game4TotalMatched = 0; 
+
+    function loadGame4() {
+        if (game4TotalMatched >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-4').innerText = game4TotalMatched;
+        isProcessing = false;
+        
+        matchPairsLeft = Math.min(5, TOTAL_QUESTIONS - game4TotalMatched);
+        let pool = questionPool.slice(game4TotalMatched, game4TotalMatched + matchPairsLeft); 
+        let buttonsData = [];
+        pool.forEach(v => {
+            buttonsData.push({ text: v.word, type: 'en', pairId: v.word });
+            buttonsData.push({ text: v.zh, type: 'zh', pairId: v.word });
+        });
+        buttonsData.sort(() => Math.random() - 0.5); 
+
+        const container = document.getElementById('match-container');
+        container.innerHTML = "";
+        buttonsData.forEach(data => {
+            let btn = document.createElement('button');
+            btn.className = 'match-btn'; btn.innerText = data.text; btn.dataset.pairId = data.pairId;
+            btn.onclick = () => handleMatchClick(btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleMatchClick(btn) {
+        if (isProcessing || btn.classList.contains('matched')) return;
+
+        if (!selectedMatchBtn) {
+            selectedMatchBtn = btn; btn.classList.add('selected');
+        } else {
+            if (selectedMatchBtn === btn) { btn.classList.remove('selected'); selectedMatchBtn = null; return; }
+
+            if (selectedMatchBtn.dataset.pairId === btn.dataset.pairId) {
+                let matchedWord = selectedMatchBtn.dataset.pairId;
+                btn.classList.add('matched'); selectedMatchBtn.classList.add('matched');
+                currentScore += 10; game4TotalMatched++; matchPairsLeft--;
+                
+                document.getElementById('q-index-4').innerText = game4TotalMatched;
+                document.getElementById('current-score-4').innerText = currentScore;
+                selectedMatchBtn = null;
+
+                isProcessing = true;
+                playSpellingAudio(matchedWord, () => {
+                    isProcessing = false;
+                    if (game4TotalMatched >= TOTAL_QUESTIONS || matchPairsLeft === 0) {
+                        isProcessing = true; setTimeout(() => loadGame4(), 300); 
+                    }
+                });
+
+            } else {
+                isProcessing = true;
+                currentScore = Math.max(0, currentScore - 5); document.getElementById('current-score-4').innerText = currentScore;
+                
+                selectedMatchBtn.classList.add('wrong-shake'); btn.classList.add('wrong-shake');
+                let fb = document.getElementById('feedback-4');
+                fb.innerHTML = `哎呀！「${selectedMatchBtn.innerText}」不是「${btn.innerText}」喔！`; fb.className = 'feedback-msg error';
+                
+                setTimeout(() => {
+                    fb.style.display = 'none';
+                    selectedMatchBtn.classList.remove('selected', 'wrong-shake'); btn.classList.remove('wrong-shake');
+                    selectedMatchBtn = null; isProcessing = false;
+                }, 1000); 
+            }
+        }
+    }
+
+    function loadGame5() {
+        if (!recognition) { alert("哎呀！你的瀏覽器不支援麥克風功能喔！建議使用 Chrome 瀏覽器。"); goHome(); return; }
+        if (currentQuestionIndex >= TOTAL_QUESTIONS) { finishGame(); return; }
+        document.getElementById('q-index-5').innerText = currentQuestionIndex + 1;
+        isProcessing = false;
+        
+        currentVocab = questionPool[currentQuestionIndex];
+        
+        document.getElementById('g5-zh').innerText = currentVocab.zh;
+        let word = currentVocab.word;
+        let displayPattern = "";
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === " ") { displayPattern += "  "; } 
+            else if (difficultyLevel === 1) { displayPattern += word[i] + " "; } 
+            else if (difficultyLevel === 2 && (i === 0 || i === word.length - 1)) { displayPattern += word[i] + " "; } 
+            else { displayPattern += "_ "; } 
+        }
+        document.getElementById('g5-pattern').innerText = displayPattern.trim();
+        
+        let statusEl = document.getElementById('g5-status');
+        let micBtn = document.getElementById('g5-mic-btn');
+        
+        statusEl.innerText = "🔊 系統發音中...";
+        statusEl.style.color = "#673ab7";
+        micBtn.className = 'mic-btn-wrapper'; 
+        
+        document.getElementById('g5-submit').style.display = 'none';
+
+        playGame5InstructionAudio();
+    }
+
+    function playGame5InstructionAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            
+            document.getElementById('g5-status').innerText = "🔊 系統發音中...";
+            document.getElementById('g5-status').style.color = "#673ab7";
+            document.getElementById('g5-mic-btn').className = 'mic-btn-wrapper';
+            
+            let msgZh = new SpeechSynthesisUtterance(currentVocab.zh);
+            msgZh.lang = 'zh-TW';
+            
+            let msgEn = new SpeechSynthesisUtterance(currentVocab.word);
+            msgEn.lang = 'en-US';
+            
+            msgEn.onend = () => { 
+                document.getElementById('g5-status').innerText = "👉 換你囉！請點擊麥克風開始唸"; 
+                document.getElementById('g5-status').style.color = "#4caf50";
+                document.getElementById('g5-mic-btn').classList.add('mic-ready'); 
+            };
+            
+            window.speechSynthesis.speak(msgZh);
+            window.speechSynthesis.speak(msgEn);
+        }
+    }
+
+    function startVoiceRecognition() {
+        if (isProcessing) return;
+        
+        let micBtn = document.getElementById('g5-mic-btn');
+        let status = document.getElementById('g5-status');
+        
+        try {
+            recognition.start();
+            micBtn.className = 'mic-btn-wrapper mic-recording'; 
+            status.innerText = "🎧 正在聆聽... 請說話";
+            status.style.color = "#f44336";
+            
+            recognition.onresult = function(event) {
+                micBtn.className = 'mic-btn-wrapper';
+                let transcript = event.results[0][0].transcript.toLowerCase();
+                
+                let cleanTranscript = transcript.replace(/[^a-z]/g, '');
+                let cleanWord = currentVocab.word.replace(/[^a-z]/g, '');
+                
+                if (cleanTranscript.includes(cleanWord)) {
+                    status.innerText = `聽到了：${transcript}`;
+                    isProcessing = true;
+                    currentScore += 20; 
+                    document.getElementById('current-score-5').innerText = currentScore;
+                    
+                    showSuccessFeedbackWithSpelling(5, currentVocab.word, () => {
+                        currentQuestionIndex++; loadGame5();
+                    });
+                } else {
+                    status.innerText = `聽成了：「${transcript}」 哎呀！再聽一次試試看！`;
+                    status.style.color = "#ff9800";
+                    document.getElementById('g5-submit').style.display = 'block'; 
+                    currentScore = Math.max(0, currentScore - 5);
+                    document.getElementById('current-score-5').innerText = currentScore;
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                micBtn.className = 'mic-btn-wrapper';
+                status.innerText = "聽不清楚，可以點喇叭重聽，或再按一次麥克風！";
+                document.getElementById('g5-submit').style.display = 'block';
+            };
+
+        } catch(e) {}
+    }
+
+    function skipGame5() {
+        currentQuestionIndex++;
+        loadGame5();
+    }
+</script>
+
+</body>
+</html>
