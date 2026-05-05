@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紐西蘭北島 11 天自駕 APP 12.0 (路線最佳化版)</title>
+    <title>紐西蘭北島 11 天自駕 APP 15.0 (晚宴夜遊版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -35,7 +35,7 @@
         </div>
         
         <div class="glass-panel p-6 rounded-3xl w-full max-w-sm flex flex-col gap-5 shadow-2xl">
-            <button onclick="showPinInput()" class="w-full bg-brand text-slate-900 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-brand/20">我是布雷克 (哥)</button>
+            <button onclick="showPinInput()" class="w-full bg-brand text-slate-900 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-brand/20">我是哥</button>
             <button onclick="loginAsGuest()" class="w-full border-2 border-slate-600 text-slate-300 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform">一般訪客</button>
             
             <div id="pin-section" class="hidden flex-col gap-3 mt-4 pt-4 border-t border-slate-700">
@@ -63,7 +63,7 @@
     <main class="p-4 max-w-2xl mx-auto" id="main-view"></main>
 
     <div id="checklist-view" class="hidden p-4 max-w-2xl mx-auto">
-        <h2 class="text-xl font-bold mb-6 pt-4"><i class="fa-solid fa-clipboard-check text-brand mr-2"></i>行前準備清單</h2>
+        <h2 class="text-xl font-bold mb-6 pt-4"><i class="fa-solid fa-clipboard-check text-brand mr-2"></i>行前準備與注意事項</h2>
         <div id="checklist-content" class="space-y-6"></div>
     </div>
 
@@ -123,9 +123,9 @@
 
     <script>
         let isBlake = false;
-        let currentRate = 19.5; // 預設匯率
+        let currentRate = 19.5; 
 
-        // 行程資料 (Day 1 與 Day 10 已根據哥的最新需求互換景點)
+        // 最新版 Day 5 與 Day 6 完美結合筆記與夜間導覽時間
         const itineraryData = [
             { day: 0, date: '5/8 五', city: 'Taipei', depart: '14:00', note: '出發前最後確認！護照、駕照、簽證都帶了嗎？', lat: 25.0797, lon: 121.2342, 
               events: [
@@ -155,29 +155,34 @@
               events: [
                 { time: '09:30 - 11:00', title: '胡卡瀑布 (Huka Falls)', desc: '懷卡托河進入峽谷後形成的壯觀瀑布。每秒洩出高達 22 萬公升的夢幻藍綠色水流，水壓極強。', loc: 'Huka Falls', accLoc: '胡卡瀑布', hasPark: true },
                 { time: '11:15 - 12:45', title: '月球環形山 (Craters of the Moon)', desc: '宛如月球表面的地熱田。沿著木棧道漫步，親眼目睹不斷湧出蒸氣的火山口與熱泥漿池。', loc: 'Craters of the Moon', accLoc: '月球環形山', hasPark: true },
-                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞！店內停放著一架退役的道格拉斯 DC-3 實體飛機，可以直接帶著漢堡進入機艙內用餐打卡。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true }
+                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞！店內停放著一架退役的道格拉斯 DC-3 實體飛機，可以直接帶著漢堡進入機艙內用餐打卡。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true },
+                { time: '14:45 - 16:30', title: '陶波湖畔步道 (Taupo Lakefront)', desc: '漫步全紐西蘭最大淡水湖畔，尋找 #LOVETAUPO 標誌拍照。', loc: 'Taupo Lakefront', accLoc: '陶波湖畔', hasPark: true }
               ],
-              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '湖畔放鬆休息。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
+              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '返回飯店休息。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
-            { day: 4, date: '5/12 二', city: 'Tongariro', depart: '08:30', note: 'Sky Waka 維修，山腳 Lorenz 咖啡廳 10:00-14:00 有開', lat: -39.29, lon: 175.54,
+            { day: 4, date: '5/12 二', city: 'Tongariro', depart: '08:30', note: 'Sky Waka 維修，改山腳短步道漫步', lat: -39.29, lon: 175.54,
               events: [
-                { time: '10:00 - 14:00', title: '東格里羅國家公園 (Tongariro National Park)', desc: '《魔戒》電影中「末日火山」的取景地。目前 Sky Waka 纜車維修關閉，可漫步山腳短步道欣賞壯麗的荒涼火山地貌。', loc: 'Tongariro National Park', accLoc: '東格里羅國家公園', type: 'warning', hasPark: true }
+                { time: '08:30 - 10:00', title: '驅車前往東格里羅國家公園', desc: '一路向南單程約 1.5 小時，前往紐西蘭最古老的雙重世界遺產國家公園。', loc: 'Tongariro National Park', accLoc: '前往國家公園', type: 'transport', hasPark: false },
+                { time: '10:00 - 13:00', title: '山腳短步道朝聖 (如 Meads Wall Trail)', desc: '因 Sky Waka 觀光纜車維修關閉，改於山腳下挑選輕鬆短步道漫步，朝聖電影《魔戒》中「末日火山」地貌。', loc: 'Meads Wall Trail', accLoc: '東格里羅國家公園', type: 'activity', hasPark: true },
+                { time: '13:00 - 15:30', title: '午餐與驅車返回陶波', desc: '在國家公園周邊享用簡餐後，沿原路驅車返回飯店休息。', loc: 'Taupo', accLoc: '午餐/返程交通', type: 'transport', hasPark: false }
               ],
-              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '返回陶波。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
+              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '抵達飯店好好放鬆。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
-            { day: 5, date: '5/13 三', city: 'Rotorua', depart: '08:30', note: '泥漿溫泉限 20 分鐘，別泡過頭', lat: -38.13, lon: 176.24,
+            { day: 5, date: '5/13 三', city: 'Rotorua', depart: '08:30', note: '下午4點Te Puia報到吃大餐看夜景！', lat: -38.13, lon: 176.24,
               events: [
-                { time: '09:30 - 11:30', title: '懷歐塔普地熱世界 (Wai-O-Tapu)', desc: '羅托路亞最著名的地熱公園。這裡有色彩斑斕的礦物池，其中以邊緣呈現亮橘色的「香檳池」最為著名。', loc: 'Wai-O-Tapu', accLoc: '懷歐塔普', hasPark: true },
-                { time: '13:00 - 15:30', title: '蒂普亞毛利文化村 (Te Puia)', desc: '近距離觀賞南半球最大的活躍間歇泉「波胡圖」，還能欣賞毛利人震撼的哈卡戰舞 (Haka)。', loc: 'Te Puia', accLoc: '蒂普亞文化村', hasPark: true },
-                { time: '16:00 - 17:00', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '紐西蘭唯一的天然泥漿溫泉。走進硫磺氣息濃郁的地獄之門，體驗最天然的護膚與身心療癒。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', hasPark: true }
+                { time: '09:30 - 12:00', title: '懷歐塔普地熱世界 (Wai-O-Tapu)', desc: '羅托路亞最著名的地熱公園。這裡有色彩斑斕的礦物池，其中以邊緣呈現亮橘色的「香檳池」最為著名。', loc: 'Wai-O-Tapu', accLoc: '懷歐塔普', hasPark: true },
+                { time: '12:30 - 14:30', title: '愛歌頓皇家牧場 (Agrodome Farm)', desc: '佔地 135 公頃的紐西蘭最大觀光牧場！搭乘拖拉機遊園，與羊駝、綿羊近距離互動，並觀賞經典的農莊綿羊秀。', loc: 'Agrodome', accLoc: '愛歌頓農場', hasPark: true },
+                { time: '15:00 - 15:45', title: '抵達市區與辦理入住', desc: '抵達羅托魯瓦市區先到青年旅館放行李，稍作休息準備迎接晚上的重頭戲。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '交通/停車', type: 'transport', hasPark: true },
+                { time: '16:00 - 20:00', title: '蒂普亞毛利文化村夜間導覽 (Te Puia)', desc: '夜間專屬導覽！觀賞打燈後壯觀的波胡圖間歇泉噴發、欣賞充滿爆發力的 Haka 毛利戰舞，並享用豐盛的毛利原住民自助大餐。', loc: 'Te Puia', accLoc: '蒂普亞夜間導覽', type: 'activity', hasPark: true }
               ],
-              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '入住羅托路亞市中心。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
+              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '結束一天豐富行程後回房好好休息。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
             },
-            { day: 6, date: '5/14 四', city: 'Rotorua', depart: '09:00', note: 'Skyline 滑板車競速！', lat: -38.13, lon: 176.24,
+            { day: 6, date: '5/14 四', city: 'Rotorua', depart: '09:00', note: '極限滑車狂飆，晚上有週四限定夜市！', lat: -38.13, lon: 176.24,
               events: [
-                { time: '09:30 - 11:30', title: '紅木森林天空步道 (Redwoods Treewalk)', desc: '懸掛在百年加州紅木群與紐西蘭特有銀蕨樹間的高空生態步道。', loc: 'Redwoods Treewalk', accLoc: '紅木森林', hasPark: true },
-                { time: '13:00 - 16:00', title: '天空纜車與斜坡滑車 (Skyline Luge)', desc: '搭乘觀光纜車抵達山頂，在總長 1.8 公里的極限賽道中體驗高速過彎與下坡的快感。', loc: 'Skyline Rotorua', accLoc: 'Skyline', hasPark: true },
-                { time: '16:30 - 17:30', title: '庫伊勞公園 (Kuirau Park)', desc: '位於市中心的一座免費地熱公園。隨處可見泥巴翻滾發出「砰砰」聲的天然泥漿池。', loc: 'Kuirau Park', accLoc: '庫伊勞公園', hasPark: true }
+                { time: '09:30 - 12:30', title: '天空纜車與斜坡滑板車 (Skyline Luge)', desc: '搭乘纜車上山，挑戰發源於紐西蘭的天空滑板車，在 1.8 公里的極限賽道中高速穿梭森林並俯瞰羅托魯瓦湖。', loc: 'Skyline Rotorua', accLoc: 'Skyline', hasPark: true },
+                { time: '14:30 - 16:30', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '體驗獨特的天然泥漿浴，將富含礦物質的泥漿塗抹全身。為避免過度浸泡，每組泥漿池體驗上限為 20 分鐘。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', type: 'activity', hasPark: true },
+                { time: '17:30 - 19:00', title: '紅木森林天空步道 (Redwoods Treewalk)', desc: '走在懸吊於 9 至 20 公尺高空的數十座吊橋上，享受夜間點燈後的魔幻氛圍與芬多精。', loc: 'Redwoods Treewalk', accLoc: '紅木森林', hasPark: true },
+                { time: '19:15 - 21:00', title: '羅托魯瓦夜市 (Rotorua Night Market)', desc: '前往羅托魯瓦市區逛熱鬧的週四夜市，品嚐各國特色小吃、欣賞在地手工藝品與街頭藝人表演。', loc: 'Rotorua Night Market', accLoc: '羅托魯瓦夜市', hasPark: true }
               ],
               hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '續住羅托路亞。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
             },
@@ -222,15 +227,18 @@
             }
         ];
 
-        let expenses = JSON.parse(localStorage.getItem('blake_exp_final1')) || [];
-        const checklistItems = JSON.parse(localStorage.getItem('blake_chk_final1')) || [
+        let expenses = JSON.parse(localStorage.getItem('blake_exp_final3')) || [];
+        const checklistItems = JSON.parse(localStorage.getItem('blake_chk_final3')) || [
+            { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '海關極度嚴格：絕對禁止攜帶肉類、新鮮水果、植物、蜂蜜等。', accLoc: '', c: false },
+            { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '海關申報：泡麵、餅乾、中藥、穿過的登山鞋必報，放同區加快通關。', accLoc: '', c: false },
+            { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '氣候穿搭：秋末冬初早晚溫差大，強烈建議「洋蔥式穿搭」，備防風外套。', accLoc: '', c: false },
+            { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '自駕安全：天黑得早，小心「暗冰 (Black ice)」打滑，盡量白天移動。', accLoc: '', c: false },
             { g: '行前申報與費用', n: 'NZeTA 電子旅行授權', accLoc: 'NZeTA 簽證費', c: false },
             { g: '行前申報與費用', n: 'NZTD 旅客入境申報', accLoc: '', c: false },
             { g: '行前申報與費用', n: '紐西蘭上網 eSIM 卡', accLoc: '紐西蘭 eSIM 卡', c: false },
-            { g: '海關嚴查', n: '洗乾淨的登山鞋 (刷底)', accLoc: '', c: false },
-            { g: '海關嚴查', n: '泡麵、餅乾 (誠實報)', accLoc: '', c: false },
             { g: '裝備', n: '八字轉接頭+車充', accLoc: '轉接頭/車充', c: false },
-            { g: '裝備', n: '個人有線耳機 (洞穴導覽)', accLoc: '', c: false }
+            { g: '裝備', n: '個人有線耳機 (洞穴導覽)', accLoc: '', c: false },
+            { g: '裝備', n: 'Travel Blue 頸枕 (需外掛，無法塞入隨身包)', accLoc: '', c: false }
         ];
 
         function showPinInput() {
@@ -429,7 +437,7 @@
             });
         }
         
-        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('blake_chk_final1', JSON.stringify(checklistItems)); renderChecklist(); }
+        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('blake_chk_final3', JSON.stringify(checklistItems)); renderChecklist(); }
 
         function quickExp(loc) { 
             if(!isBlake) return;
@@ -451,7 +459,7 @@
                 note: document.getElementById('exp-note').value, 
                 date: new Date().toLocaleDateString() 
             });
-            localStorage.setItem('blake_exp_final1', JSON.stringify(expenses));
+            localStorage.setItem('blake_exp_final3', JSON.stringify(expenses));
             document.getElementById('exp-amount').value = ''; 
             renderExpenses();
         }
@@ -489,7 +497,7 @@
             document.getElementById('total-ntd').innerText = `約 NTD ${Math.round(totalNTD).toLocaleString()}`;
         }
 
-        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('blake_exp_final1', JSON.stringify(expenses)); renderExpenses(); }
+        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('blake_exp_final3', JSON.stringify(expenses)); renderExpenses(); }
     </script>
 </body>
 </html>
