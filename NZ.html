@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紐西蘭北島自駕 APP (完美行前版)</title>
+    <title>紐西蘭北島 11 天自駕 APP 12.0 (路線最佳化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,12 +26,29 @@
         .check-item input:checked + div { text-decoration: line-through; color: #64748b; }
     </style>
 </head>
-<body class="antialiased pb-24">
+<body class="antialiased pb-24 overflow-hidden">
+
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center p-6 transition-opacity duration-300">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-white mb-2 tracking-wide"><i class="fa-solid fa-kiwi-bird text-brand mr-3"></i>中土自駕神器</h1>
+            <p class="text-slate-400 text-sm">紐西蘭北島 11 天終極旅程</p>
+        </div>
+        
+        <div class="glass-panel p-6 rounded-3xl w-full max-w-sm flex flex-col gap-5 shadow-2xl">
+            <button onclick="showPinInput()" class="w-full bg-brand text-slate-900 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-brand/20">我是布雷克 (哥)</button>
+            <button onclick="loginAsGuest()" class="w-full border-2 border-slate-600 text-slate-300 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform">一般訪客</button>
+            
+            <div id="pin-section" class="hidden flex-col gap-3 mt-4 pt-4 border-t border-slate-700">
+                <input type="password" id="pin-input" placeholder="輸入 4 碼密碼" class="text-center text-xl tracking-[0.5em] font-bold bg-slate-800 rounded-xl p-3 text-white border-2 border-slate-600 focus:border-brand focus:ring-0 outline-none transition-colors" inputmode="numeric" maxlength="4">
+                <button onclick="verifyPin()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition-colors">確認登入</button>
+                <p id="pin-error" class="text-red-400 text-xs text-center hidden mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>密碼錯誤！</p>
+            </div>
+        </div>
+    </div>
 
     <header class="sticky top-0 z-50 glass-panel shadow-xl">
         <div class="px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold text-white tracking-tight">北島自駕神器</h1>
-            
+            <h1 class="text-lg font-bold text-white tracking-tight" id="app-title">北島自駕 11 天</h1>
             <div id="weather-display" class="flex items-center gap-2 text-right">
                 <div id="weather-icon" class="text-2xl drop-shadow-md"><i class="fa-solid fa-spinner fa-spin text-slate-400"></i></div>
                 <div>
@@ -40,7 +57,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="px-3 py-3 border-t border-slate-700/50 flex gap-2 hide-scrollbar whitespace-nowrap" id="day-nav"></div>
     </header>
 
@@ -52,145 +68,208 @@
     </div>
 
     <div id="accounting-view" class="hidden p-4 max-w-2xl mx-auto">
-        <h2 class="text-xl font-bold mb-6 pt-4"><i class="fa-solid fa-wallet text-brand mr-2"></i>紐幣開支紀錄</h2>
-        <div class="glass-panel rounded-2xl p-5 mb-6">
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <input type="number" id="exp-amount" placeholder="金額 (NZD)" class="bg-slate-800 rounded-lg p-3 text-sm border-none">
-                <select id="exp-cat" class="bg-slate-800 rounded-lg p-3 text-sm border-none">
-                    <option>美食</option><option>加油</option><option>活動</option><option>住宿</option><option>採買</option><option>交通</option>
-                </select>
+        <h2 class="text-xl font-bold mb-6 pt-4"><i class="fa-solid fa-wallet text-brand mr-2"></i>旅費開支紀錄</h2>
+        
+        <div class="flex justify-between items-center bg-slate-800 p-3 rounded-xl mb-4 border border-slate-700">
+            <div class="text-[11px] text-brand flex items-center gap-1">
+                <i class="fa-solid fa-bolt"></i> 系統即時匯率
             </div>
-            <input type="text" id="exp-note" placeholder="地點/備註" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none mb-4">
-            <button onclick="saveExpense()" class="w-full bg-brand text-slate-900 font-bold py-3 rounded-xl">新增開支</button>
+            <div class="flex items-center gap-2">
+                <span class="text-[12px] text-slate-300">1 NZD = <span id="auto-rate" class="font-bold text-white">載入中...</span> NTD</span>
+            </div>
         </div>
-        <div class="flex justify-between items-end px-2 mb-4">
+
+        <div class="glass-panel rounded-2xl p-5 mb-6">
+            <div class="grid grid-cols-[1fr_2fr] gap-3 mb-4">
+                <select id="exp-currency" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none font-bold text-brand">
+                    <option value="NZD">NZD 紐元</option>
+                    <option value="NTD">NTD 台幣</option>
+                </select>
+                <input type="number" id="exp-amount" placeholder="輸入金額" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
+            </div>
+            
+            <div class="grid grid-cols-[1fr_2fr] gap-3 mb-4">
+                <select id="exp-cat" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
+                    <option>行前費用</option><option>美食</option><option>加油</option><option>活動</option><option>住宿</option><option>採買</option><option>交通</option>
+                </select>
+                <input type="text" id="exp-note" placeholder="地點/備註" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
+            </div>
+            
+            <button onclick="saveExpense()" class="w-full bg-brand text-slate-900 font-bold py-3 rounded-xl shadow-lg shadow-brand/20 active:scale-95 transition-transform">新增開支</button>
+        </div>
+
+        <div class="flex justify-between items-end px-2 mb-4 pb-2 border-b border-slate-700">
             <h3 class="text-sm font-bold">歷史紀錄</h3>
             <div class="text-right">
-                <p class="text-[10px] text-slate-400 font-medium">總計</p>
-                <p id="total-nz" class="text-xl font-bold text-brand">NZD 0.00</p>
+                <p class="text-[10px] text-slate-400 font-medium mb-1">總計累積</p>
+                <p id="total-nzd" class="text-lg font-bold text-brand leading-none">NZD 0.00</p>
+                <p id="total-ntd" class="text-[11px] text-slate-400 mt-1">約 NTD 0</p>
             </div>
         </div>
-        <div id="exp-list" class="space-y-2"></div>
+        <div id="exp-list" class="space-y-2 pb-10"></div>
     </div>
 
-    <footer class="fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-700 p-2 z-50 flex justify-around items-center">
-        <button onclick="switchTab('itinerary')" id="t-itinerary" class="flex flex-col items-center gap-1 text-brand">
+    <footer id="main-footer" class="fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-700 p-2 z-50 flex justify-around items-center">
+        <button onclick="switchTab('itinerary')" id="t-itinerary" class="flex flex-col items-center gap-1 text-brand flex-1">
             <i class="fa-solid fa-route text-xl"></i><span class="text-[10px]">行程</span>
         </button>
-        <button onclick="switchTab('checklist')" id="t-checklist" class="flex flex-col items-center gap-1 text-slate-400">
+        <button onclick="switchTab('checklist')" id="t-checklist" class="flex flex-col items-center gap-1 text-slate-400 flex-1 border-l border-slate-700">
             <i class="fa-solid fa-list-check text-xl"></i><span class="text-[10px]">清單</span>
         </button>
-        <button onclick="switchTab('accounting')" id="t-accounting" class="flex flex-col items-center gap-1 text-slate-400">
+        <button onclick="switchTab('accounting')" id="t-accounting" class="flex flex-col items-center gap-1 text-slate-400 flex-1 border-l border-slate-700">
             <i class="fa-solid fa-calculator text-xl"></i><span class="text-[10px]">記帳</span>
         </button>
     </footer>
 
     <script>
+        let isBlake = false;
+        let currentRate = 19.5; // 預設匯率
+
+        // 行程資料 (Day 1 與 Day 10 已根據哥的最新需求互換景點)
         const itineraryData = [
             { day: 0, date: '5/8 五', city: 'Taipei', depart: '14:00', note: '出發前最後確認！護照、駕照、簽證都帶了嗎？', lat: 25.0797, lon: 121.2342, 
               events: [
-                { time: '14:30 - 15:30', title: '出發前往機場', desc: '帶著無比興奮的心情，前往桃園國際機場 (TPE)。', loc: 'Taoyuan International Airport', accLoc: '桃園機場', type: 'transport', hasPark: false },
-                { time: '18:30', title: '搭乘紐西蘭航空前往奧克蘭', desc: '準備在飛機上睡一覺，迎接夢幻的中土世界！', loc: 'Taoyuan International Airport', accLoc: '桃園機場', type: 'warning', hasPark: false }
-              ]
+                { time: '14:30 - 15:30', title: '出發前往機場', desc: '帶著無比興奮的心情，前往桃園國際機場 (TPE)。', loc: 'Taoyuan International Airport', accLoc: '機場接送/高鐵', type: 'transport', hasPark: false },
+                { time: '18:30', title: '搭乘紐西蘭航空前往奧克蘭', desc: '準備在飛機上睡一覺，迎接夢幻的中土世界！', loc: 'Taoyuan International Airport', accLoc: '桃園機場免稅/餐飲', type: 'warning', hasPark: false }
+              ],
+              hotel: null
             },
-            { day: 1, date: '5/9 六', city: 'Auckland', depart: '09:15', note: '入境海關嚴查！登山鞋底、泡麵、藥品務必申報', lat: -36.848, lon: 174.76, 
+            { day: 1, date: '5/9 六', city: 'Auckland', depart: '09:15', note: '下飛機先去 Outlet 補裝備！海關嚴查鞋底請注意', lat: -36.848, lon: 174.76, 
               events: [
                 { time: '09:15 - 10:30', title: '奧克蘭機場 (Auckland Airport)', desc: '抵達紐西蘭第一大城，確認完成電子旅行授權 (NZeTA) 與旅客入境申報 (NZTD)。', loc: 'Auckland Airport', accLoc: '奧克蘭機場', hasPark: true },
-                { time: '13:00 - 15:00', title: '伊甸山 (Mount Eden)', desc: '奧克蘭市區內最高的休眠火山，標高 196 公尺。可沿著環形火山口步道漫步，360 度俯瞰「帆之都」奧克蘭壯麗的城市天際線與海灣風景。', loc: 'Mount Eden', accLoc: '伊甸山', hasPark: true },
-                { time: '16:00 - 17:00', title: '住宿：卡拉卡希爾頓逸林酒店 (DoubleTree Karaka)', desc: '第一天先在奧克蘭外圍的飯店辦理入住並調整時差，為隔天的長途自駕做準備。', loc: 'DoubleTree by Hilton Auckland Karaka', accLoc: '奧克蘭希爾頓', isHotel: true, hasPark: true }
-              ]
+                { time: '13:00 - 16:00', title: '奧克蘭 Dress Smart Outlet (Dress Smart Onehunga)', desc: '紐西蘭最大的暢貨中心，距離機場不遠。剛下飛機可以順路先來補齊缺少的休閒裝備或防風衣物！', loc: 'Dress Smart Onehunga', accLoc: 'Outlet 採買', hasPark: true }
+              ],
+              hotel: { title: '卡拉卡希爾頓逸林酒店 (DoubleTree Karaka)', desc: '採買完畢後，往南前往外圍的飯店辦理入住並調整時差，為隔天的長途自駕做準備。', loc: 'DoubleTree by Hilton Auckland Karaka', accLoc: '卡拉卡希爾頓', hasPark: true }
             },
             { day: 2, date: '5/10 日', city: 'Waitomo', depart: '09:00', note: '訂單 4126567：洞穴需使用自己的耳機聽導覽', lat: -38.26, lon: 175.11,
               events: [
                 { time: '11:40 - 12:00', title: 'WGC 報到取票', desc: '提前 20 分鐘抵達遊客中心報到，領取螢火蟲洞與魯阿庫里洞的兩份預約門票。', loc: '39 Waitomo Village Road', accLoc: '懷托摩遊客中心', type: 'warning', hasPark: true },
                 { time: '12:00 - 12:45', title: '懷托摩螢火蟲洞 (Waitomo Glowworm Caves)', desc: '搭乘小船進入漆黑的地底洞穴，抬頭仰望成千上萬如藍色星辰般閃爍的特有種藍光螢火蟲。(注意：主洞穴嚴格禁止拍照)。', loc: 'Waitomo Glowworm Caves', accLoc: '螢火蟲洞', hasPark: false },
-                { time: '13:05 - 13:15', title: '前往魯阿庫里洞 (Ruakuri Cave)', desc: '車程約 7 分鐘，需自行開車轉點。', loc: '219 Tumutumu Road', accLoc: '前往魯阿庫里洞', type: 'transport', hasPark: true },
+                { time: '13:05 - 13:15', title: '前往魯阿庫里洞 (Ruakuri Cave)', desc: '車程約 7 分鐘，需自行開車轉點。', loc: '219 Tumutumu Road', accLoc: '懷托摩停車', type: 'transport', hasPark: true },
                 { time: '13:30 - 15:00', title: '魯阿庫里洞 (Ruakuri Cave)', desc: '走下視覺震撼的螺旋狀階梯深入地底，欣賞千萬年歷史的鐘乳石與貝殼化石。(可無閃光燈拍照，請自備耳機聽語音導覽)。', loc: 'Ruakuri Cave', accLoc: '魯阿庫里洞', type: 'activity', hasPark: false },
-                { time: '15:15 - 17:45', title: '驅車前往陶波 (Taupo)', desc: '長途駕駛前往紐西蘭最大的火山湖——陶波湖。', loc: 'Taupo', accLoc: '公路服務站', type: 'transport', hasPark: false },
-                { time: '18:00 - 19:00', title: '住宿：陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '辦理入住，享受湖畔度假氛圍。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', isHotel: true, hasPark: true }
-              ]
+                { time: '15:15 - 17:45', title: '驅車前往陶波 (Taupo)', desc: '長途駕駛前往紐西蘭最大的火山湖——陶波湖。', loc: 'Taupo', accLoc: '公路服務站/加油', type: 'transport', hasPark: false }
+              ],
+              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '辦理入住，享受湖畔度假氛圍。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
             { day: 3, date: '5/11 一', city: 'Taupo', depart: '09:30', note: '今天都在陶波湖周邊，機艙座位16:30關閉', lat: -38.68, lon: 176.07,
               events: [
                 { time: '09:30 - 11:00', title: '胡卡瀑布 (Huka Falls)', desc: '懷卡托河進入峽谷後形成的壯觀瀑布。每秒洩出高達 22 萬公升的夢幻藍綠色水流，水壓極強。', loc: 'Huka Falls', accLoc: '胡卡瀑布', hasPark: true },
                 { time: '11:15 - 12:45', title: '月球環形山 (Craters of the Moon)', desc: '宛如月球表面的地熱田。沿著木棧道漫步，親眼目睹不斷湧出蒸氣的火山口與熱泥漿池。', loc: 'Craters of the Moon', accLoc: '月球環形山', hasPark: true },
-                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞！店內停放著一架退役的道格拉斯 DC-3 實體飛機，可以直接帶著漢堡進入機艙內用餐打卡。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true },
-                { time: '15:00 - 16:00', title: '住宿：陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '湖畔放鬆休息。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', isHotel: true, hasPark: true }
-              ]
+                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞！店內停放著一架退役的道格拉斯 DC-3 實體飛機，可以直接帶著漢堡進入機艙內用餐打卡。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true }
+              ],
+              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '湖畔放鬆休息。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
             { day: 4, date: '5/12 二', city: 'Tongariro', depart: '08:30', note: 'Sky Waka 維修，山腳 Lorenz 咖啡廳 10:00-14:00 有開', lat: -39.29, lon: 175.54,
               events: [
-                { time: '10:00 - 14:00', title: '東格里羅國家公園 (Tongariro National Park)', desc: '《魔戒》電影中「末日火山」的取景地。目前 Sky Waka 纜車維修關閉，可漫步山腳短步道欣賞壯麗的荒涼火山地貌。', loc: 'Tongariro National Park', accLoc: '東格里羅國家公園', type: 'warning', hasPark: true },
-                { time: '15:30 - 16:30', title: '住宿：陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '返回陶波。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', isHotel: true, hasPark: true }
-              ]
+                { time: '10:00 - 14:00', title: '東格里羅國家公園 (Tongariro National Park)', desc: '《魔戒》電影中「末日火山」的取景地。目前 Sky Waka 纜車維修關閉，可漫步山腳短步道欣賞壯麗的荒涼火山地貌。', loc: 'Tongariro National Park', accLoc: '東格里羅國家公園', type: 'warning', hasPark: true }
+              ],
+              hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '返回陶波。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
             { day: 5, date: '5/13 三', city: 'Rotorua', depart: '08:30', note: '泥漿溫泉限 20 分鐘，別泡過頭', lat: -38.13, lon: 176.24,
               events: [
                 { time: '09:30 - 11:30', title: '懷歐塔普地熱世界 (Wai-O-Tapu)', desc: '羅托路亞最著名的地熱公園。這裡有色彩斑斕的礦物池，其中以邊緣呈現亮橘色的「香檳池」最為著名。', loc: 'Wai-O-Tapu', accLoc: '懷歐塔普', hasPark: true },
                 { time: '13:00 - 15:30', title: '蒂普亞毛利文化村 (Te Puia)', desc: '近距離觀賞南半球最大的活躍間歇泉「波胡圖」，還能欣賞毛利人震撼的哈卡戰舞 (Haka)。', loc: 'Te Puia', accLoc: '蒂普亞文化村', hasPark: true },
-                { time: '16:00 - 17:00', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '紐西蘭唯一的天然泥漿溫泉。走進硫磺氣息濃郁的地獄之門，體驗最天然的護膚與身心療癒。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', hasPark: true },
-                { time: '18:00 - 19:00', title: '住宿：堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '入住羅托路亞市中心。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', isHotel: true, hasPark: true }
-              ]
+                { time: '16:00 - 17:00', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '紐西蘭唯一的天然泥漿溫泉。走進硫磺氣息濃郁的地獄之門，體驗最天然的護膚與身心療癒。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', hasPark: true }
+              ],
+              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '入住羅托路亞市中心。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
             },
             { day: 6, date: '5/14 四', city: 'Rotorua', depart: '09:00', note: 'Skyline 滑板車競速！', lat: -38.13, lon: 176.24,
               events: [
                 { time: '09:30 - 11:30', title: '紅木森林天空步道 (Redwoods Treewalk)', desc: '懸掛在百年加州紅木群與紐西蘭特有銀蕨樹間的高空生態步道。', loc: 'Redwoods Treewalk', accLoc: '紅木森林', hasPark: true },
                 { time: '13:00 - 16:00', title: '天空纜車與斜坡滑車 (Skyline Luge)', desc: '搭乘觀光纜車抵達山頂，在總長 1.8 公里的極限賽道中體驗高速過彎與下坡的快感。', loc: 'Skyline Rotorua', accLoc: 'Skyline', hasPark: true },
-                { time: '16:30 - 17:30', title: '庫伊勞公園 (Kuirau Park)', desc: '位於市中心的一座免費地熱公園。隨處可見泥巴翻滾發出「砰砰」聲的天然泥漿池。', loc: 'Kuirau Park', accLoc: '庫伊勞公園', hasPark: true },
-                { time: '18:00 - 19:00', title: '住宿：堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '續住羅托路亞。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', isHotel: true, hasPark: true }
-              ]
+                { time: '16:30 - 17:30', title: '庫伊勞公園 (Kuirau Park)', desc: '位於市中心的一座免費地熱公園。隨處可見泥巴翻滾發出「砰砰」聲的天然泥漿池。', loc: 'Kuirau Park', accLoc: '庫伊勞公園', hasPark: true }
+              ],
+              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '續住羅托路亞。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
             },
             { day: 7, date: '5/15 五', city: 'Matamata', depart: '08:30', note: '哈比村需提前報到，傍晚開車去半島', lat: -37.82, lon: 175.77,
               events: [
                 { time: '09:30 - 11:30', title: '藍泉 (Blue Spring Putaruru)', desc: '供應全紐西蘭近 70% 瓶裝水的神奇秘境，水溫常年維持在 11 度，呈現夢幻的湛藍色。', loc: 'Blue Spring Putaruru', accLoc: '藍泉', hasPark: true },
                 { time: '13:30 - 16:00', title: '哈比村 (Hobbiton Movie Set)', desc: '《魔戒》夏爾村真實取景地！穿越哈比人洞，最後在綠龍酒館喝一杯特釀啤酒。', loc: 'Hobbiton Movie Set', accLoc: '哈比村', hasPark: true },
-                { time: '16:30 - 19:00', title: '驅車至科羅曼德半島 (Coromandel)', desc: '長途跋涉前往紐西蘭人最愛的度假區。', loc: 'Whitianga', accLoc: '公路服務站', type: 'transport', hasPark: true },
-                { time: '19:00 - 20:00', title: '住宿：半島周邊住宿', desc: '入住休息。', loc: 'Whitianga', accLoc: '半島住宿', isHotel: true, hasPark: true }
-              ]
+                { time: '16:30 - 19:00', title: '驅車至科羅曼德半島 (Coromandel)', desc: '長途跋涉前往紐西蘭人最愛的度假區。', loc: 'Whitianga', accLoc: '公路服務站/加油', type: 'transport', hasPark: true }
+              ],
+              hotel: { title: '半島周邊住宿', desc: '入住休息。', loc: 'Whitianga', accLoc: '半島住宿', hasPark: true }
             },
             { day: 8, date: '5/16 六', city: 'Coromandel', depart: '08:00', note: '13:15 退潮自挖溫泉！下午開往奧克蘭機場還車', lat: -36.83, lon: 175.82,
               events: [
                 { time: '08:30 - 10:45', title: '教堂灣 (Cathedral Cove)', desc: '《納尼亞傳奇》電影取景地。踏上 2025 年新開放的步道，穿過天然的巨大岩石拱門。', loc: 'Cathedral Cove', accLoc: '教堂灣', hasPark: true },
                 { time: '11:15 - 12:45', title: '溫泉海灘 (Hot Water Beach)', desc: '在退潮前後的黃金時段 (13:15)，帶著鏟子自行挖坑，享受專屬的天然沙灘溫泉。', loc: 'Hot Water Beach', accLoc: '溫泉海灘', type: 'warning', hasPark: true },
-                { time: '13:00 - 15:30', title: '驅車前往奧克蘭機場', desc: '簡單盥洗後提早離開半島，車程約 2.5 小時。', loc: 'Auckland Airport Car Rental', accLoc: '公路服務站', type: 'transport', hasPark: false },
-                { time: '15:30 - 17:00', title: '奧克蘭機場順利還車', desc: '保留時間加油，在 17:00 前完成還車手續。', loc: 'Auckland Airport', accLoc: '奧克蘭機場', type: 'warning', hasPark: false },
-                { time: '17:30 - 18:30', title: '住宿：奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '搭乘接駁巴士或 Uber 抵達市區海濱飯店，接下來全程免開車。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', isHotel: true, hasPark: false }
-              ]
+                { time: '13:00 - 15:30', title: '驅車前往奧克蘭機場', desc: '簡單盥洗後提早離開半島，車程約 2.5 小時。', loc: 'Auckland Airport Car Rental', accLoc: '公路服務站/加油', type: 'transport', hasPark: false },
+                { time: '15:30 - 17:00', title: '奧克蘭機場順利還車', desc: '保留時間加油，在 17:00 前完成還車手續。', loc: 'Auckland Airport', accLoc: '機場還車', type: 'warning', hasPark: false }
+              ],
+              hotel: { title: '奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '搭乘接駁巴士或 Uber 抵達市區海濱飯店，接下來全程免開車。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', hasPark: false }
             },
             { day: 9, date: '5/17 日', city: 'Auckland', depart: '10:30', note: '今日無車全步行，盡情享受海鮮', lat: -36.84, lon: 174.76,
               events: [
                 { time: '11:00 - 13:00', title: '奧克蘭魚市場 (Auckland Fish Market)', desc: '座落於百年碼頭邊，被譽為紐西蘭的海鮮心臟。是品嚐新鮮生蠔與炸魚薯條的絕佳去處。', loc: 'Auckland Fish Market', accLoc: '魚市場', hasPark: false },
                 { time: '14:00 - 16:00', title: '奧克蘭天空塔 (Sky Tower)', desc: '南半球第一高塔，搭乘透明電梯直達觀景台，360 度鳥瞰「帆之都」。', loc: 'Sky Tower Auckland', accLoc: '天空塔', hasPark: false },
-                { time: '16:30 - 18:30', title: '帕奈爾村 (Parnell Village)', desc: '奧克蘭歷史最悠久的近郊街區。保留了許多維多利亞式建築與文青風格的精品商店。', loc: 'Parnell Village', accLoc: '帕奈爾村', hasPark: false },
-                { time: '19:00 - 20:00', title: '住宿：奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '返回飯店放鬆。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', isHotel: true, hasPark: false }
-              ]
+                { time: '16:30 - 18:30', title: '帕奈爾村 (Parnell Village)', desc: '奧克蘭歷史最悠久的近郊街區。保留了許多維多利亞式建築與文青風格的精品商店。', loc: 'Parnell Village', accLoc: '帕奈爾村', hasPark: false }
+              ],
+              hotel: { title: '奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '返回飯店放鬆。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', hasPark: false }
             },
-            { day: 10, date: '5/18 一', city: 'Auckland', depart: '09:30', note: '最後衝刺伴手禮！Outlet 超好買', lat: -36.84, lon: 174.76,
+            { day: 10, date: '5/18 一', city: 'Auckland', depart: '09:30', note: '市區巡禮與最後的美景', lat: -36.84, lon: 174.76,
               events: [
-                { time: '10:00 - 12:30', title: '奧克蘭戰爭紀念博物館 (Auckland Museum)', desc: '館內不僅紀錄了軍事歷史，更擁有極為豐富的毛利文化館藏。', loc: 'Auckland War Memorial Museum', accLoc: '博物館', hasPark: false },
-                { time: '13:30 - 16:30', title: 'Dress Smart Outlet', desc: '紐西蘭最大的暢貨中心。特別是運動服飾與休閒裝備，是返台前掃貨伴手禮的大站。', loc: 'Dress Smart Onehunga', accLoc: 'Outlet', hasPark: false },
-                { time: '17:30 - 18:30', title: '住宿：奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '整理行李準備返台。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', isHotel: true, hasPark: false }
-              ]
+                { time: '10:00 - 12:30', title: '奧克蘭戰爭紀念博物館 (Auckland Museum)', desc: '館內不僅紀錄了軍事歷史，更擁有極為豐富的毛利文化館藏，是深入了解紐西蘭歷史的好去處。', loc: 'Auckland War Memorial Museum', accLoc: '奧克蘭博物館', hasPark: false },
+                { time: '14:00 - 16:00', title: '伊甸山 (Mount Eden)', desc: '奧克蘭市區內最高的休眠火山。離博物館非常近，漫步火山口步道，360 度俯瞰奧克蘭市區絕美天際線，留下最後的深刻回憶。', loc: 'Mount Eden', accLoc: '伊甸山', hasPark: false }
+              ],
+              hotel: { title: '奧克蘭希爾頓酒店 (Hilton Auckland)', desc: '整理行李準備隔日一早返台。', loc: 'Hilton Auckland', accLoc: '奧克蘭希爾頓', hasPark: false }
             },
             { day: 11, date: '5/19 二', city: 'Auckland', depart: '05:30', note: '離境日！再見紐西蘭', lat: -37.0082, lon: 174.7850,
               events: [
-                { time: '06:00 - 06:40', title: '前往機場報到', desc: '抵達奧克蘭國際機場辦理登機手續。', loc: 'Auckland Airport', accLoc: '奧克蘭機場', hasPark: false },
-                { time: '09:40 - 10:00', title: '搭乘紐航 NZ77 返台', desc: '再見中土世界，帶著滿滿的回憶平安歸途！', loc: 'Auckland Airport', accLoc: '奧克蘭機場', type: 'warning', hasPark: false }
-              ]
+                { time: '06:00 - 06:40', title: '前往機場報到', desc: '抵達奧克蘭國際機場辦理登機手續。', loc: 'Auckland Airport', accLoc: '前往機場/交通', hasPark: false },
+                { time: '09:40 - 10:00', title: '搭乘紐航 NZ77 返台', desc: '再見中土世界，帶著滿滿的回憶平安歸途！', loc: 'Auckland Airport', accLoc: '奧克蘭機場免稅', type: 'warning', hasPark: false }
+              ],
+              hotel: null
             }
         ];
 
-        let expenses = JSON.parse(localStorage.getItem('b_exp_v11')) || [];
-        const checklistItems = JSON.parse(localStorage.getItem('b_chk_v11')) || [
-            { g: '出發必備', n: '護照+NZeTA+NZTD', c: false },
-            { g: '出發必備', n: '台灣駕照+國際駕照', c: false },
-            { g: '海關嚴查', n: '洗乾淨的登山鞋', c: false },
-            { g: '海關嚴查', n: '泡麵、餅乾 (需申報)', c: false },
-            { g: '裝備', n: '八字轉接頭+車充', c: false },
-            { g: '裝備', n: '個人有線耳機 (洞穴導覽用)', c: false }
+        let expenses = JSON.parse(localStorage.getItem('blake_exp_final1')) || [];
+        const checklistItems = JSON.parse(localStorage.getItem('blake_chk_final1')) || [
+            { g: '行前申報與費用', n: 'NZeTA 電子旅行授權', accLoc: 'NZeTA 簽證費', c: false },
+            { g: '行前申報與費用', n: 'NZTD 旅客入境申報', accLoc: '', c: false },
+            { g: '行前申報與費用', n: '紐西蘭上網 eSIM 卡', accLoc: '紐西蘭 eSIM 卡', c: false },
+            { g: '海關嚴查', n: '洗乾淨的登山鞋 (刷底)', accLoc: '', c: false },
+            { g: '海關嚴查', n: '泡麵、餅乾 (誠實報)', accLoc: '', c: false },
+            { g: '裝備', n: '八字轉接頭+車充', accLoc: '轉接頭/車充', c: false },
+            { g: '裝備', n: '個人有線耳機 (洞穴導覽)', accLoc: '', c: false }
         ];
 
-        window.onload = () => { renderNav(); renderDay(0); renderChecklist(); renderExpenses(); };
+        function showPinInput() {
+            document.getElementById('pin-section').classList.remove('hidden');
+            document.getElementById('pin-input').focus();
+        }
+
+        function verifyPin() {
+            if (document.getElementById('pin-input').value === '0602') {
+                isBlake = true;
+                launchApp();
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+            }
+        }
+
+        function loginAsGuest() {
+            isBlake = false;
+            document.getElementById('t-accounting').style.display = 'none';
+            document.getElementById('t-checklist').classList.remove('border-l', 'border-slate-700');
+            document.getElementById('app-title').innerText = '北島自駕 11 天';
+            launchApp();
+        }
+
+        function launchApp() {
+            document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = 'none';
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+            
+            renderNav(); 
+            renderDay(0); 
+            renderChecklist(); 
+            if(isBlake) {
+                fetchExchangeRate(); 
+                renderExpenses();
+            }
+        }
 
         function renderNav() {
             const nav = document.getElementById('day-nav');
@@ -223,41 +302,60 @@
                     </div>
                     <p class="text-xs text-slate-300 leading-relaxed"><i class="fa-solid fa-circle-info text-brand mr-1"></i> ${data.note}</p>
                 </div>
-                <div class="relative border-l-2 border-slate-700 ml-3 space-y-8 pb-10">
+                <div class="relative border-l-2 border-slate-700 ml-3 pb-4">
             `;
 
             data.events.forEach(ev => {
                 const mapURL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.loc)}`;
                 const parkURL = `https://www.google.com/maps/search/parking+near+${encodeURIComponent(ev.loc + ' parking')}`;
-                const marketURL = `https://www.google.com/maps/search/supermarket+near+${encodeURIComponent(ev.loc + ' supermarket')}`;
-                const laundryURL = `https://www.google.com/maps/search/laundromat+near+${encodeURIComponent(ev.loc + ' laundromat')}`;
                 
-                let dotColor = ev.isHotel ? 'bg-blue-500' : (ev.type === 'warning' ? 'bg-red-500' : (ev.type === 'transport' ? 'bg-green-500' : 'bg-brand'));
+                let dotColor = ev.type === 'warning' ? 'bg-red-500' : (ev.type === 'transport' ? 'bg-green-500' : 'bg-brand');
 
                 html += `
-                    <div class="relative pl-6">
+                    <div class="relative pl-6 mb-8">
                         <div class="absolute w-4 h-4 rounded-full ${dotColor} -left-[9px] top-1 border-4 border-[#0f172a]"></div>
-                        <div class="glass-panel rounded-xl p-4">
-                            <div class="flex justify-between mb-2">
-                                <span class="text-[10px] font-bold text-slate-400">${ev.time}</span>
-                                <button onclick="quickExp('${ev.accLoc}')" class="text-brand text-[10px] font-bold bg-slate-800 px-2 py-0.5 rounded-full active:scale-95 transition-transform"><i class="fa-solid fa-coins mr-1"></i>記帳</button>
+                        <div class="glass-panel rounded-xl p-4 shadow-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">${ev.time}</span>
+                                ${isBlake ? `<button onclick="quickExp('${ev.accLoc}')" class="text-brand text-[10px] font-bold bg-slate-800 px-2 py-0.5 rounded-full active:scale-95 transition-transform"><i class="fa-solid fa-coins mr-1"></i>記帳</button>` : ''}
                             </div>
                             <h3 class="text-sm font-bold text-white mb-2 leading-tight">${ev.title}</h3>
                             <p class="text-[11.5px] text-slate-300 mb-4 leading-relaxed">${ev.desc}</p>
                             
                             <div class="flex flex-wrap gap-2">
-                                <a href="${mapURL}" target="_blank" class="nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>導航</a>
-                                ${ev.hasPark ? `<a href="${parkURL}" target="_blank" class="nav-btn text-yellow-400 border-yellow-400/30"><i class="fa-solid fa-square-parking"></i>停車</a>` : ''}
-                                ${ev.isHotel ? `
-                                    <a href="${marketURL}" target="_blank" class="nav-btn text-orange-400 border-orange-400/30"><i class="fa-solid fa-cart-shopping"></i>超市</a>
-                                    <a href="${laundryURL}" target="_blank" class="nav-btn text-blue-400 border-blue-400/30"><i class="fa-solid fa-soap"></i>洗衣</a>
-                                ` : ''}
+                                <a href="${mapURL}" target="_blank" class="nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>地圖導航</a>
+                                ${ev.hasPark ? `<a href="${parkURL}" target="_blank" class="nav-btn text-yellow-400 border-yellow-400/30"><i class="fa-solid fa-square-parking"></i>找停車場</a>` : ''}
                             </div>
                         </div>
                     </div>
                 `;
             });
-            view.innerHTML = html + '</div>';
+
+            html += `</div>`;
+
+            if(data.hotel) {
+                const mapURL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(data.hotel.loc)}`;
+                const marketURL = `https://www.google.com/maps/search/supermarket+near+${encodeURIComponent(data.hotel.loc + ' supermarket')}`;
+                const laundryURL = `https://www.google.com/maps/search/laundromat+near+${encodeURIComponent(data.hotel.loc + ' laundromat')}`;
+
+                html += `
+                    <div class="mt-4 pt-4 border-t border-slate-700">
+                        <h3 class="text-xs font-bold text-slate-400 mb-3"><i class="fa-solid fa-bed mr-2"></i>當晚住宿資訊</h3>
+                        <div class="glass-panel rounded-xl p-4 border-l-4 border-blue-500 relative shadow-lg">
+                            ${isBlake ? `<button onclick="quickExp('${data.hotel.accLoc}')" class="absolute top-4 right-4 text-brand text-[10px] font-bold bg-slate-800 px-2 py-0.5 rounded-full active:scale-95 transition-transform"><i class="fa-solid fa-coins mr-1"></i>記帳</button>` : ''}
+                            <h4 class="text-sm font-bold text-white mb-2 leading-tight pr-12">${data.hotel.title}</h4>
+                            <p class="text-[11.5px] text-slate-300 mb-4 leading-relaxed">${data.hotel.desc}</p>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="${mapURL}" target="_blank" class="nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>飯店導航</a>
+                                <a href="${marketURL}" target="_blank" class="nav-btn text-orange-400 border-orange-400/30"><i class="fa-solid fa-cart-shopping"></i>附近超市</a>
+                                <a href="${laundryURL}" target="_blank" class="nav-btn text-blue-400 border-blue-400/30"><i class="fa-solid fa-soap"></i>自助洗衣</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            view.innerHTML = html;
             switchTab('itinerary');
         }
 
@@ -268,27 +366,13 @@
                 const temp = Math.round(weather.current_weather.temperature);
                 const code = weather.current_weather.weathercode;
                 
-                let icon = '';
-                let condition = '';
-                if (code <= 1) {
-                    icon = '<i class="fa-solid fa-sun text-yellow-400"></i>';
-                    condition = '晴朗';
-                } else if (code <= 3) {
-                    icon = '<i class="fa-solid fa-cloud-sun text-yellow-200"></i>';
-                    condition = '多雲';
-                } else if (code <= 48) {
-                    icon = '<i class="fa-solid fa-cloud text-gray-400"></i>';
-                    condition = '陰天/霧';
-                } else if (code <= 67 || (code >= 80 && code <= 82)) {
-                    icon = '<i class="fa-solid fa-cloud-rain text-blue-400"></i>';
-                    condition = '下雨';
-                } else if (code <= 77 || code >= 85) {
-                    icon = '<i class="fa-solid fa-snowflake text-white"></i>';
-                    condition = '降雪';
-                } else {
-                    icon = '<i class="fa-solid fa-cloud-showers-heavy text-blue-500"></i>';
-                    condition = '陣雨';
-                }
+                let icon = '', condition = '';
+                if (code <= 1) { icon = '<i class="fa-solid fa-sun text-yellow-400"></i>'; condition = '晴朗'; }
+                else if (code <= 3) { icon = '<i class="fa-solid fa-cloud-sun text-yellow-200"></i>'; condition = '多雲'; }
+                else if (code <= 48) { icon = '<i class="fa-solid fa-cloud text-gray-400"></i>'; condition = '陰天/霧'; }
+                else if (code <= 67 || (code >= 80 && code <= 82)) { icon = '<i class="fa-solid fa-cloud-rain text-blue-400"></i>'; condition = '下雨'; }
+                else if (code <= 77 || code >= 85) { icon = '<i class="fa-solid fa-snowflake text-white"></i>'; condition = '降雪'; }
+                else { icon = '<i class="fa-solid fa-cloud-showers-heavy text-blue-500"></i>'; condition = '陣雨'; }
 
                 document.getElementById('temp').innerText = `${temp}°C`;
                 document.getElementById('city').innerText = `${city} • ${condition}`;
@@ -300,6 +384,20 @@
             }
         }
 
+        async function fetchExchangeRate() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/NZD');
+                const data = await res.json();
+                if(data && data.rates && data.rates.TWD) {
+                    currentRate = data.rates.TWD;
+                    document.getElementById('auto-rate').innerText = currentRate.toFixed(2);
+                    renderExpenses(); 
+                }
+            } catch(e) {
+                document.getElementById('auto-rate').innerText = '19.50 (離線預設)';
+            }
+        }
+
         function switchTab(t) {
             ['main-view', 'checklist-view', 'accounting-view'].forEach(v => document.getElementById(v).classList.add('hidden'));
             ['t-itinerary', 't-checklist', 't-accounting'].forEach(b => document.getElementById(b).classList.replace('text-brand', 'text-slate-400'));
@@ -307,6 +405,7 @@
             document.getElementById(`${t === 'itinerary' ? 'main-view' : t + '-view'}`).classList.remove('hidden');
             document.getElementById(`t-${t}`).classList.replace('text-slate-400', 'text-brand');
             window.scrollTo(0,0);
+            if(t === 'accounting' && isBlake) renderExpenses();
         }
 
         function renderChecklist() {
@@ -316,31 +415,81 @@
             groups.forEach(g => {
                 let h = `<div class="mb-4"><h3 class="text-xs font-bold text-brand mb-2 px-1">${g}</h3><div class="glass-panel rounded-xl overflow-hidden divide-y divide-slate-700/50">`;
                 checklistItems.filter(i => i.g === g).forEach(i => {
-                    h += `<label class="check-item flex items-center p-4 active:bg-slate-800/50"><input type="checkbox" class="hidden" onchange="toggleC('${i.n}')" ${i.c ? 'checked' : ''}><div class="flex-1 text-sm font-medium">${i.n}</div><i class="fa-solid fa-circle-check text-lg ${i.c ? 'text-brand' : 'text-slate-700'}"></i></label>`;
+                    const accBtn = (isBlake && i.accLoc) ? `<button onclick="quickExp('${i.accLoc}')" class="ml-3 text-brand text-[10px] font-bold bg-slate-800 border border-brand/30 px-2 py-1 rounded-md active:scale-95"><i class="fa-solid fa-coins mr-1"></i>記帳</button>` : '';
+                    h += `<div class="flex items-center justify-between p-4 active:bg-slate-800/50">
+                            <label class="check-item flex items-center flex-1 cursor-pointer">
+                                <input type="checkbox" class="hidden" onchange="toggleC('${i.n}')" ${i.c ? 'checked' : ''}>
+                                <div class="flex-1 text-sm font-medium pr-2">${i.n}</div>
+                                <i class="fa-solid fa-circle-check text-lg ${i.c ? 'text-brand' : 'text-slate-700'}"></i>
+                            </label>
+                            ${accBtn}
+                          </div>`;
                 });
                 container.innerHTML += h + '</div></div>';
             });
         }
-        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('b_chk_v11', JSON.stringify(checklistItems)); renderChecklist(); }
+        
+        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('blake_chk_final1', JSON.stringify(checklistItems)); renderChecklist(); }
 
-        function quickExp(loc) { switchTab('accounting'); document.getElementById('exp-note').value = loc; document.getElementById('exp-amount').focus(); }
-        function saveExpense() {
-            const a = document.getElementById('exp-amount').value;
-            if(!a) return;
-            expenses.push({ id: Date.now(), a: parseFloat(a), c: document.getElementById('exp-cat').value, n: document.getElementById('exp-note').value, d: new Date().toLocaleDateString() });
-            localStorage.setItem('b_exp_v11', JSON.stringify(expenses));
-            document.getElementById('exp-amount').value = ''; renderExpenses();
+        function quickExp(loc) { 
+            if(!isBlake) return;
+            switchTab('accounting'); 
+            document.getElementById('exp-note').value = loc; 
+            document.getElementById('exp-amount').focus(); 
         }
+
+        function saveExpense() {
+            const a = parseFloat(document.getElementById('exp-amount').value);
+            const currency = document.getElementById('exp-currency').value;
+            if(!a) return alert('哥，錢要填喔！');
+
+            expenses.push({ 
+                id: Date.now(), 
+                amount: a, 
+                currency: currency,
+                cat: document.getElementById('exp-cat').value, 
+                note: document.getElementById('exp-note').value, 
+                date: new Date().toLocaleDateString() 
+            });
+            localStorage.setItem('blake_exp_final1', JSON.stringify(expenses));
+            document.getElementById('exp-amount').value = ''; 
+            renderExpenses();
+        }
+
         function renderExpenses() {
             const list = document.getElementById('exp-list');
-            list.innerHTML = ''; let total = 0;
+            list.innerHTML = ''; 
+            
+            let totalNZD = 0;
+            let totalNTD = 0;
+
             expenses.slice().reverse().forEach(e => {
-                total += e.a;
-                list.innerHTML += `<div class="glass-panel p-3 rounded-xl flex justify-between items-center"><div><p class="text-xs font-bold">${e.n}</p><p class="text-[9px] text-slate-500">${e.c} • ${e.d}</p></div><div class="flex items-center gap-3"><span class="text-sm font-bold text-brand">NZD ${e.a.toFixed(2)}</span><button onclick="delE(${e.id})" class="text-red-400 text-xs px-2"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
+                if(e.currency === 'NZD') {
+                    totalNZD += e.amount;
+                    totalNTD += e.amount * currentRate;
+                } else {
+                    totalNTD += e.amount;
+                    totalNZD += e.amount / currentRate;
+                }
+
+                list.innerHTML += `
+                    <div class="glass-panel p-3 rounded-xl flex justify-between items-center mb-2">
+                        <div>
+                            <p class="text-xs font-bold">${e.note}</p>
+                            <p class="text-[9px] text-slate-500">${e.cat} • ${e.date}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold ${e.currency === 'NZD' ? 'text-brand' : 'text-blue-300'}">${e.currency} ${e.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            <button onclick="delE(${e.id})" class="text-red-400 text-xs px-2"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>`;
             });
-            document.getElementById('total-nz').innerText = `NZD ${total.toFixed(2)}`;
+            
+            document.getElementById('total-nzd').innerText = `NZD ${totalNZD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('total-ntd').innerText = `約 NTD ${Math.round(totalNTD).toLocaleString()}`;
         }
-        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('b_exp_v11', JSON.stringify(expenses)); renderExpenses(); }
+
+        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('blake_exp_final1', JSON.stringify(expenses)); renderExpenses(); }
     </script>
 </body>
 </html>
