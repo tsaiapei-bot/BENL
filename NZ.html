@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紐西蘭北島 11 天自駕 APP 15.0 (晚宴夜遊版)</title>
+    <title>紐西蘭北島 11 天自駕 APP 16.0 (版面優化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -39,7 +39,7 @@
             <button onclick="loginAsGuest()" class="w-full border-2 border-slate-600 text-slate-300 font-bold py-4 rounded-xl text-lg active:scale-95 transition-transform">一般訪客</button>
             
             <div id="pin-section" class="hidden flex-col gap-3 mt-4 pt-4 border-t border-slate-700">
-                <input type="password" id="pin-input" placeholder="輸入 4 碼密碼" class="text-center text-xl tracking-[0.5em] font-bold bg-slate-800 rounded-xl p-3 text-white border-2 border-slate-600 focus:border-brand focus:ring-0 outline-none transition-colors" inputmode="numeric" maxlength="4">
+                <input type="password" id="pin-input" placeholder="輸入 4 碼密碼" class="w-full text-center text-xl tracking-[0.5em] font-bold bg-slate-800 rounded-xl p-3 text-white border-2 border-slate-600 focus:border-brand focus:ring-0 outline-none transition-colors" inputmode="numeric" maxlength="4">
                 <button onclick="verifyPin()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition-colors">確認登入</button>
                 <p id="pin-error" class="text-red-400 text-xs text-center hidden mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>密碼錯誤！</p>
             </div>
@@ -81,15 +81,15 @@
 
         <div class="glass-panel rounded-2xl p-5 mb-6">
             <div class="grid grid-cols-[1fr_2fr] gap-3 mb-4">
-                <select id="exp-currency" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none font-bold text-brand">
+                <select id="exp-currency" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none font-bold text-brand">
                     <option value="NZD">NZD 紐元</option>
                     <option value="NTD">NTD 台幣</option>
                 </select>
-                <input type="number" id="exp-amount" placeholder="輸入金額" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
+                <input type="number" id="exp-amount" placeholder="輸入金額" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
             </div>
             
             <div class="grid grid-cols-[1fr_2fr] gap-3 mb-4">
-                <select id="exp-cat" class="bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
+                <select id="exp-cat" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
                     <option>行前費用</option><option>美食</option><option>加油</option><option>活動</option><option>住宿</option><option>採買</option><option>交通</option>
                 </select>
                 <input type="text" id="exp-note" placeholder="地點/備註" class="w-full bg-slate-800 rounded-lg p-3 text-sm border-none focus:ring-1 focus:ring-brand outline-none">
@@ -125,7 +125,6 @@
         let isBlake = false;
         let currentRate = 19.5; 
 
-        // 最新版 Day 5 與 Day 6 完美結合筆記與夜間導覽時間
         const itineraryData = [
             { day: 0, date: '5/8 五', city: 'Taipei', depart: '14:00', note: '出發前最後確認！護照、駕照、簽證都帶了嗎？', lat: 25.0797, lon: 121.2342, 
               events: [
@@ -153,9 +152,9 @@
             },
             { day: 3, date: '5/11 一', city: 'Taupo', depart: '09:30', note: '今天都在陶波湖周邊，機艙座位16:30關閉', lat: -38.68, lon: 176.07,
               events: [
-                { time: '09:30 - 11:00', title: '胡卡瀑布 (Huka Falls)', desc: '懷卡托河進入峽谷後形成的壯觀瀑布。每秒洩出高達 22 萬公升的夢幻藍綠色水流，水壓極強。', loc: 'Huka Falls', accLoc: '胡卡瀑布', hasPark: true },
-                { time: '11:15 - 12:45', title: '月球環形山 (Craters of the Moon)', desc: '宛如月球表面的地熱田。沿著木棧道漫步，親眼目睹不斷湧出蒸氣的火山口與熱泥漿池。', loc: 'Craters of the Moon', accLoc: '月球環形山', hasPark: true },
-                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞！店內停放著一架退役的道格拉斯 DC-3 實體飛機，可以直接帶著漢堡進入機艙內用餐打卡。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true },
+                { time: '09:30 - 11:00', title: '胡卡瀑布 (Huka Falls)', desc: '觀賞紐西蘭水流最強的瀑布之一，每秒洩出高達 22 萬公升的夢幻藍綠色水流，氣勢震耳欲聾。', loc: 'Huka Falls', accLoc: '胡卡瀑布', hasPark: true },
+                { time: '11:15 - 12:45', title: '月球環形山 (Craters of the Moon)', desc: '沿著木棧道漫步於地熱田，親眼目睹湧出蒸氣的火山口與熱泥漿池。', loc: 'Craters of the Moon', accLoc: '月球環形山', hasPark: true },
+                { time: '13:00 - 14:30', title: '飛機麥當勞 (McDonald\'s Taupo)', desc: '世界最酷的麥當勞，店內停放退役飛機並保留駕駛座，可直接在機艙內用餐打卡（機艙座位僅開放至 16:30）。', loc: 'McDonald\'s Taupo', accLoc: '飛機麥當勞', hasPark: true },
                 { time: '14:45 - 16:30', title: '陶波湖畔步道 (Taupo Lakefront)', desc: '漫步全紐西蘭最大淡水湖畔，尋找 #LOVETAUPO 標誌拍照。', loc: 'Taupo Lakefront', accLoc: '陶波湖畔', hasPark: true }
               ],
               hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '返回飯店休息。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
@@ -168,19 +167,18 @@
               ],
               hotel: { title: '陶波湖希爾頓酒店 (Hilton Lake Taupo)', desc: '抵達飯店好好放鬆。', loc: 'Hilton Lake Taupo', accLoc: '陶波希爾頓', hasPark: true }
             },
-            { day: 5, date: '5/13 三', city: 'Rotorua', depart: '08:30', note: '下午4點Te Puia報到吃大餐看夜景！', lat: -38.13, lon: 176.24,
+            { day: 5, date: '5/13 三', city: 'Rotorua', depart: '09:00', note: '晚上有毛利文化村夜間導覽', lat: -38.13, lon: 176.24,
               events: [
-                { time: '09:30 - 12:00', title: '懷歐塔普地熱世界 (Wai-O-Tapu)', desc: '羅托路亞最著名的地熱公園。這裡有色彩斑斕的礦物池，其中以邊緣呈現亮橘色的「香檳池」最為著名。', loc: 'Wai-O-Tapu', accLoc: '懷歐塔普', hasPark: true },
-                { time: '12:30 - 14:30', title: '愛歌頓皇家牧場 (Agrodome Farm)', desc: '佔地 135 公頃的紐西蘭最大觀光牧場！搭乘拖拉機遊園，與羊駝、綿羊近距離互動，並觀賞經典的農莊綿羊秀。', loc: 'Agrodome', accLoc: '愛歌頓農場', hasPark: true },
-                { time: '15:00 - 15:45', title: '抵達市區與辦理入住', desc: '抵達羅托魯瓦市區先到青年旅館放行李，稍作休息準備迎接晚上的重頭戲。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '交通/停車', type: 'transport', hasPark: true },
-                { time: '16:00 - 20:00', title: '蒂普亞毛利文化村夜間導覽 (Te Puia)', desc: '夜間專屬導覽！觀賞打燈後壯觀的波胡圖間歇泉噴發、欣賞充滿爆發力的 Haka 毛利戰舞，並享用豐盛的毛利原住民自助大餐。', loc: 'Te Puia', accLoc: '蒂普亞夜間導覽', type: 'activity', hasPark: true }
+                { time: '09:00 - 12:00', title: '懷歐塔普地熱世界 (Wai-O-Tapu)', desc: '車程約 40 分鐘往北順路造訪，欣賞富含礦物質的香檳池與鮮豔硫磺地貌。', loc: 'Wai-O-Tapu', accLoc: '懷歐塔普', hasPark: true },
+                { time: '12:00 - 15:00', title: '驅車抵達羅托魯瓦與入住', desc: '抵達羅托魯瓦市區辦理入住，享受擁有紐西蘭最大室內攀岩牆的四星級青年旅館設施。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '前往羅托魯瓦', type: 'transport', hasPark: true },
+                { time: '18:00 - 21:00', title: '蒂普亞毛利文化村 (Te Puia) 夜間導覽', desc: '參觀紐西蘭最大的波胡圖間歇泉噴發奇景、夜訪奇異鳥，並欣賞表情浮誇、充滿爆發力的傳統 Haka 毛利戰舞表演。', loc: 'Te Puia', accLoc: '蒂普亞', type: 'activity', hasPark: true }
               ],
-              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '結束一天豐富行程後回房好好休息。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
+              hotel: { title: '堅如磐石背包客棧 (Rock Solid Backpackers)', desc: '市區住宿，機能方便。', loc: 'Rock Solid Backpackers Rotorua', accLoc: '羅托魯瓦客棧', hasPark: true }
             },
-            { day: 6, date: '5/14 四', city: 'Rotorua', depart: '09:00', note: '極限滑車狂飆，晚上有週四限定夜市！', lat: -38.13, lon: 176.24,
+            { day: 6, date: '5/14 四', city: 'Rotorua', depart: '09:30', note: '泥漿浴限時 20 分鐘，晚上逛週四限定夜市', lat: -38.13, lon: 176.24,
               events: [
-                { time: '09:30 - 12:30', title: '天空纜車與斜坡滑板車 (Skyline Luge)', desc: '搭乘纜車上山，挑戰發源於紐西蘭的天空滑板車，在 1.8 公里的極限賽道中高速穿梭森林並俯瞰羅托魯瓦湖。', loc: 'Skyline Rotorua', accLoc: 'Skyline', hasPark: true },
-                { time: '14:30 - 16:30', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '體驗獨特的天然泥漿浴，將富含礦物質的泥漿塗抹全身。為避免過度浸泡，每組泥漿池體驗上限為 20 分鐘。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', type: 'activity', hasPark: true },
+                { time: '09:30 - 12:30', title: 'Skyline 天空纜車與斜坡滑板車 (Luge)', desc: '搭乘纜車上山，挑戰發源於紐西蘭的天空滑板車，在 1.8 公里的極限賽道中高速穿梭森林並俯瞰羅托魯瓦湖。', loc: 'Skyline Rotorua', accLoc: 'Skyline', hasPark: true },
+                { time: '14:30 - 16:30', title: '地獄之門泥漿溫泉 (Hell\'s Gate)', desc: '體驗獨特的天然泥漿浴，將富含礦物質的泥漿塗抹全身。為避免過度浸泡，每組泥漿池體驗上限為 20 分鐘。', loc: 'Hell\'s Gate Geothermal', accLoc: '地獄之門', hasPark: true },
                 { time: '17:30 - 19:00', title: '紅木森林天空步道 (Redwoods Treewalk)', desc: '走在懸吊於 9 至 20 公尺高空的數十座吊橋上，享受夜間點燈後的魔幻氛圍與芬多精。', loc: 'Redwoods Treewalk', accLoc: '紅木森林', hasPark: true },
                 { time: '19:15 - 21:00', title: '羅托魯瓦夜市 (Rotorua Night Market)', desc: '前往羅托魯瓦市區逛熱鬧的週四夜市，品嚐各國特色小吃、欣賞在地手工藝品與街頭藝人表演。', loc: 'Rotorua Night Market', accLoc: '羅托魯瓦夜市', hasPark: true }
               ],
@@ -227,8 +225,8 @@
             }
         ];
 
-        let expenses = JSON.parse(localStorage.getItem('blake_exp_final3')) || [];
-        const checklistItems = JSON.parse(localStorage.getItem('blake_chk_final3')) || [
+        let expenses = JSON.parse(localStorage.getItem('blake_exp_final4')) || [];
+        const checklistItems = JSON.parse(localStorage.getItem('blake_chk_final4')) || [
             { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '海關極度嚴格：絕對禁止攜帶肉類、新鮮水果、植物、蜂蜜等。', accLoc: '', c: false },
             { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '海關申報：泡麵、餅乾、中藥、穿過的登山鞋必報，放同區加快通關。', accLoc: '', c: false },
             { g: '🚨 紐西蘭海關、氣候與自駕注意', n: '氣候穿搭：秋末冬初早晚溫差大，強烈建議「洋蔥式穿搭」，備防風外套。', accLoc: '', c: false },
@@ -331,8 +329,8 @@
                             <p class="text-[11.5px] text-slate-300 mb-4 leading-relaxed">${ev.desc}</p>
                             
                             <div class="flex flex-wrap gap-2">
-                                <a href="${mapURL}" target="_blank" class="nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>地圖導航</a>
-                                ${ev.hasPark ? `<a href="${parkURL}" target="_blank" class="nav-btn text-yellow-400 border-yellow-400/30"><i class="fa-solid fa-square-parking"></i>找停車場</a>` : ''}
+                                <a href="${mapURL}" target="_blank" class="w-full nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>地圖導航</a>
+                                ${ev.hasPark ? `<a href="${parkURL}" target="_blank" class="w-full nav-btn text-yellow-400 border-yellow-400/30"><i class="fa-solid fa-square-parking"></i>找停車場</a>` : ''}
                             </div>
                         </div>
                     </div>
@@ -354,9 +352,9 @@
                             <h4 class="text-sm font-bold text-white mb-2 leading-tight pr-12">${data.hotel.title}</h4>
                             <p class="text-[11.5px] text-slate-300 mb-4 leading-relaxed">${data.hotel.desc}</p>
                             <div class="flex flex-wrap gap-2">
-                                <a href="${mapURL}" target="_blank" class="nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>飯店導航</a>
-                                <a href="${marketURL}" target="_blank" class="nav-btn text-orange-400 border-orange-400/30"><i class="fa-solid fa-cart-shopping"></i>附近超市</a>
-                                <a href="${laundryURL}" target="_blank" class="nav-btn text-blue-400 border-blue-400/30"><i class="fa-solid fa-soap"></i>自助洗衣</a>
+                                <a href="${mapURL}" target="_blank" class="w-full nav-btn text-brand border-brand/30"><i class="fa-solid fa-location-arrow"></i>飯店導航</a>
+                                <a href="${marketURL}" target="_blank" class="w-full nav-btn text-orange-400 border-orange-400/30"><i class="fa-solid fa-cart-shopping"></i>附近超市</a>
+                                <a href="${laundryURL}" target="_blank" class="w-full nav-btn text-blue-400 border-blue-400/30"><i class="fa-solid fa-soap"></i>自助洗衣</a>
                             </div>
                         </div>
                     </div>
@@ -437,7 +435,7 @@
             });
         }
         
-        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('blake_chk_final3', JSON.stringify(checklistItems)); renderChecklist(); }
+        function toggleC(n) { const i = checklistItems.find(x => x.n === n); i.c = !i.c; localStorage.setItem('blake_chk_final4', JSON.stringify(checklistItems)); renderChecklist(); }
 
         function quickExp(loc) { 
             if(!isBlake) return;
@@ -459,7 +457,7 @@
                 note: document.getElementById('exp-note').value, 
                 date: new Date().toLocaleDateString() 
             });
-            localStorage.setItem('blake_exp_final3', JSON.stringify(expenses));
+            localStorage.setItem('blake_exp_final4', JSON.stringify(expenses));
             document.getElementById('exp-amount').value = ''; 
             renderExpenses();
         }
@@ -497,7 +495,7 @@
             document.getElementById('total-ntd').innerText = `約 NTD ${Math.round(totalNTD).toLocaleString()}`;
         }
 
-        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('blake_exp_final3', JSON.stringify(expenses)); renderExpenses(); }
+        function delE(id) { expenses = expenses.filter(x => x.id !== id); localStorage.setItem('blake_exp_final4', JSON.stringify(expenses)); renderExpenses(); }
     </script>
 </body>
 </html>
