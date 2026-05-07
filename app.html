@@ -272,32 +272,32 @@
 </div>
 
 <script>
-    // 🌟 更新單元 8 (141-160) 的 20 個單字
+    // 🌟 更新單元 9 (161-180) 的 20 個單字
     const defaultVocabList = [
-        { word: "folk dance", def: "A traditional dance from a specific culture.", zh: "民俗舞蹈" },
-        { word: "championship", def: "A competition to find the best player or team.", zh: "冠軍" },
-        { word: "musician", def: "A person who plays a musical instrument or sings.", zh: "音樂家" },
-        { word: "envelope", def: "A paper cover used to send a letter.", zh: "信封" },
-        { word: "decorate", def: "To make something look nice by adding beautiful things to it.", zh: "佈置、裝飾、打扮" },
-        { word: "gather", def: "To come together in a group or to collect things.", zh: "聚集、收集、搜集" },
-        { word: "plain", def: "A large, flat area of land with few trees.", zh: "平原" },
-        { word: "canyon", def: "A deep valley with very steep sides.", zh: "峽谷" },
-        { word: "get over", def: "To feel better after being sad or sick.", zh: "克服、從..中恢復" },
-        { word: "multiply", def: "To add a number to itself a certain number of times.", zh: "(使)相乘" },
-        { word: "diagram", def: "A simple drawing that explains how something works.", zh: "圖解、示意圖" },
-        { word: "imaginary", def: "Not real; existing only in your mind.", zh: "幻想的、虛構的" },
-        { word: "put in charge", def: "To give someone the job of leading or managing something.", zh: "讓某人負責" },
-        { word: "playwright", def: "A person who writes plays for the theater.", zh: "劇作家" },
-        { word: "worn", def: "Looking old and damaged because it has been used a lot.", zh: "磨損的" },
-        { word: "windmill", def: "A tall building with sails that turn in the wind.", zh: "風車" },
-        { word: "coal", def: "A black rock that you burn to make heat.", zh: "木炭" },
-        { word: "remains", def: "The parts of something that are left after the rest is gone.", zh: "剩餘物、殘留物(複數)" },
-        { word: "conserve", def: "To protect something and stop it from being wasted.", zh: "保存、保留、節約" },
-        { word: "grain", def: "Seeds from plants like wheat or rice, used for food.", zh: "穀物" }
+        { word: "recital", def: "A performance of music or dance.", zh: "演奏會" },
+        { word: "nervous", def: "Feeling worried or afraid about what might happen.", zh: "緊張不安的、擔心的" },
+        { word: "band", def: "A group of people who play music together.", zh: "樂團" },
+        { word: "listen", def: "To pay attention to a sound.", zh: "聆聽" },
+        { word: "imagine", def: "To form a picture or idea in your head.", zh: "想像力" },
+        { word: "mind", def: "The part of a person that feels and thinks deeply.", zh: "心靈" },
+        { word: "worry", def: "To feel anxious or troubled about problems.", zh: "擔心、憂慮" },
+        { word: "proud", def: "Feeling very happy and pleased about something you have done.", zh: "自豪的、得意的" },
+        { word: "hit", def: "To touch something quickly and with force.", zh: "打、擊" },
+        { word: "press", def: "To push something firmly.", zh: "按壓" },
+        { word: "necklace", def: "A piece of jewelry worn around the neck.", zh: "項鍊" },
+        { word: "tune", def: "A series of musical notes that make a nice song.", zh: "曲調" },
+        { word: "ambulance", def: "A special vehicle used to take sick or hurt people to the hospital.", zh: "救護車" },
+        { word: "appear", def: "To become visible or able to be seen.", zh: "出現" },
+        { word: "mind", def: "Your ability to think and understand.", zh: "心智" },
+        { word: "competition", def: "An event where people try to win against others.", zh: "競賽" },
+        { word: "tortoise", def: "A slow-moving animal with a hard shell that lives on land.", zh: "烏龜、陸龜" },
+        { word: "cooker", def: "A piece of equipment used to cook food.", zh: "廚具" },
+        { word: "interested", def: "Wanting to give your attention to something and learn more about it.", zh: "覺得有興趣的" },
+        { word: "interesting", def: "Holding your attention because it is unusual or exciting.", zh: "有趣的" }
     ];
 
-    // 🌟 升級儲存代碼為 unit8 確保吃到新單字
-    let myVocabList = JSON.parse(localStorage.getItem('hurrayCustomVocab_unit8')) || [...defaultVocabList];
+    // 🌟 升級儲存代碼為 unit9 確保吃到新單字
+    let myVocabList = JSON.parse(localStorage.getItem('hurrayCustomVocab_unit9')) || [...defaultVocabList];
 
     let playerName = "";
     let totalScore = 0;
@@ -335,7 +335,7 @@
         
         playerName = input;
         totalScore = parseInt(localStorage.getItem('hurrayTotalScore_' + playerName)) || 0;
-        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_unit8_' + playerName)) || [];
+        masteredWords = JSON.parse(localStorage.getItem('hurrayMasteredWords_unit9_' + playerName)) || [];
 
         document.getElementById('welcome-msg').innerText = `Hi, ${playerName}! 🐾`;
         document.getElementById('highest-score-display').innerText = totalScore;
@@ -438,9 +438,9 @@
     }
 
     function saveVocabList() {
-        localStorage.setItem('hurrayCustomVocab_unit8', JSON.stringify(myVocabList));
+        localStorage.setItem('hurrayCustomVocab_unit9', JSON.stringify(myVocabList));
         masteredWords = masteredWords.filter(w => myVocabList.some(v => v.word === w));
-        localStorage.setItem('hurrayMasteredWords_unit8_' + playerName, JSON.stringify(masteredWords));
+        localStorage.setItem('hurrayMasteredWords_unit9_' + playerName, JSON.stringify(masteredWords));
         renderParentList(); 
     }
 
@@ -531,7 +531,7 @@
                     masteredWords.push(v.word);
                     item.className = 'wb-item mastered'; item.querySelector('.wb-status').innerText = '✅';
                 }
-                localStorage.setItem('hurrayMasteredWords_unit8_' + playerName, JSON.stringify(masteredWords));
+                localStorage.setItem('hurrayMasteredWords_unit9_' + playerName, JSON.stringify(masteredWords));
                 updateWbCount();
             };
             container.appendChild(item);
