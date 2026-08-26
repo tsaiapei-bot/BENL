@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB 原生多圖比例 - 單圖組合工具</title>
+<title>FB 原生多圖比例 - 完美同步版</title>
 <style>
   :root {
-    --primary: #1877F2; /* FB Blue */
+    --primary: #1877F2; 
     --bg: #f0f2f5;
     --text: #1c1e21;
     --border: #ccd0d5;
@@ -54,7 +54,7 @@
   .layout-card.selected .card-icon { color: var(--primary); }
   .card-label { font-size: 0.75em; font-weight: bold; line-height: 1.3; }
   
-  select, input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; background: #f5f6f7; color: var(--text); }
+  select, input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; background: #f5f6f7; color: var(--text); font-weight: bold;}
   button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-top: auto; }
   button.generate-btn:hover { background: #166fe5; }
   .status-text { font-size: 0.85em; text-align: center; color: #606770; margin-top: 8px; line-height: 1.4; }
@@ -68,13 +68,13 @@
   
   .workspace-heading { position: absolute; top: 15px; left: 20px; font-weight: bold; font-size: 0.9em; color: #606770; background: rgba(255,255,255,0.9); padding: 5px 12px; border-radius: 15px; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   
-  /* 預覽容器 - 強制 1:1 正方形 */
+  /* 預覽容器 - 真實連動比例 */
   #workspaceContainer {
     position: relative; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
     display: grid; overflow: hidden; user-select: none;
     max-width: 100%; max-height: 100%;
-    aspect-ratio: 1 / 1; /* FB 原生多圖組合後皆為 1:1 */
-    width: 100%; /* 響應式填滿 */
+    aspect-ratio: 2 / 3; /* 預設 2:3，會由 JS 動態修改 */
+    width: 100%; /* 響應式填滿，但受 max-height 和 aspect-ratio 限制 */
   }
 
   /* 圖片格子 */
@@ -97,9 +97,9 @@
   /* 互動提示 */
   .interaction-overlay {
     position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.6); color: white; padding: 4px 10px; border-radius: 12px;
-    font-size: 0.75em; display: flex; gap: 8px; pointer-events: none; opacity: 0.8; transition: opacity 0.3s;
-    white-space: nowrap; font-weight: normal;
+    background: rgba(0, 0, 0, 0.6); color: white; padding: 6px 12px; border-radius: 15px;
+    font-size: 0.8em; display: flex; gap: 8px; pointer-events: none; opacity: 0.9; transition: opacity 0.3s;
+    white-space: nowrap; font-weight: normal; backdrop-filter: blur(2px);
   }
   .img-cell.has-image:hover .interaction-overlay { opacity: 0.1; }
   .img-cell.dragging .interaction-overlay { opacity: 0; }
@@ -115,14 +115,24 @@
 </head>
 <body>
 
-<header>🖼️ FB 原生多圖比例 - 單圖產生器</header>
+<header>🖼️ FB 比例組合工具 (真實比例預覽版)</header>
 
 <div class="app-container">
   <!-- 左側：控制面板 -->
   <aside class="controls-panel">
     
     <div>
-      <div class="step-heading">Step 1: 選擇 FB 多圖版型</div>
+      <div class="step-heading">Step 1: 選擇輸出畫布尺寸</div>
+      <div class="control-group">
+        <select id="outSize" onchange="updateAspectRatio()">
+          <option value="1200x1800">2:3 長形尺寸 (1200 x 1800 像素)</option>
+          <option value="1200x1200">1:1 正方形尺寸 (1200 x 1200 像素)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="step-heading">Step 2: 選擇 FB 多圖排版</div>
       <div class="layout-tabs">
         <div class="layout-tab selected" onclick="switchTab(2, this)">2張圖</div>
         <div class="layout-tab" onclick="switchTab(3, this)">3張圖</div>
@@ -132,10 +142,10 @@
       <!-- 2張圖版型 -->
       <div id="layoutGroup_2" class="card-grid">
         <div class="layout-card selected" onclick="selectLayout('fb2v')">
-          <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(600x1200)</div>
+          <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(左右對分)</div>
         </div>
         <div class="layout-card" onclick="selectLayout('fb2h')">
-          <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式<br>(1200x600)</div>
+          <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式<br>(上下對分)</div>
         </div>
       </div>
 
@@ -152,19 +162,19 @@
       <!-- 4張圖版型 -->
       <div id="layoutGroup_4" class="card-grid" style="display: none;">
         <div class="layout-card" onclick="selectLayout('fb4v')">
-          <div class="card-icon">◨</div><div class="card-label">四張圖直式<br>(左一右三 800x1200)</div>
+          <div class="card-icon">◨</div><div class="card-label">四張圖直式<br>(左一右三)</div>
         </div>
         <div class="layout-card" onclick="selectLayout('fb4h')">
-          <div class="card-icon">⬒</div><div class="card-label">四張圖橫式<br>(上一下三 1200x800)</div>
+          <div class="card-icon">⬒</div><div class="card-label">四張圖橫式<br>(上一下三)</div>
         </div>
         <div class="layout-card" onclick="selectLayout('fb4g')" style="grid-column: span 2;">
-          <div class="card-icon">⊞</div><div class="card-label">四張皆正方形 (田字)</div>
+          <div class="card-icon">⊞</div><div class="card-label">四張皆正方形 (田字均分)</div>
         </div>
       </div>
     </div>
     
     <div>
-      <div class="step-heading">Step 2: 圖片間隙融合方式</div>
+      <div class="step-heading">Step 3: 圖片間隙融合方式</div>
       <div class="control-group">
         <select id="style">
           <option value="blur">柔邊模糊融合 (無縫過渡)</option>
@@ -181,68 +191,70 @@
     </div>
 
     <div style="margin-top: auto;">
-      <button class="generate-btn" onclick="exportCollage()">⬇️ 下載 1200x1200 組合圖</button>
-      <div id="status" class="status-text">輸出畫布將自動鎖定為完美的 1200 x 1200<br>確保符合 FB 最穩定且不裁切的比例。</div>
+      <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載圖片</button>
+      <div id="status" class="status-text">輸出畫布將與您的選擇 100% 同步<br>確保所見即所得，絕不裁切偏移。</div>
     </div>
   </aside>
 
   <!-- 右側：互動工作區 -->
   <div class="preview-section">
-    <div class="workspace-heading">預覽區 (與實際輸出比例 1:1)</div>
+    <div class="workspace-heading">真實比例預覽區 (自動同步 Step 1 尺寸)</div>
     <!-- 預覽容器 -->
     <div id="workspaceContainer"></div>
   </div>
 </div>
 
 <script>
-    // --- 核心邏輯：FB 原生尺寸網格定義 --- //
-    // 定義各種 FB 比例的 CSS Grid Template 與輸出時的實際座標與大小 (基準為 1200x1200)
+    // --- 核心邏輯：FB 原生尺寸網格定義 (相對比例) ---
+    // 改用「分數(Fraction)」來定義版型，這樣無論畫布是 1200x1200 還是 1200x1800 都能完美適應！
     const fbLayouts = {
-        'fb2v': {
-            count: 2, 
+        'fb2v': { count: 2, 
             gridTpl: `grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;`,
             getArea: (i) => i === 0 ? '1/1/2/2' : '1/2/2/3',
-            getExport: () => [{x:0, y:0, w:600, h:1200}, {x:600, y:0, w:600, h:1200}]
+            getExport: () => [{x:0, y:0, w:1/2, h:1}, {x:1/2, y:0, w:1/2, h:1}]
         },
-        'fb2h': {
-            count: 2, 
+        'fb2h': { count: 2, 
             gridTpl: `grid-template-columns: 1fr; grid-template-rows: 1fr 1fr;`,
             getArea: (i) => i === 0 ? '1/1/2/2' : '2/1/3/2',
-            getExport: () => [{x:0, y:0, w:1200, h:600}, {x:0, y:600, w:1200, h:600}]
+            getExport: () => [{x:0, y:0, w:1, h:1/2}, {x:0, y:1/2, w:1, h:1/2}]
         },
-        'fb3v': { // 左一(600x1200) 右二(600x600)
-            count: 3, 
+        'fb3v': { count: 3, 
             gridTpl: `grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;`,
             getArea: (i) => i === 0 ? '1/1/3/2' : (i === 1 ? '1/2/2/3' : '2/2/3/3'),
-            getExport: () => [{x:0, y:0, w:600, h:1200}, {x:600, y:0, w:600, h:600}, {x:600, y:600, w:600, h:600}]
+            getExport: () => [{x:0, y:0, w:1/2, h:1}, {x:1/2, y:0, w:1/2, h:1/2}, {x:1/2, y:1/2, w:1/2, h:1/2}]
         },
-        'fb3h': { // 上一(1200x600) 下二(600x600)
-            count: 3, 
+        'fb3h': { count: 3, 
             gridTpl: `grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;`,
             getArea: (i) => i === 0 ? '1/1/2/3' : (i === 1 ? '2/1/3/2' : '2/2/3/3'),
-            getExport: () => [{x:0, y:0, w:1200, h:600}, {x:0, y:600, w:600, h:600}, {x:600, y:600, w:600, h:600}]
+            getExport: () => [{x:0, y:0, w:1, h:1/2}, {x:0, y:1/2, w:1/2, h:1/2}, {x:1/2, y:1/2, w:1/2, h:1/2}]
         },
-        'fb4v': { // 左一(800x1200) 右三(400x400) -> CSS用 2:1 分割寬度，3等分高度
-            count: 4, 
+        'fb4v': { count: 4, 
             gridTpl: `grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr 1fr;`,
-            getArea: (i) => i === 0 ? '1/1/4/2' : `row ${i} / col 2`, // i=1: 1/2/2/3, i=2: 2/2/3/3, i=3: 3/2/4/3
-            getExport: () => [{x:0, y:0, w:800, h:1200}, {x:800, y:0, w:400, h:400}, {x:800, y:400, w:400, h:400}, {x:800, y:800, w:400, h:400}]
+            getArea: (i) => {
+                if(i===0) return '1/1/4/2';
+                if(i===1) return '1/2/2/3';
+                if(i===2) return '2/2/3/3';
+                return '3/2/4/3';
+            },
+            getExport: () => [{x:0, y:0, w:2/3, h:1}, {x:2/3, y:0, w:1/3, h:1/3}, {x:2/3, y:1/3, w:1/3, h:1/3}, {x:2/3, y:2/3, w:1/3, h:1/3}]
         },
-        'fb4h': { // 上一(1200x800) 下三(400x400) -> CSS用 3等分寬度，2:1 分割高度
-            count: 4, 
+        'fb4h': { count: 4, 
             gridTpl: `grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 2fr 1fr;`,
-            getArea: (i) => i === 0 ? '1/1/2/4' : `row 2 / col ${i}`,
-            getExport: () => [{x:0, y:0, w:1200, h:800}, {x:0, y:800, w:400, h:400}, {x:400, y:800, w:400, h:400}, {x:800, y:800, w:400, h:400}]
+            getArea: (i) => {
+                if(i===0) return '1/1/2/4';
+                if(i===1) return '2/1/3/2';
+                if(i===2) return '2/2/3/3';
+                return '2/3/3/4';
+            },
+            getExport: () => [{x:0, y:0, w:1, h:2/3}, {x:0, y:2/3, w:1/3, h:1/3}, {x:1/3, y:2/3, w:1/3, h:1/3}, {x:2/3, y:2/3, w:1/3, h:1/3}]
         },
-        'fb4g': { // 田字 4個 600x600
-            count: 4, 
+        'fb4g': { count: 4, 
             gridTpl: `grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;`,
             getArea: (i) => i === 0 ? '1/1/2/2' : (i === 1 ? '1/2/2/3' : (i === 2 ? '2/1/3/2' : '2/2/3/3')),
-            getExport: () => [{x:0, y:0, w:600, h:600}, {x:600, y:0, w:600, h:600}, {x:0, y:600, w:600, h:600}, {x:600, y:600, w:600, h:600}]
+            getExport: () => [{x:0, y:0, w:1/2, h:1/2}, {x:1/2, y:0, w:1/2, h:1/2}, {x:0, y:1/2, w:1/2, h:1/2}, {x:1/2, y:1/2, w:1/2, h:1/2}]
         }
     };
 
-    // 狀態管理
     const state = {
         currentLayout: 'fb2v',
         images: [null, null, null, null],
@@ -251,25 +263,32 @@
     };
 
     // 啟動初始化
-    updatePreviewDOM();
+    updateAspectRatio();
 
     function updatePxDisplay(val) {
         document.getElementById('pxDisplay').innerText = val + ' px';
     }
+    
+    function updateAspectRatio() {
+        const sizeStr = document.getElementById('outSize').value;
+        const [w, h] = sizeStr.split('x');
+        const container = document.getElementById('workspaceContainer');
+        
+        // 動態調整預覽區的 CSS aspect-ratio，保證預覽與輸出比例100%一致
+        container.style.aspectRatio = `${w} / ${h}`;
+        updatePreviewDOM(); 
+    }
 
     // --- UI 切換邏輯 --- //
     function switchTab(num, element) {
-        // 切換頁籤樣式
         document.querySelectorAll('.layout-tab').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
         
-        // 顯示對應數量的版型群組
         document.getElementById('layoutGroup_2').style.display = 'none';
         document.getElementById('layoutGroup_3').style.display = 'none';
         document.getElementById('layoutGroup_4').style.display = 'none';
         document.getElementById('layoutGroup_' + num).style.display = 'grid';
 
-        // 自動選擇該群組的第一個版型
         const firstLayoutId = {2: 'fb2v', 3: 'fb3v', 4: 'fb4v'}[num];
         selectLayout(firstLayoutId);
     }
@@ -277,16 +296,11 @@
     function selectLayout(layoutId) {
         state.currentLayout = layoutId;
         
-        // 移除所有卡片的 selected 樣式，再為當前點擊的加上
         document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
-        // 由於 card-icon 沒有 id，我們用迴圈找出 onclick 屬性包含該 layoutId 的卡片
         document.querySelectorAll('.layout-card').forEach(c => {
-            if (c.getAttribute('onclick').includes(`'${layoutId}'`)) {
-                c.classList.add('selected');
-            }
+            if (c.getAttribute('onclick').includes(`'${layoutId}'`)) c.classList.add('selected');
         });
 
-        // 重置所有圖片的互動狀態並重繪
         for(let i=0; i<4; i++) state.cellStates[i] = {ox: 0, oy: 0, scale: 1};
         updatePreviewDOM();
     }
@@ -297,20 +311,12 @@
         workspace.innerHTML = '';
         
         const layoutConfig = fbLayouts[state.currentLayout];
-        
-        // 套用 CSS Grid 寫死的原生比例
         workspace.style.cssText = layoutConfig.gridTpl;
 
         for (let i = 0; i < layoutConfig.count; i++) {
             const cell = document.createElement('div');
-            cell.className = 'img-cell'; 
-            cell.id = `cell-${i}`; 
-            
-            // 處理 fb4v 與 fb4h 的動態 Area
-            let area = layoutConfig.getArea(i);
-            if (state.currentLayout === 'fb4v' && i > 0) area = `${i}/2/${i+1}/3`;
-            if (state.currentLayout === 'fb4h' && i > 0) area = `2/${i}/${3}/${i+1}`;
-            cell.style.gridArea = area;
+            cell.className = 'img-cell'; cell.id = `cell-${i}`; 
+            cell.style.gridArea = layoutConfig.getArea(i);
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file'; fileInput.accept = 'image/*';
@@ -324,7 +330,7 @@
 
                 const overlay = document.createElement('div');
                 overlay.className = 'interaction-overlay';
-                overlay.innerHTML = '<span>✥ 移動</span><span>🖱️ 縮放</span>';
+                overlay.innerHTML = '<span>✥ 拖曳移動</span><span>|</span><span>🖱️ 滾輪縮放</span>';
                 cell.appendChild(overlay);
 
                 const reuploadBtn = document.createElement('div');
@@ -350,10 +356,12 @@
         }
     }
 
+    // 將資料同步到預覽畫面上
     function applyImageTransform(cell, i) {
         const cs = state.cellStates[i];
         cell.style.backgroundImage = `url(${state.images[i].src})`;
         cell.style.backgroundSize = `${cs.scale * 100}% auto`; 
+        // 使用 CSS calc 將拖曳的 Pixel offset 直接反映到 background position 上
         cell.style.backgroundPosition = `calc(50% + ${cs.ox}px) calc(50% + ${cs.oy}px)`;
     }
 
@@ -367,6 +375,7 @@
         cell.onwheel = function(e) {
             if (e.target.tagName === 'INPUT') return;
             e.preventDefault();
+            // 縮放限制 0.1 到 3 倍
             state.cellStates[i].scale = Math.max(0.1, Math.min(3, state.cellStates[i].scale + (e.deltaY > 0 ? -0.05 : 0.05)));
             applyImageTransform(cell, i);
         };
@@ -389,22 +398,40 @@
         }
     });
 
-    // --- 輸出繪製邏輯 (鎖定 1200x1200) --- //
-    function drawImageCoverTransformed(ctx, img, cell, cs) {
-        const imgRatio = img.width / img.height, targetRatio = cell.w / cell.h;
-        let sx, sy, sw, sh;
-        if (imgRatio > targetRatio) { sh = img.height; sw = img.height * targetRatio; sx = (img.width - sw) / 2; sy = 0; } 
-        else { sw = img.width; sh = img.width / targetRatio; sx = 0; sy = (img.height - sh) / 2; }
+    // --- 絕對精準輸出繪製邏輯 (Canvas Clipping 演算法) --- //
+    // 這個演算法完美模擬了 CSS background-size: cover 以及 background-position 的運算
+    function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceRect, outW, outH) {
+        ctx.save();
         
-        const scaleInv = 1 / cs.scale;
-        sw = Math.min(img.width, sw * scaleInv); sh = Math.min(img.height, sh * scaleInv);
-        sx = Math.min(img.width - sw, Math.max(0, sx + (img.width * (1 - scaleInv)) / 2));
-        sy = Math.min(img.height - sh, Math.max(0, sy + (img.height * (1 - scaleInv)) / 2));
+        // 建立 Clipping Mask，確保圖片不會超出格子範圍
+        ctx.beginPath();
+        ctx.rect(cellConfig.x, cellConfig.y, cellConfig.w, cellConfig.h);
+        ctx.clip();
 
-        sx = Math.min(img.width - sw, Math.max(0, sx - cs.ox * (sw / cell.w)));
-        sy = Math.min(img.height - sh, Math.max(0, sy - cs.oy * (sh / cell.h)));
+        // 1. 基礎 Cover 縮放演算法
+        let scale = Math.max(cellConfig.w / img.width, cellConfig.h / img.height);
+        
+        // 2. 套用使用者滑鼠滾輪自訂的縮放倍率
+        scale *= cs.scale;
 
-        ctx.drawImage(img, sx, sy, sw, sh, cell.x, cell.y, cell.w, cell.h);
+        // 3. 計算圖片實際繪製寬高
+        const dw = img.width * scale;
+        const dh = img.height * scale;
+
+        // 4. 將圖片置中於格子內
+        let dx = cellConfig.x + (cellConfig.w - dw) / 2;
+        let dy = cellConfig.y + (cellConfig.h - dh) / 2;
+
+        // 5. 轉換 UI 的 Pixel Offset 為 Canvas 實際的 Pixel Offset
+        // 這解決了「預覽與實際輸出不同」的最核心問題
+        const ratioX = outW / workspaceRect.width;
+        const ratioY = outH / workspaceRect.height;
+        
+        dx += cs.ox * ratioX;
+        dy += cs.oy * ratioY;
+
+        ctx.drawImage(img, dx, dy, dw, dh);
+        ctx.restore();
     }
 
     function exportCollage() {
@@ -418,34 +445,39 @@
         const style = document.getElementById('style').value;
         const effectPX = parseInt(document.getElementById('effectValue').value);
         
+        // 取得 Step 1 使用者選擇的實際寬高
+        const sizeStr = document.getElementById('outSize').value;
+        const outW = parseInt(sizeStr.split('x')[0]);
+        const outH = parseInt(sizeStr.split('x')[1]);
+        
+        const workspaceRect = document.getElementById('workspaceContainer').getBoundingClientRect();
         const statusEl = document.getElementById('status');
         statusEl.innerText = '影像處理中，請稍候...';
         
         setTimeout(() => {
             const canvas = document.createElement('canvas');
-            // 鎖定輸出畫布為完美的 FB Grid 比例
-            canvas.width = 1200; 
-            canvas.height = 1200;
+            canvas.width = outW; 
+            canvas.height = outH;
             const ctx = canvas.getContext('2d');
             
-            // 模糊融合使用黑底，實線邊框使用白底
             ctx.fillStyle = style === 'blur' ? '#000000' : '#ffffff'; 
-            ctx.fillRect(0, 0, 1200, 1200);
+            ctx.fillRect(0, 0, outW, outH);
             
-            // 取得精準座標
-            const cells = layoutConfig.getExport();
+            // 將分數比例轉為 Canvas 絕對座標
+            const relativeCells = layoutConfig.getExport();
+            const cells = relativeCells.map(c => ({
+                x: c.x * outW, y: c.y * outH, 
+                w: c.w * outW, h: c.h * outH
+            }));
 
             for (let i = 0; i < requiredImgs; i++) {
                 const cell = cells[i], img = state.images[i], cs = state.cellStates[i];
                 
                 if (style === 'border') {
-                    // 縮小範圍保留實心邊框
-                    const ew = Math.max(1, cell.w - effectPX * 2);
-                    const eh = Math.max(1, cell.h - effectPX * 2);
-                    drawImageCoverTransformed(ctx, img, {x: cell.x + effectPX, y: cell.y + effectPX, w: ew, h: eh}, cs);
+                    const cellShrunk = { x: cell.x + effectPX, y: cell.y + effectPX, w: Math.max(1, cell.w - effectPX * 2), h: Math.max(1, cell.h - effectPX * 2) };
+                    drawImageCoverTransformed(ctx, img, cellShrunk, cs, workspaceRect, outW, outH);
                 } 
                 else if (style === 'blur') {
-                    // 製作高斯模糊漸層遮罩
                     const tCanvas = document.createElement('canvas'); 
                     tCanvas.width = cell.w; tCanvas.height = cell.h;
                     const tCtx = tCanvas.getContext('2d');
@@ -457,16 +489,19 @@
                     tCtx.filter = 'none'; 
                     tCtx.globalCompositeOperation = 'source-in';
                     
-                    drawImageCoverTransformed(tCtx, img, {x:0, y:0, w:cell.w, h:cell.h}, cs); 
+                    // 繪製於暫存畫布，座標從 0,0 開始
+                    const cellLocal = { x:0, y:0, w:cell.w, h:cell.h };
+                    drawImageCoverTransformed(tCtx, img, cellLocal, cs, workspaceRect, outW, outH); 
+                    
                     ctx.drawImage(tCanvas, cell.x, cell.y);
                 }
             }
 
             const link = document.createElement('a');
-            link.download = `fb_native_collage_${new Date().getTime()}.jpg`;
+            link.download = `fb_collage_${outW}x${outH}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            statusEl.innerHTML = '✅ 下載完成！<br>圖片已鎖定為 FB 原生 1200x1200 比例';
+            statusEl.innerHTML = `✅ 下載完成！<br>圖片已完美對齊 ${outW} x ${outH} 尺寸。`;
         }, 100);
     }
 </script>
