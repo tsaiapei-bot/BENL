@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>部落格社群拼圖工具 - 模糊筆刷融合 (新增4圖排版)</title>
+<title>部落格社群拼圖工具 - 真實比例 & 直覺操作版</title>
 <style>
   :root {
     --primary: #3b82f6;
@@ -16,12 +16,13 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--bg);
     color: var(--text);
-    max-width: 1300px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
   }
   
   header {
@@ -30,23 +31,33 @@
     border-bottom: 1px solid #cbd5e1;
     display: flex;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 15px;
     box-sizing: border-box;
+    font-weight: bold;
+    color: #475569;
+    border-radius: 8px 8px 0 0;
   }
-  .browser-title { font-size: 14px; color: #64748b; font-weight: 500; }
 
   .app-container {
     flex: 1;
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 360px 1fr;
     gap: 20px;
-    height: 100%;
+    height: calc(100% - 36px);
     overflow: hidden;
-  }
-  @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; } }
-  
-  .controls-panel {
     background: #fff;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; overflow-y: auto; } }
+  
+  /* 左側控制面板 */
+  .controls-panel {
+    background: #f8fafc;
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 20px;
     display: flex;
@@ -55,74 +66,151 @@
     overflow-y: auto;
   }
   
-  .step-heading { font-weight: bold; font-size: 1.1em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; }
+  .step-heading { font-weight: bold; font-size: 1.1em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; color: #0f172a; }
   
   .layout-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
   .layout-tab { padding: 10px; text-align: center; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; font-weight: 500; }
   .layout-tab.selected { color: var(--primary); border-color: var(--primary); font-weight: bold; }
 
   .card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); } /* 給4張圖的3個選項用的 */
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
   
-  .layout-card { border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; position: relative; }
-  .layout-card.selected { border-color: var(--primary); background: var(--highlight); }
+  .layout-card { border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; position: relative; transition: 0.2s; }
+  .layout-card.selected { border-color: var(--primary); background: var(--highlight); box-shadow: 0 2px 4px rgba(59,130,246,0.15); }
   .card-icon { font-size: 1.8em; margin-bottom: 5px; color: #64748b; }
   .layout-card.selected .card-icon { color: var(--primary); }
   .card-label { font-size: 0.8em; font-weight: bold; line-height: 1.2; }
   
-  select, input[type="number"], input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
-  button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; background: #fff; }
+  button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.2s; margin-top: auto; }
   button.generate-btn:hover { background: #2563eb; }
-  .status-text { font-size: 0.9em; text-align: center; color: #64748b; margin-top: 10px; }
+  .status-text { font-size: 0.9em; text-align: center; color: #64748b; margin-top: 5px; }
 
-  .preview-section { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 20px; }
-  .workspace-heading { font-weight: bold; font-size: 1.1em; color: var(--text); margin-bottom: 10px; }
+  /* 右側預覽區 */
+  .preview-section { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; /* 置中對齊 */
+    justify-content: center; /* 置中對齊 */
+    overflow: hidden; 
+    background: #e2e8f0; /* 深一點的底色凸顯工作區 */
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .workspace-heading { position: absolute; top: 15px; left: 20px; font-weight: bold; font-size: 1em; color: #475569; background: rgba(255,255,255,0.8); padding: 5px 15px; border-radius: 20px; z-index: 100; }
+  
+  /* 預覽容器 - 真實比例自適應縮放 */
   #workspaceContainer {
-    position: relative; width: 100%; background: #fff; border: 1px solid var(--border);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 8px; display: grid; overflow: hidden;
-    aspect-ratio: 1200 / 800; user-select: none;
+    position: relative; 
+    background: #fff; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+    display: grid; 
+    overflow: hidden;
+    user-select: none;
+    /* 核心：限制最大寬高，並讓 aspect-ratio 自動等比縮放，確保與實際輸出比例完全一致 */
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1200 / 630; /* 會被 JS 覆寫 */
   }
 
   .img-cell {
-    position: relative; background-color: #f1f5f9; background-size: cover; background-position: center;
-    overflow: hidden; transition: background-color 0.3s;
+    position: relative; background-color: #f8fafc; background-size: cover; background-position: center;
+    overflow: hidden; border: 1px dashed #cbd5e1; box-sizing: border-box;
   }
+  
+  /* 未上傳圖片時的提示 */
   .img-cell:not(.has-image)::before {
-    content: "格子 "+ attr(data-id) + "\000A點擊選取圖片";
+    content: "＋\000A點擊上傳圖片";
     white-space: pre-wrap; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center; font-size: 1.2em; color: #94a3b8;
+    text-align: center; font-size: 1.1em; color: #94a3b8; font-weight: bold; line-height: 1.5; pointer-events: none;
   }
-  .img-cell.has-image { background-color: #fff; cursor: move; }
+  
+  /* 上傳圖片後的互動樣式與提示 */
+  .img-cell.has-image { cursor: grab; border: none; }
+  .img-cell.has-image:active { cursor: grabbing; }
   .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .img-cell.has-image input[type="file"] { display: none; /* 上傳後隱藏，避免干擾拖曳 */ }
+  
+  /* 互動操作提示 Overlay */
+  .interaction-overlay {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.7);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    display: flex;
+    gap: 12px;
+    pointer-events: none; /* 讓滑鼠點擊穿透到圖片上 */
+    opacity: 0.9;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    backdrop-filter: blur(2px);
+  }
+  /* 滑鼠移入稍微淡出，拖曳時完全隱藏 */
+  .img-cell.has-image:hover .interaction-overlay { opacity: 0.3; }
+  .img-cell.dragging .interaction-overlay { opacity: 0; }
 
+  /* 雙擊重新上傳提示 */
+  .reupload-btn {
+    position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); color: #333;
+    padding: 4px 8px; border-radius: 4px; font-size: 0.75em; cursor: pointer; opacity: 0; transition: 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold;
+  }
+  .img-cell.has-image:hover .reupload-btn { opacity: 1; }
+
+  /* 分割線把手 */
   .splitter { position: absolute; z-index: 10; background: rgba(59, 130, 246, 0); transition: background 0.2s; }
   .splitter:hover, .splitter.active { background: rgba(59, 130, 246, 0.8); }
   .v-split { cursor: col-resize; width: 14px; top: 0; bottom: 0; transform: translateX(-7px); }
   .h-split { cursor: row-resize; height: 14px; left: 0; right: 0; transform: translateY(-7px); }
 
-  .hint-box { font-size: 0.9em; color: #64748b; margin-top: 15px; background: #fff; padding: 10px 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="browser-title">部落格社群拼圖工具</div>
-</header>
+<header>部落格社群拼圖工具</header>
 
 <div class="app-container">
   <!-- 左側：控制面板 -->
   <aside class="controls-panel">
+    
+    <!-- 將輸出尺寸移至 Step 1 -->
     <div>
-      <div class="step-heading">Step 1: 選擇版型數量</div>
+      <div class="step-heading">Step 1: 選擇輸出尺寸 (真實比例)</div>
+      <div class="control-group">
+        <select id="sizePreset" onchange="applyPreset(this.value)">
+          <option value="facebook_post">Facebook 貼文 (1200x630)</option>
+          <option value="instagram_square">IG 方形貼文 (1080x1080)</option>
+          <option value="instagram_story">IG/FB 直式 (1080x1350)</option>
+          <option value="twitter_post">Twitter 貼文 (1200x675)</option>
+          <option value="blog_feature">部落格首圖 (1200x800)</option>
+          <option value="custom">自訂尺寸</option>
+        </select>
+      </div>
+      <div id="customSizeInputs" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <input type="number" id="outW" value="1200" placeholder="寬度 (W)" onchange="updateAspectRatio()">
+        <input type="number" id="outH" value="630" placeholder="高度 (H)" onchange="updateAspectRatio()">
+      </div>
+    </div>
+
+    <div>
+      <div class="step-heading">Step 2: 選擇版型數量</div>
       <div class="layout-tabs">
         <div class="layout-tab selected" id="tab3Image" onclick="selectType(3)">3張圖片</div>
         <div class="layout-tab" id="tab4Grid" onclick="selectType(4)">4張圖片</div>
       </div>
     </div>
 
-    <!-- 3張圖的排版選項 -->
+    <!-- 排版選項 -->
     <div id="subLayoutList_3">
-      <div class="step-heading">Step 1-2: 選擇 3張 排版位置</div>
+      <div class="step-heading">Step 2-2: 排版位置</div>
       <div class="card-grid">
         <div class="layout-card selected" onclick="selectSubLayout('top-1')">
           <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
@@ -139,12 +227,11 @@
       </div>
     </div>
 
-    <!-- 4張圖的排版選項 -->
     <div id="subLayoutList_4" style="display: none;">
-      <div class="step-heading">Step 1-2: 選擇 4張 排版位置</div>
+      <div class="step-heading">Step 2-2: 排版位置</div>
       <div class="card-grid cols-3">
         <div class="layout-card selected" onclick="selectSubLayout('grid')">
-          <div class="card-icon">🪟</div><div class="card-label">四張一樣大小</div>
+          <div class="card-icon">🪟</div><div class="card-label">均分四格</div>
         </div>
         <div class="layout-card" onclick="selectSubLayout('top-1-bottom-3')">
           <div class="card-icon">⬆️</div><div class="card-label">上一大<br>下三小</div>
@@ -156,7 +243,7 @@
     </div>
     
     <div>
-      <div class="step-heading">Step 2: 組合融合方式</div>
+      <div class="step-heading">Step 3: 組合融合方式</div>
       <div class="control-group">
         <select id="style">
           <option value="blur">柔邊模糊融合 (Soft Blur Blend)</option>
@@ -168,39 +255,21 @@
           <span>模糊筆刷寬度 (PX)：</span>
           <span id="pxDisplay" style="color: var(--primary);">40 px</span>
         </label>
-        <input type="range" id="effectValue" min="0" max="150" value="40" oninput="updatePxDisplay(this.value)">
+        <input type="range" id="effectValue" min="0" max="150" value="40" oninput="updatePxDisplay(this.value)" style="margin-top: 5px;">
       </div>
     </div>
 
-    <div>
-      <div class="step-heading">Step 3: 選擇輸出社群尺寸</div>
-      <div class="control-group">
-        <select id="sizePreset" onchange="applyPreset(this.value)">
-          <option value="facebook_post">Facebook 貼文 (1200x630)</option>
-          <option value="instagram_square">IG 方形貼文 (1080x1080)</option>
-          <option value="instagram_story">IG/FB 直式 (1080x1350)</option>
-          <option value="twitter_post">Twitter 貼文 (1200x675)</option>
-          <option value="blog_feature">部落格首圖 (1200x800)</option>
-          <option value="custom">自訂尺寸</option>
-        </select>
-      </div>
-      <div id="customSizeInputs" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <input type="number" id="outW" value="1200" placeholder="W" onchange="updateAspectRatio()">
-        <input type="number" id="outH" value="800" placeholder="H" onchange="updateAspectRatio()">
-      </div>
+    <div style="margin-top: auto;">
+      <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載圖片</button>
+      <div id="status" class="status-text">下載時會套用精準高畫質模糊筆刷效果</div>
     </div>
-
-    <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載最終圖片</button>
-    <div id="status" class="status-text">預覽圖為排版示意，下載時會套用精準的模糊筆刷效果。</div>
   </aside>
 
   <!-- 右側：互動工作區 -->
   <div class="preview-section">
-    <div class="workspace-heading">互動預覽工作區 (移動 / 縮放 / 拉邊框)</div>
+    <div class="workspace-heading">預覽區 (與實際輸出比例 1:1 等比)</div>
+    <!-- 預覽容器 -->
     <div id="workspaceContainer"></div>
-    <div class="hint-box">
-      💡 提示：可以在圖片交界處拖曳調整版面大小，也可以在格子內直接「移動」圖片或使用「滾輪縮放」。
-    </div>
   </div>
 </div>
 
@@ -212,13 +281,39 @@
         splitX: 50, splitY: 50, isDraggingSplitter: null, isDraggingImage: null, dragStartX: 0, dragStartY: 0
     };
 
+    // 初始化先套用尺寸，再畫DOM
     applyPreset('facebook_post');
-    updatePreviewDOM();
 
     function updatePxDisplay(val) {
         document.getElementById('pxDisplay').innerText = val + ' px';
     }
 
+    // --- 尺寸與比例控制 --- //
+    function applyPreset(preset) {
+        const presets = {
+            'facebook_post': {w:1200, h:630}, 'instagram_square': {w:1080, h:1080},
+            'instagram_story': {w:1080, h:1350}, 'twitter_post': {w:1200, h:675}, 'blog_feature': {w:1200, h:800}
+        };
+        const customInputs = document.getElementById('customSizeInputs');
+        if (preset === 'custom') customInputs.style.display = 'grid';
+        else {
+            customInputs.style.display = 'none';
+            document.getElementById('outW').value = presets[preset].w;
+            document.getElementById('outH').value = presets[preset].h;
+        }
+        updateAspectRatio();
+    }
+    
+    function updateAspectRatio() {
+        const w = document.getElementById('outW').value;
+        const h = document.getElementById('outH').value;
+        const container = document.getElementById('workspaceContainer');
+        // CSS aspect-ratio 將自動確保容器與輸出比例完全一致
+        container.style.aspectRatio = `${w} / ${h}`;
+        updatePreviewDOM(); // 尺寸變更時重繪格線
+    }
+
+    // --- 排版切換 --- //
     function selectType(num) {
         state.type = num;
         document.getElementById('tab3Image').classList.toggle('selected', num === 3);
@@ -252,6 +347,7 @@
         for(let i=0; i<4; i++) state.cellStates[i] = {ox: 0, oy: 0, scale: 1};
     }
 
+    // --- 預覽區 DOM 生成 --- //
     function updatePreviewDOM() {
         const workspace = document.getElementById('workspaceContainer');
         workspace.innerHTML = '';
@@ -279,15 +375,33 @@
             cell.className = 'img-cell'; cell.id = `cell-${i}`; cell.dataset.id = i + 1;
             cell.style.gridArea = getCellGridArea(i);
 
-            if (state.images[i]) {
-                cell.classList.add('has-image');
-                applyImageTransform(cell, i);
-                setupImageInteraction(cell, i);
-            }
+            // 原始上傳 input
             const fileInput = document.createElement('input');
             fileInput.type = 'file'; fileInput.accept = 'image/*';
             fileInput.onchange = function() { handleFile(i, this); };
             cell.appendChild(fileInput);
+
+            if (state.images[i]) {
+                cell.classList.add('has-image');
+                applyImageTransform(cell, i);
+                setupImageInteraction(cell, i);
+
+                // 明確的互動提示浮水印
+                const overlay = document.createElement('div');
+                overlay.className = 'interaction-overlay';
+                overlay.innerHTML = '<span>✥ 拖曳移動</span><span>🖱️ 滾輪縮放</span>';
+                cell.appendChild(overlay);
+
+                // 重新上傳按鈕 (給已被覆蓋的input用)
+                const reuploadBtn = document.createElement('div');
+                reuploadBtn.className = 'reupload-btn';
+                reuploadBtn.innerText = '更換圖片';
+                reuploadBtn.onclick = (e) => {
+                    e.stopPropagation(); // 阻止拖曳觸發
+                    fileInput.click();
+                };
+                cell.appendChild(reuploadBtn);
+            }
             workspace.appendChild(cell);
         }
         addSplitters(workspace);
@@ -297,20 +411,11 @@
         const sl = state.subLayout;
         if (state.type === 4) {
             if (sl === 'top-1-bottom-3') {
-                if (i === 0) return '1 / 1 / 2 / 4';
-                if (i === 1) return '2 / 1 / 3 / 2';
-                if (i === 2) return '2 / 2 / 3 / 3';
-                if (i === 3) return '2 / 3 / 3 / 4';
+                if (i === 0) return '1 / 1 / 2 / 4'; if (i === 1) return '2 / 1 / 3 / 2'; if (i === 2) return '2 / 2 / 3 / 3'; if (i === 3) return '2 / 3 / 3 / 4';
             } else if (sl === 'left-1-right-3') {
-                if (i === 0) return '1 / 1 / 4 / 2';
-                if (i === 1) return '1 / 2 / 2 / 3';
-                if (i === 2) return '2 / 2 / 3 / 3';
-                if (i === 3) return '3 / 2 / 4 / 3';
+                if (i === 0) return '1 / 1 / 4 / 2'; if (i === 1) return '1 / 2 / 2 / 3'; if (i === 2) return '2 / 2 / 3 / 3'; if (i === 3) return '3 / 2 / 4 / 3';
             } else { // grid
-                if (i === 0) return '1 / 1 / 2 / 2';
-                if (i === 1) return '1 / 2 / 2 / 3';
-                if (i === 2) return '2 / 1 / 3 / 2';
-                if (i === 3) return '2 / 2 / 3 / 3';
+                if (i === 0) return '1 / 1 / 2 / 2'; if (i === 1) return '1 / 2 / 2 / 3'; if (i === 2) return '2 / 1 / 3 / 2'; if (i === 3) return '2 / 2 / 3 / 3';
             }
         } else {
             if (sl === 'top-1') { if (i === 0) return '1/1/2/3'; else if (i === 1) return '2/1/3/2'; else return '2/2/3/3'; } 
@@ -322,38 +427,28 @@
 
     function addSplitters(workspace) {
         const sl = state.subLayout;
-
-        // 水平把手 (H-Split)
-        if (sl !== 'left-1-right-3') { // 左1右3 只需要垂直把手
-            const hSplit = document.createElement('div');
-            hSplit.className = 'splitter h-split';
-            hSplit.style.top = `${state.splitY}%`;
-            hSplit.onmousedown = () => state.isDraggingSplitter = 'y';
-            
-            // 縮短水平把手範圍 (視覺優化)
+        if (sl !== 'left-1-right-3') { 
+            const hSplit = document.createElement('div'); hSplit.className = 'splitter h-split';
+            hSplit.style.top = `${state.splitY}%`; hSplit.onmousedown = () => state.isDraggingSplitter = 'y';
             if (state.type === 3) {
-                if (sl === 'left-1') { hSplit.style.left = `${state.splitX}%`; }
+                if (sl === 'left-1') hSplit.style.left = `${state.splitX}%`; 
                 else if (sl === 'right-1') { hSplit.style.right = `${100 - state.splitX}%`; hSplit.style.left = '0'; }
             }
             workspace.appendChild(hSplit);
         }
-
-        // 垂直把手 (V-Split)
-        if (sl !== 'top-1-bottom-3') { // 上1下3 只需要水平把手
-            const vSplit = document.createElement('div');
-            vSplit.className = 'splitter v-split';
+        if (sl !== 'top-1-bottom-3') { 
+            const vSplit = document.createElement('div'); vSplit.className = 'splitter v-split';
             vSplit.style.left = `${state.splitX}%`;
-            
-            // 縮短垂直把手範圍 (視覺優化)
             if (state.type === 3) {
-                if (sl === 'top-1') { vSplit.style.top = `${state.splitY}%`; }
-                else if (sl === 'bottom-1') { vSplit.style.bottom = `${100 - state.splitY}%`; }
+                if (sl === 'top-1') vSplit.style.top = `${state.splitY}%`; 
+                else if (sl === 'bottom-1') vSplit.style.bottom = `${100 - state.splitY}%`; 
             }
             vSplit.onmousedown = () => state.isDraggingSplitter = 'x';
             workspace.appendChild(vSplit);
         }
     }
 
+    // --- 圖片上傳與互動 --- //
     function handleFile(index, input) {
         const file = input.files[0];
         if (file) {
@@ -376,9 +471,10 @@
 
     function setupImageInteraction(cell, i) {
         cell.onmousedown = function(e) {
-            if (e.target.tagName === 'INPUT') return;
+            if (e.target.tagName === 'INPUT' || e.target.classList.contains('reupload-btn')) return;
             state.isDraggingImage = i;
             state.dragStartX = e.clientX; state.dragStartY = e.clientY;
+            cell.classList.add('dragging'); // 套用拖曳狀態以隱藏提示
         };
         cell.onwheel = function(e) {
             if (e.target.tagName === 'INPUT') return;
@@ -403,27 +499,15 @@
         }
     });
 
-    window.addEventListener('mouseup', () => { state.isDraggingSplitter = null; state.isDraggingImage = null; });
-
-    function applyPreset(preset) {
-        const presets = {
-            'facebook_post': {w:1200, h:630}, 'instagram_square': {w:1080, h:1080},
-            'instagram_story': {w:1080, h:1350}, 'twitter_post': {w:1200, h:675}, 'blog_feature': {w:1200, h:800}
-        };
-        const customInputs = document.getElementById('customSizeInputs');
-        if (preset === 'custom') customInputs.style.display = 'grid';
-        else {
-            customInputs.style.display = 'none';
-            document.getElementById('outW').value = presets[preset].w;
-            document.getElementById('outH').value = presets[preset].h;
+    window.addEventListener('mouseup', () => { 
+        state.isDraggingSplitter = null; 
+        if (state.isDraggingImage !== null) {
+            document.getElementById(`cell-${state.isDraggingImage}`).classList.remove('dragging');
+            state.isDraggingImage = null; 
         }
-        updateAspectRatio();
-    }
-    
-    function updateAspectRatio() {
-        document.getElementById('workspaceContainer').style.aspectRatio = `${document.getElementById('outW').value} / ${document.getElementById('outH').value}`;
-    }
+    });
 
+    // --- 輸出繪製 --- //
     function drawImageCoverTransformed(ctx, img, cell, cs) {
         const imgRatio = img.width / img.height, targetRatio = cell.w / cell.h;
         let sx, sy, sw, sh;
@@ -452,7 +536,7 @@
         }
 
         const statusEl = document.getElementById('status');
-        statusEl.innerText = '處理中，請稍候...';
+        statusEl.innerText = '影像處理中，請稍候...';
         
         setTimeout(() => {
             const canvas = document.createElement('canvas');
@@ -490,7 +574,7 @@
             link.download = `blake_collage_${new Date().getTime()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            statusEl.innerText = '✅ 組合成功，圖片已產生！';
+            statusEl.innerText = '✅ 下載時會套用精準高畫質模糊筆刷效果';
         }, 100);
     }
 
@@ -505,12 +589,10 @@
         } else {
             const sl = state.subLayout;
             if (sl === 'top-1-bottom-3') {
-                const cw = w / 3;
-                return [{x:0,y:0,w:w,h:sy}, {x:0,y:sy,w:cw,h:h-sy}, {x:cw,y:sy,w:cw,h:h-sy}, {x:cw*2,y:sy,w:cw,h:h-sy}];
+                const cw = w / 3; return [{x:0,y:0,w:w,h:sy}, {x:0,y:sy,w:cw,h:h-sy}, {x:cw,y:sy,w:cw,h:h-sy}, {x:cw*2,y:sy,w:cw,h:h-sy}];
             } else if (sl === 'left-1-right-3') {
-                const ch = h / 3;
-                return [{x:0,y:0,w:sx,h:h}, {x:sx,y:0,w:w-sx,h:ch}, {x:sx,y:ch,w:w-sx,h:ch}, {x:sx,y:ch*2,w:w-sx,h:ch}];
-            } else { // grid
+                const ch = h / 3; return [{x:0,y:0,w:sx,h:h}, {x:sx,y:0,w:w-sx,h:ch}, {x:sx,y:ch,w:w-sx,h:ch}, {x:sx,y:ch*2,w:w-sx,h:ch}];
+            } else { 
                 return [{x:0,y:0,w:sx,h:sy}, {x:sx,y:0,w:w-sx,h:sy}, {x:0,y:sy,w:sx,h:h-sy}, {x:sx,y:sy,w:w-sx,h:h-sy}];
             }
         }
