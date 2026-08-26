@@ -3,872 +3,591 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-<title>部落格社群拼圖工具 - 支援手機觸控版</title>
+<title>FB 完美比例組合工具</title>
 <style>
   :root {
-    --primary: #3b82f6;
-    --bg: #f8fafc;
-    --text: #1e293b;
-    --border: #e2e8f0;
-    --highlight: #dbeafe;
+    --primary: #1877F2; 
+    --bg: #f0f2f5;
+    --text: #1c1e21;
+    --border: #ccd0d5;
+    --highlight: #e7f3ff;
   }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg); color: var(--text);
+    max-width: 1400px; margin: 0 auto; padding: 20px;
+    height: 100vh; display: flex; flex-direction: column; box-sizing: border-box;
   }
   
   header {
-    height: 36px;
-    background-color: #e2e8f0;
-    border-bottom: 1px solid #cbd5e1;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    box-sizing: border-box;
+    height: 40px; background-color: #fff; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 15px; box-sizing: border-box;
+    font-weight: bold; color: var(--primary); border-radius: 8px 8px 0 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-size: 1.1em;
   }
-  .browser-title { font-size: 14px; color: #64748b; font-weight: 500; }
 
   .app-container {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-    height: 100%;
-    overflow: hidden;
+    flex: 1; display: grid; grid-template-columns: 360px 1fr; gap: 20px;
+    height: calc(100% - 40px); overflow: hidden; background: #fff;
+    border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;
+    padding: 20px; box-sizing: border-box;
   }
   @media (max-width: 1000px) { 
-      .app-container { grid-template-columns: 1fr; overflow-y: auto; }
-      body { height: auto; }
+    .app-container { grid-template-columns: 1fr; overflow-y: auto; }
+    body { height: auto; }
   }
   
   .controls-panel {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;
   }
   
-  .step-heading { font-weight: bold; font-size: 1.1em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; }
+  .step-heading { font-weight: bold; font-size: 1.05em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; color: #0f172a;}
   
-  .layout-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-  .layout-tab { padding: 10px; text-align: center; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; font-weight: 500; }
-  .layout-tab.selected { color: var(--primary); border-color: var(--primary); font-weight: bold; }
+  .layout-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .layout-tab { padding: 10px; text-align: center; color: #606770; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 0.9em; }
+  .layout-tab.selected { color: var(--primary); border-color: var(--primary); }
 
   .card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .layout-card { border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; }
-  .layout-card.selected { border-color: var(--primary); background: var(--highlight); }
-  .card-icon { font-size: 1.8em; margin-bottom: 5px; color: #64748b; }
-  .layout-card.selected .card-icon { color: var(--primary); }
-  .card-label { font-size: 0.8em; font-weight: bold; line-height: 1.2; }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
   
-  select, input[type="number"], input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
-  button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-  button.generate-btn:hover { background: #2563eb; }
-  .status-text { font-size: 0.9em; text-align: center; color: #64748b; margin-top: 10px; }
+  .layout-card { border: 2px solid var(--border); border-radius: 8px; padding: 12px 5px; text-align: center; cursor: pointer; background: #fff; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .layout-card.selected { border-color: var(--primary); background: var(--highlight); box-shadow: 0 2px 4px rgba(24, 119, 242, 0.15); }
+  .card-icon { font-size: 1.8em; margin-bottom: 5px; color: #606770; }
+  .layout-card.selected .card-icon { color: var(--primary); }
+  .card-label { font-size: 0.75em; font-weight: bold; line-height: 1.3; }
+  
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; background: #fff; font-weight: bold;}
+  button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.2s; margin-top: auto; }
+  button.generate-btn:hover { background: #166fe5; }
+  .status-text { font-size: 0.85em; text-align: center; color: #606770; margin-top: 5px; }
 
-  .preview-section { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 20px; }
-  .workspace-heading { font-weight: bold; font-size: 1.1em; color: var(--text); margin-bottom: 10px; }
+  .preview-section { 
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; background: #e2e8f0; border-radius: 12px; padding: 20px; position: relative;
+  }
+  
+  .workspace-heading { position: absolute; top: 15px; left: 20px; font-weight: bold; font-size: 1em; color: #475569; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 20px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  
   #workspaceContainer {
-    position: relative; width: 100%; background: #fff; border: 1px solid var(--border);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 8px; display: grid; overflow: hidden;
-    aspect-ratio: 1200 / 800; user-select: none;
+    position: relative; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+    display: grid; overflow: hidden; user-select: none;
   }
 
   .img-cell {
-    position: relative; background-color: #f1f5f9; background-size: cover; background-position: center;
-    overflow: hidden;
-    /* [手機支援] 修改 1: 禁止手機預設觸控行為(如捲動)，交由 JS 處理圖片移動/縮放 */
-    touch-action: none; 
+    position: relative; background-color: #f8fafc; overflow: hidden; box-sizing: border-box;
+    border: 2px dashed #94a3b8;
+    touch-action: none; /* 允許手機觸控手勢 */
   }
+  
+  .img-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center;
+    transform-origin: center center;
+    pointer-events: none;
+  }
+  
   .img-cell:not(.has-image)::before {
-    content: "格子 "+ attr(data-id) + "\000A點擊選取圖片";
+    content: "＋\000A點擊上傳圖片";
     white-space: pre-wrap; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center; font-size: 1.2em; color: #94a3b8; pointer-events: none;
+    text-align: center; font-size: 1.1em; color: #64748b; font-weight: bold; line-height: 1.5; pointer-events: none; z-index: 5;
   }
-  .img-cell.has-image { background-color: #fff; cursor: move; }
-  .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+  
+  .img-cell.has-image { 
+    cursor: grab; 
+    border: 3px solid #ffffff; 
+    box-shadow: 0 0 0 1px #cbd5e1; 
+  } 
+  .img-cell.has-image:active { cursor: grabbing; }
+  .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+  .img-cell.has-image input[type="file"] { display: none; }
+  
+  .interaction-overlay {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.75); color: white; padding: 6px 14px; border-radius: 20px;
+    font-size: 0.85em; display: flex; gap: 12px; pointer-events: none; opacity: 0.9; transition: opacity 0.3s;
+    white-space: nowrap; backdrop-filter: blur(2px); z-index: 5;
+  }
+  .img-cell.has-image:hover .interaction-overlay { opacity: 0.2; }
+  .img-cell.dragging .interaction-overlay { opacity: 0; }
 
-  .hint-box { font-size: 0.9em; color: #64748b; margin-top: 15px; background: #fff; padding: 10px 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
+  .reupload-btn {
+    position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); color: #333;
+    padding: 4px 8px; border-radius: 4px; font-size: 0.75em; cursor: pointer; opacity: 0; transition: 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; z-index: 20;
+  }
+  .img-cell.has-image:hover .reupload-btn { opacity: 1; }
+
 </style>
 </head>
 <body>
 
-<header>
-  <div class="browser-title">部落格社群拼圖工具</div>
-</header>
+<header>🖼️ FB 比例組合工具</header>
 
 <div class="app-container">
   <aside class="controls-panel">
+    
     <div>
-      <div class="step-heading">Step 1: 選擇排版</div>
-      <div class="layout-tabs">
-        <div class="layout-tab selected" id="tab3Image" onclick="selectType(3)">3張圖片</div>
-        <div class="layout-tab" id="tab4Grid" onclick="selectType(4)">4張網格</div>
+      <div class="step-heading">Step 1: 選擇輸出畫布尺寸</div>
+      <div class="control-group">
+        <select id="outSize" onchange="resizeWorkspace()">
+          <option value="1200x1200" selected>1:1 尺寸 (1200 x 1200) - 適合正方形</option>
+          <option value="1200x1800">2:3 尺寸 (1200 x 1800) - 適合直立大圖</option>
+        </select>
       </div>
-      <div class="card-grid">
-        <div class="layout-card selected" id="cardTop1" onclick="selectSubLayout('top-1')">
-          <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
-        </div>
-        <div class="layout-card" id="cardBottom1" onclick="selectSubLayout('bottom-1')">
-          <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
-        </div>
-        <div class="layout-card" id="cardLeft1" onclick="selectSubLayout('left-1')">
-          <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
-        </div>
-        <div class="layout-card" id="cardRight1" onclick="selectSubLayout('right-1')">
-          <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
-        </div>
+    </div>
+
+    <div>
+      <div class="step-heading">Step 2: 選擇版型數量</div>
+      <div class="layout-tabs">
+        <div class="layout-tab" onclick="switchTab(2, this)">2張圖</div>
+        <div class="layout-tab" onclick="switchTab(3, this)">3張圖</div>
+        <div class="layout-tab selected" onclick="switchTab(4, this)">4張圖</div>
+      </div>
+    </div>
+
+    <div id="layoutGroup_2" class="card-grid" style="display: none;">
+      <div class="layout-card selected" onclick="selectLayout('fb2v')">
+        <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(左右對分)</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('fb2h')">
+        <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式<br>(上下對分)</div>
+      </div>
+    </div>
+
+    <div id="layoutGroup_3" class="card-grid" style="display: none;">
+      <div class="layout-card selected" onclick="selectLayout('top-1')">
+        <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('bottom-1')">
+        <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('left-1')">
+        <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('right-1')">
+        <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
+      </div>
+    </div>
+
+    <div id="layoutGroup_4" class="card-grid cols-3">
+      <div class="layout-card" onclick="selectLayout('grid')">
+        <div class="card-icon">🪟</div><div class="card-label">均分四格</div>
+      </div>
+      <div class="layout-card selected" onclick="selectLayout('top-1-bottom-3')">
+        <div class="card-icon">⬆️</div><div class="card-label">上一大<br>下三小</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('left-1-right-3')">
+        <div class="card-icon">⬅️</div><div class="card-label">左一大<br>右三小</div>
       </div>
     </div>
     
     <div>
-      <div class="step-heading">Step 2: 組合融合方式</div>
+      <div class="step-heading">Step 3: 圖片間隙處理方式</div>
       <div class="control-group">
-        <select id="style">
-          <option value="blur">柔邊模糊融合 (Soft Blur Blend)</option>
-          <option value="border">保留實線邊緣 (Solid Border)</option>
+        <select id="style" onchange="toggleBorderPreview()">
+          <option value="border" selected>保留實線邊緣 (可選黑/白)</option>
+          <option value="blur">色彩模糊融合 (無縫過渡)</option>
         </select>
       </div>
-      <div class="control-group" style="margin-top: 15px;">
-        <label style="font-weight: bold; font-size: 0.9em; display: flex; justify-content: space-between;">
-          <span>模糊筆刷寬度 (PX)：</span>
-          <span id="pxDisplay" style="color: var(--primary);">40 px</span>
-        </label>
-        <input type="range" id="effectValue" min="0" max="150" value="40" oninput="updatePxDisplay(this.value)">
-      </div>
-    </div>
-
-    <div>
-      <div class="step-heading">Step 3: 輸出尺寸</div>
-      <div class="control-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <input type="number" id="outW" value="1200" placeholder="W">
-        <input type="number" id="outH" value="800" placeholder="H">
-      </div>
-    </div>
-
-    <button class="generate-btn" onclick="exportCollage()">⬆️ 產生組合圖</button>
-    <div id="status" class="status-text">本機處理，圖片不會上傳伺服器。</div>
-  </aside>
-
-  <div class="preview-section">
-    <div class="workspace-heading">互動預覽工作區 (支援手機雙指縮放)當然可以。我已經將處理手機觸控（單指移動、雙指捏合縮放）的完整 JavaScript 邏輯同步整合進您原本的部落格拼圖工具程式碼中。
-
-您不需要額外安裝任何東西，只需要將以下這份完整的程式碼，全部複製並覆蓋您原本的 HTML 檔案即可。
-
-### 修改重點（整合內容）：
-
-1.  **CSS 更新**：在 `.img-cell` 中加入了 `touch-action: none;`，這是為了告訴手機瀏覽器：「把這個格子的觸控權交給我的 JavaScript，不要觸發頁面捲動」。
-2.  **JS 狀態擴充**：在 `state` 物件中新增了 `evCache`（緩存觸控點）和 `prevDiff`（記錄上次雙指距離）。
-3.  **重寫互動邏輯**：重寫了 `setupImageInteraction` 函數，使用了現代的 **Pointer Events API**（`pointerdown`, `pointermove`, `pointerup` 等）。這套 API 可以統一處理滑鼠和手指觸控：
-    *   **滑鼠/單指**：進行圖片平移（移動位置）。
-    *   **雙指捏合**：進行圖片放大或縮小。
-4.  **確保同步匯出**：觸控操作產生的圖片位置（ox, oy）和縮放比例（scale）數值，會直接更新到原本的 `state` 中，確保最後「產生組合圖」時，Canvas 匯出的畫面與您在手機上調整的一模一樣。
-
-### 完整的整合程式碼如下：
-
-```html
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-<title>部落格社群拼圖工具 - 支援手機觸控版</title>
-<style>
-  :root {
-    --primary: #3b82f6;
-    --bg: #f8fafc;
-    --text: #1e293b;
-    --border: #e2e8f0;
-    --highlight: #dbeafe;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  header {
-    height: 36px;
-    background-color: #e2e8f0;
-    border-bottom: 1px solid #cbd5e1;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    box-sizing: border-box;
-  }
-  .browser-title { font-size: 14px; color: #64748b; font-weight: 500; }
-
-  .app-container {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-    height: 100%;
-    overflow: hidden;
-  }
-  @media (max-width: 1000px) { 
-      .app-container { grid-template-columns: 1fr; overflow-y: auto; }
-      body { height: auto; }
-  }
-  
-  .controls-panel {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-  }
-  
-  .step-heading { font-weight: bold; font-size: 1.1em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; }
-  
-  .layout-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-  .layout-tab { padding: 10px; text-align: center; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; font-weight: 500; }
-  .layout-tab.selected { color: var(--primary); border-color: var(--primary); font-weight: bold; }
-
-  .card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .layout-card { border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; }
-  .layout-card.selected { border-color: var(--primary); background: var(--highlight); }
-  .card-icon { font-size: 1.8em; margin-bottom: 5px; color: #64748b; }
-  .layout-card.selected .card-icon { color: var(--primary); }
-  .card-label { font-size: 0.8em; font-weight: bold; line-height: 1.2; }
-  
-  select, input[type="number"], input[type="range"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
-  button.generate-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-  button.generate-btn:hover { background: #2563eb; }
-  .status-text { font-size: 0.9em; text-align: center; color: #64748b; margin-top: 10px; }
-
-  .preview-section { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 20px; }
-  .workspace-heading { font-weight: bold; font-size: 1.1em; color: var(--text); margin-bottom: 10px; }
-  #workspaceContainer {
-    position: relative; width: 100%; background: #fff; border: 1px solid var(--border);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 8px; display: grid; overflow: hidden;
-    aspect-ratio: 1200 / 800; user-select: none;
-  }
-
-  .img-cell {
-    position: relative; background-color: #f1f5f9; background-size: cover; background-position: center;
-    overflow: hidden;
-    /* [整合修改] 為了支援手機觸控縮放/移動，必須禁用格子的預設觸控行為 */
-    touch-action: none; 
-  }
-  .img-cell:not(.has-image)::before {
-    content: "格子 "+ attr(data-id) + "\000A點擊選取圖片";
-    white-space: pre-wrap; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center; font-size: 1.2em; color: #94a3b8; pointer-events: none;
-  }
-  .img-cell.has-image { background-color: #fff; cursor: move; }
-  .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
-
-  .hint-box { font-size: 0.9em; color: #64748b; margin-top: 15px; background: #fff; padding: 10px 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
-</style>
-</head>
-<body>
-
-<header>
-  <div class="browser-title">部落格社群拼圖工具</div>
-</header>
-
-<div class="app-container">
-  <aside class="controls-panel">
-    <div>
-      <div class="step-heading">Step 1: 選擇排版</div>
-      <div class="layout-tabs">
-        <div class="layout-tab selected" id="tab3Image" onclick="selectType(3)">3張圖片</div>
-        <div class="layout-tab" id="tab4Grid" onclick="selectType(4)">4張網格</div>
-      </div>
-      <div class="card-grid">
-        <div class="layout-card selected" id="cardTop1" onclick="selectSubLayout('top-1')">
-          <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
-        </div>
-        <div class="layout-card" id="cardBottom1" onclick="selectSubLayout('bottom-1')">
-          <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
-        </div>
-        <div class="layout-card" id="cardLeft1" onclick="selectSubLayout('left-1')">
-          <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
-        </div>
-        <div class="layout-card" id="cardRight1" onclick="selectSubLayout('right-1')">
-          <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
-        </div>
-      </div>
-    </div>
-    
-    <div>
-      <div class="step-heading">Step 2: 組合融合方式</div>
-      <div class="control-group">
-        <select id="style">
-          <option value="blur">柔邊模糊融合 (Soft Blur Blend)</option>
-          <option value="border">保留實線邊緣 (Solid Border)</option>
+      
+      <div class="control-group" id="borderColorGroup" style="margin-top: 10px;">
+        <select id="borderColor" onchange="toggleBorderPreview()">
+          <option value="#ffffff" selected>🤍 白色邊線</option>
+          <option value="#000000">🖤 黑色邊線</option>
         </select>
       </div>
+
       <div class="control-group" style="margin-top: 15px;">
-        <label style="font-weight: bold; font-size: 0.9em; display: flex; justify-content: space-between;">
-          <span>模糊筆刷寬度 (PX)：</span>
-          <span id="pxDisplay" style="color: var(--primary);">40 px</span>
+        <label style="font-weight: 600; font-size: 0.85em; display: flex; justify-content: space-between; color: #606770;">
+          <span>邊線寬度 / 渲染深度 (PX)：</span>
+          <span id="pxDisplay" style="color: var(--primary);">5 px</span>
         </label>
-        <input type="range" id="effectValue" min="0" max="150" value="40" oninput="updatePxDisplay(this.value)">
+        <input type="range" id="effectValue" min="0" max="150" value="5" step="1" oninput="updatePxDisplay(this.value)" style="margin-top: 5px;">
       </div>
     </div>
 
-    <div>
-      <div class="step-heading">Step 3: 輸出尺寸</div>
-      <div class="control-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <input type="number" id="outW" value="1200" placeholder="W">
-        <input type="number" id="outH" value="800" placeholder="H">
-      </div>
+    <div style="margin-top: auto;">
+      <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載圖片</button>
+      <div id="status" class="status-text">預設完整載入不裁切，滑鼠/手指縮放再移動。</div>
     </div>
-
-    <button class="generate-btn" onclick="exportCollage()">⬆️ 產生組合圖</button>
-    <div id="status" class="status-text">本機處理，圖片不會上傳伺服器。</div>
   </aside>
 
-  <div class="preview-section">
-    <div class="workspace-heading">互動預覽工作區 (支援手機雙指縮放)</div>
-    <div id="workspaceContainer">
-      <!-- 格子將由 JS 動態產生 -->
-    </div>
-    <div class="hint-box">
-      提示：點擊格子上傳圖片。上傳後，電腦使用滑鼠<strong>拖曳</strong>移動、<strong>滾輪</strong>縮放；手機使用<strong>單指</strong>移動、<strong>雙指捏合</strong>縮放。
-    </div>
+  <div class="preview-section" id="previewWrapper">
+    <div class="workspace-heading">真實比例預覽區 (完全同步輸出尺寸)</div>
+    <div id="workspaceContainer"></div>
   </div>
 </div>
 
 <script>
-  // ==========================================
-  // 核心狀態管理
-  // ==========================================
-  const state = {
-    type: 3, // 3張 或 4張
-    subLayout: 'top-1', // 具體排版樣式
-    images: [null, null, null, null], // 儲存 Image 物件
-    // 儲存每張圖的互動狀態 (平移, 縮放)
-    cellStates: [
-      { ox: 0, oy: 0, scale: 1 },
-      { ox: 0, oy: 0, scale: 1 },
-      { ox: 0, oy: 0, scale: 1 },
-      { ox: 0, oy: 0, scale: 1 }
-    ],
-    // [整合修改] 新增用於緩存觸控點的陣列，支援多點觸控
-    evCache: [],
-    prevDiff: -1, // 用於紀錄上一次雙指間的距離
-  };
-
-  // ==========================================
-  // 初始化與 UI 互動
-  // ==========================================
-  window.onload = () => {
-    updatePreviewDOM();
-  };
-
-  function updatePxDisplay(val) {
-    document.getElementById('pxDisplay').innerText = val + ' px';
-  }
-
-  // 切換 3張圖 / 4張網格
-  function selectType(num) {
-    state.type = num;
-    // 更新 Tab 樣式
-    document.getElementById('tab3Image').classList.toggle('selected', num === 3);
-    document.getElementById('tab4Grid').classList.toggle('selected', num === 4);
-    
-    // 更新排版選項卡片顯示
-    const cardGrid = document.querySelector('.controls-panel .card-grid');
-    if (num === 4) {
-      cardGrid.style.display = 'none'; // 4張網格只有一種，隱藏選項
-      state.subLayout = 'grid-4';
-    } else {
-      cardGrid.style.display = 'grid';
-      state.subLayout = 'top-1'; // 預設選第一個
-      // 重置卡片選取樣式
-      document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
-      document.getElementById('cardTop1').classList.add('selected');
-    }
-    resetImageStates();
-    updatePreviewDOM();
-  }
-
-  // 選取具體排版子樣式 (僅限3張圖)
-  function selectSubLayout(layout) {
-    state.subLayout = layout;
-    document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
-    // 根據 ID 選取對應卡片 (這部分對應 HTML ID)
-    const idMap = {'top-1': 'cardTop1', 'bottom-1': 'cardBottom1', 'left-1': 'cardLeft1', 'right-1': 'cardRight1'};
-    document.getElementById(idMap[layout]).classList.add('selected');
-    
-    resetImageStates();
-    updatePreviewDOM();
-  }
-
-  // 更換排版時重置圖片位置與縮放
-  function resetImageStates() {
-    for(let i=0; i<4; i++) {
-      state.cellStates[i] = { ox: 0, oy: 0, scale: 1 };
-    }
-  }
-
-  // ==========================================
-  // 核心：DOM 預覽生成 與 互動處理 (包含手機支援)
-  // ==========================================
-  
-  // 根據當前狀態重新生成預覽區域的格子
-  function updatePreviewDOM() {
-    const container = document.getElementById('workspaceContainer');
-    container.innerHTML = ''; // 清空
-    
-    const count = state.type;
-    const layout = state.subLayout;
-
-    // 設定網格 CSS (Grid Template)
-    if (count === 4) {
-      container.style.gridTemplateColumns = '1fr 1fr';
-      container.style.gridTemplateRows = '1fr 1fr';
-    } else {
-      // 3張圖的不同排版
-      if (layout === 'top-1') {
-        container.style.gridTemplateColumns = '1fr 1fr';
-        container.style.gridTemplateRows = '2fr 1fr'; // 大圖佔 2/3 高
-      } else if (layout === 'bottom-1') {
-        container.style.gridTemplateColumns = '1fr 1fr';
-        container.style.gridTemplateRows = '1fr 2fr';
-      } else if (layout === 'left-1') {
-        container.style.gridTemplateColumns = '2fr 1fr'; // 大圖佔 2/3 寬
-        container.style.gridTemplateRows = '1fr 1fr';
-      } else if (layout === 'right-1') {
-        container.style.gridTemplateColumns = '1fr 2fr';
-        container.style.gridTemplateRows = '1fr 1fr';
-      }
-    }
-
-    // 生成格子
-    for (let i = 0; i < count; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'img-cell';
-      cell.setAttribute('data-id', i + 1);
-      
-      // 設定 CSS Grid Area (哪張圖是大圖)
-      if (count === 3) {
-        if (layout === 'top-1' && i === 0) cell.style.gridArea = '1 / 1 / 2 / 3';
-        else if (layout === 'bottom-1' && i === 2) cell.style.gridArea = '2 / 1 / 3 / 3';
-        else if (layout === 'left-1' && i === 0) cell.style.gridArea = '1 / 1 / 3 / 2';
-        else if (layout === 'right-1' && i === 2) cell.style.gridArea = '1 / 2 / 3 / 3';
-      }
-
-      // 如果該格子已有圖片，渲染圖片並初始化互動
-      if (state.images[i]) {
-        cell.classList.add('has-image');
-        applyImageTransform(cell, i); // 套用位置與縮放
-        setupImageInteraction(cell, i); // 初始化滑鼠與觸控互動
-      }
-
-      // 建立 File Input
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (e) => handleFileSelect(e, i);
-      
-      cell.appendChild(input);
-      container.appendChild(cell);
-    }
-  }
-
-  // 處理檔案選取
-  function handleFileSelect(e, index) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        state.images[index] = img; // 儲存 Image 物件
-        // 初始化圖片狀態：以 cover 方式填滿格子
-        initImageState(index, img);
-        updatePreviewDOM(); // 重新渲染
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // 初始化圖片狀態 (計算初始 scale 以填滿格子，類似 background-size: cover)
-  function initImageState(index, img) {
-    const container = document.getElementById('workspaceContainer');
-    // 這裡需要模擬計算格子的寬高，因為實際 DOM 還沒生成
-    // 簡單起見，我們先設為預設，準確的 Cover 計算需在 DOM 生成後，
-    // 這裡我們先設為 1，互動時再調整
-    state.cellStates[index] = { ox: 0, oy: 0, scale: 1 };
-  }
-
-  // 將狀態應用到 DOM 元素的 CSS background 屬性上
-  function applyImageTransform(cell, i) {
-    const img = state.images[i];
-    const s = state.cellStates[i];
-    if (!img) return;
-
-    // 使用 background-image
-    cell.style.backgroundImage = `url(${img.src})`;
-    
-    // 計算 background-size：模擬 background-size: cover 效果並乘上自訂 scale
-    // 這部分邏輯較複雜，為了示範移動縮放，我們使用簡化的 transform 方案，
-    // 但因為要匯出 Canvas，background 方案較合適。
-    // 我們需要知道格子的寬高比與圖片的寬高比。
-    
-    // [簡化方案] 為了互動流暢，預覽時使用 background-position 與原始大小，
-    // 匯出時再做精確計算。
-    cell.style.backgroundRepeat = 'no-repeat';
-    
-    // 互動的核心：縮放與平移
-    // 縮放 (使用百分比或 px 較難精確控制 cover 基礎上的縮放，這裡使用自定義算法)
-    // 為了完美的 Canvas 匯出，預覽區我們採用最直觀的 CSS
-    
-    const bgW = img.width * s.scale;
-    const bgH = img.height * s.scale;
-    cell.style.backgroundSize = `${bgW}px ${bgH}px`;
-
-    // 平移 (預設居中 + 偏移量 ox, oy)
-    // 預設背景是 0 0 (左上角)，我們需要計算居中的位置
-    cell.style.backgroundPosition = `calc(50% + ${s.ox}px) calc(50% + ${s.oy}px)`;
-  }
-
-  // ==========================================
-  // [整合修改] 核心：初始化互動處理 (滑鼠 + 手機觸控)
-  // 使用 Pointer Events API 統一處理
-  // ==========================================
-  function setupImageInteraction(cell, i) {
-    let currentCellState = state.cellStates[i];
-
-    // --- 滑鼠滾輪縮放 (僅限桌電) ---
-    cell.onwheel = function(e) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      currentCellState.scale = Math.max(0.1, Math.min(3, currentCellState.scale + delta));
-      applyImageTransform(cell, i);
+    const fbLayouts = {
+        'fb2v': { count: 2, cols: '1fr 1fr', rows: '1fr', getArea: (i) => i===0 ? '1/1/2/2' : '1/2/2/3', getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1}] },
+        'fb2h': { count: 2, cols: '1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : '2/1/3/2', getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] },
+        'top-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/3' : (i===1 ? '2/1/3/2' : '2/2/3/3'), getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] },
+        'bottom-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : '2/1/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] },
+        'left-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/3/2' : (i===1 ? '1/2/2/3' : '2/2/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] },
+        'right-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '2/1/3/2' : '1/2/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1}] },
+        'top-1-bottom-3': { count: 4, cols: '1fr 1fr 1fr', rows: '2fr 1fr', getArea: (i) => i===0 ? '1/1/2/4' : `2/${i}/3/${i+1}`, getExport: () => [{x:0,y:0,w:1,h:2/3}, {x:0,y:2/3,w:1/3,h:1/3}, {x:1/3,y:2/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] },
+        'left-1-right-3': { count: 4, cols: '2fr 1fr', rows: '1fr 1fr 1fr', getArea: (i) => i===0 ? '1/1/4/2' : `${i}/2/${i+1}/3`, getExport: () => [{x:0,y:0,w:2/3,h:1}, {x:2/3,y:0,w:1/3,h:1/3}, {x:2/3,y:1/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] },
+        'grid': { count: 4, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : (i===2 ? '2/1/3/2' : '2/2/3/3')), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] }
     };
 
-    // --- Pointer Events (處理拖曳平移 與 手機雙指縮放) ---
-    
-    // [手機支援] 修改 2: 初始化，設置 touch-action 已經在 CSS 做了
+    const state = {
+        currentLayout: 'top-1-bottom-3',
+        images: [null, null, null, null],
+        cellStates: [ {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1} ]
+    };
 
-    cell.onpointerdown = onPointerDown;
-    cell.onpointermove = onPointerMove;
-    // 統一處理停止交互的事件
-    cell.onpointerup = onPointerUp;
-    cell.onpointercancel = onPointerUp;
-    cell.onpointerout = onPointerUp;
-    cell.onpointerleave = onPointerUp;
-
-    // 用於記錄單指拖曳開始時的滑鼠/手指位置與原始圖片偏移量
-    let isDragging = false;
-    let dragStartX, dragStartY;
-    let initialOx, initialOy;
-
-    function onPointerDown(ev) {
-      // 如果點擊的是 reupload按鈕或 file input，不觸發拖曳
-      if (ev.target.tagName === 'INPUT') return;
-
-      // [手機支援] 修改 3: 將新的 pointer event 加入緩存
-      state.evCache.push(ev);
-      
-      cell.setPointerCapture(ev.pointerId); // 鎖定 pointer，即使超出格子也能捕捉
-
-      if (state.evCache.length === 1) {
-        // --- 單指/滑鼠按下的拖曳初始化 ---
-        isDragging = true;
-        dragStartX = ev.clientX;
-        dragStartY = ev.clientY;
-        initialOx = currentCellState.ox;
-        initialOy = currentCellState.oy;
-      } else if (state.evCache.length === 2) {
-        // --- 雙指按下的縮放初始化 ---
-        isDragging = false; // 轉為縮放模式，停止拖曳
-        // 計算初始兩點距離
-        state.prevDiff = Math.hypot(
-          state.evCache[0].clientX - state.evCache[1].clientX,
-          state.evCache[0].clientY - state.evCache[1].clientY
-        );
-      }
-    }
-
-    function onPointerMove(ev) {
-      // [手機支援] 修改 4: 更新緩存中的 pointer event 狀態
-      const index = state.evCache.findIndex(e => e.pointerId === ev.pointerId);
-      if (index > -1) state.evCache[index] = ev;
-
-      if (state.evCache.length === 1 && isDragging) {
-        // --- 處理單指/滑鼠拖曳平移 ---
-        const dx = ev.clientX - dragStartX;
-        const dy = ev.clientY - dragStartY;
-        // 在原始偏移量上加上當前的滑動距離
-        currentCellState.ox = initialOx + dx;
-        currentCellState.oy = initialOy + dy;
-        applyImageTransform(cell, i);
-      } 
-      else if (state.evCache.length === 2) {
-        // --- [手機支援] 修改 5: 處理雙指捏合縮放 ---
-        // 計算當前兩點距離
-        const curDiff = Math.hypot(
-          state.evCache[0].clientX - state.evCache[1].clientX,
-          state.evCache[0].clientY - state.evCache[1].clientY
-        );
-
-        if (state.prevDiff > 0) {
-          // 計算距離變化比例 (放大或縮小)
-          const ratio = curDiff / state.prevDiff;
-          // 根據比例調整 scale，限制在 0.1 到 3 倍之間
-          const newScale = currentCellState.scale * ratio;
-          currentCellState.scale = Math.max(0.1, Math.min(3, newScale));
-          applyImageTransform(cell, i);
-        }
-        // 更新距離，用於下一次計算
-        state.prevDiff = curDiff;
-      }
-    }
-
-    function onPointerUp(ev) {
-      // [手機支援] 修改 6: 從緩存中移除停止交互的 pointer
-      const index = state.evCache.findIndex(e => e.pointerId === ev.pointerId);
-      if (index > -1) state.evCache.splice(index, 1);
-      
-      if (state.evCache.length < 2) {
-        state.prevDiff = -1; // 重置雙指距離記錄
-      }
-
-      if (state.evCache.length === 0) {
-        // 所有手指/滑鼠都離開
-        isDragging = false;
-        cell.releasePointerCapture(ev.pointerId); // 釋放 pointer 鎖定
-      } else if (state.evCache.length === 1) {
-        // 從雙指變回單指，重新初始化拖曳起點，防止圖片跳動
-        isDragging = true;
-        // 使用剩下那隻手指的位置
-        dragStartX = state.evCache[0].clientX;
-        dragStartY = state.evCache[0].clientY;
-        initialOx = currentCellState.ox;
-        initialOy = currentCellState.oy;
-      }
-    }
-  }
-
-  // ==========================================
-  // 圖片組合與 Canvas 匯出核心
-  // ==========================================
-  function exportCollage() {
-    // 檢查圖片是否都上傳了
-    const requiredCount = state.type;
-    for(let i=0; i<requiredCount; i++) {
-      if(!state.images[i]) {
-        alert(`請先上傳第 ${i+1} 個格子的圖片。`);
-        return;
-      }
-    }
-
-    const statusEl = document.getElementById('status');
-    statusEl.innerText = '正在產生組合圖，請稍候...';
-
-    // 獲取設定
-    const outW = parseInt(document.getElementById('outW').value) || 1200;
-    const outH = parseInt(document.getElementById('outH').value) || 800;
-    const blendStyle = document.getElementById('style').value;
-    const effectPX = parseInt(document.getElementById('effectValue').value);
-
-    // 建立 Canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = outW;
-    canvas.height = outH;
-    const ctx = canvas.getContext('2d');
-
-    // 計算排版幾何數據
-    const cellsInfo = calculateLayoutGeometry(outW, outH);
-
-    // 繪製邏輯
-    if (blendStyle === 'border') {
-      // --- 實線邊緣排版 ---
-      ctx.fillStyle = '#ffffff'; // 邊框顏色
-      ctx.fillRect(0, 0, outW, outH);
-      
-      cellsInfo.forEach((info, i) => {
-        // 留出邊框空間 (縮小繪製區域)
-        const borderW = effectPX;
-        const drawX = info.x + borderW;
-        const drawY = info.y + borderW;
-        const drawW = info.w - borderW * 2;
-        const drawH = info.h - borderW * 2;
-        
-        if(drawW > 0 && drawH > 0) {
-          ctx.save();
-          // 建立裁剪區域
-          ctx.beginPath();
-          ctx.rect(drawX, drawY, drawW, drawH);
-          ctx.clip();
-          
-          // 繪製圖片 (包含使用者調整的平移與縮放)
-          drawTransformedImage(ctx, state.images[i], state.cellStates[i], info);
-          ctx.restore();
-        }
-      });
-      finalizeExport(canvas);
-
-    } else {
-      // --- 柔邊模糊融合排版 (核心難點) ---
-      // 原理：使用 Temporary Canvas 繪製帶透明度的圖層，最後重疊
-      
-      // 1. 繪製底層 (使用第一張圖)
-      ctx.fillStyle = '#000'; // 防止鏤空
-      ctx.fillRect(0, 0, outW, outH);
-      drawTransformedImage(ctx, state.images[0], state.cellStates[0], cellsInfo[0]);
-
-      // 2. 依次疊加其他圖層，並在邊緣應用模糊遮罩
-      const promises = [];
-      for(let i=1; i<requiredCount; i++) {
-        promises.push(drawBlurredLayer(ctx, state.images[i], state.cellStates[i], cellsInfo[i], effectPX, outW, outH));
-      }
-
-      Promise.all(promises).then(() => {
-        finalizeExport(canvas);
-      });
-    }
-  }
-
-  // 計算 Canvas 上每個格子的幾何位置 (x, y, w, h)
-  function calculateLayoutGeometry(outW, outH) {
-    const geo = [];
-    const count = state.type;
-    const layout = state.subLayout;
-
-    if (count === 4) {
-      const w = outW / 2;
-      const h = outH / 2;
-      geo.push({x:0, y:0, w:w, h:h}, {x:w, y:0, w:w, h:h}, {x:0, y:h, w:w, h:h}, {x:w, y:h, w:w, h:h});
-    } else {
-      // 3張圖排版
-      const splitW = layout.includes('left') || layout.includes('right') ? Math.round(outW * 2/3) : outW / 2;
-      const splitH = layout.includes('top') || layout.includes('bottom') ? Math.round(outH * 2/3) : outH / 2;
-      const otherW = outW - splitW;
-      const otherH = outH - splitH;
-      const smallW = layout.includes('left') || layout.includes('right') ? otherW : outW/2;
-      const smallH = layout.includes('top') || layout.includes('bottom') ? otherH : outH/2;
-
-      if (layout === 'top-1') {
-        geo.push({x:0, y:0, w:outW, h:splitH}, {x:0, y:splitH, w:smallW, h:smallH}, {x:smallW, y:splitH, w:smallW, h:smallH});
-      } else if (layout === 'bottom-1') {
-        geo.push({x:0, y:0, w:smallW, h:smallH}, {x:smallW, y:0, w:smallW, h:smallH}, {x:0, y:smallH, w:outW, h:splitH});
-      } else if (layout === 'left-1') {
-        geo.push({x:0, y:0, w:splitW, h:outH}, {x:splitW, y:0, w:smallW, h:smallH}, {x:splitW, y:smallH, w:smallW, h:smallH});
-      } else if (layout === 'right-1') {
-        geo.push({x:0, y:0, w:smallW, h:smallH}, {x:0, y:smallH, w:smallW, h:smallH}, {x:smallW, y:0, w:splitW, h:outH});
-      }
-    }
-    return geo;
-  }
-
-  // 在 Canvas 上繪製單張經過平移、縮放調整的圖片
-  function drawTransformedImage(ctx, img, s, cellInfo) {
-    const cellW = cellInfo.w;
-    const cellH = cellInfo.h;
-    const cellRatio = cellW / cellH;
-    const imgRatio = img.width / img.height;
-
-    // 1. 計算 "Cover" 基礎縮放比例 (類似 background-size: cover)
-    let baseScale;
-    if (imgRatio > cellRatio) {
-      baseScale = cellH / img.height; // 高度填滿
-    } else {
-      baseScale = cellW / img.width; // 寬度填滿
-    }
-
-    // 2. 應用使用者自訂的互動縮放 (在 cover 基礎上)
-    const finalScale = baseScale * s.scale;
-    const drawW = img.width * finalScale;
-    const drawH = img.height * finalScale;
-
-    // 3. 計算居中位置 + 使用者平移偏移量 (ox, oy)
-    // 預覽時的 ox 是相對於居中位置，Canvas 繪製是以左上角為準，需要轉換
-    const centerX = cellInfo.x + cellW / 2;
-    const centerY = cellInfo.y + cellH / 2;
-    // 考慮到預覽和實體尺寸的比例 (ox 是預覽尺寸下的 px，需轉為實體 px)
-    // 簡化起見，假設預覽工作區也接近 1200x800，直接使用 ox。
-    // 更精確的做法是計算用比例：實體W / 預覽DOM W。
-    
-    // [整合修改] 為了讓手機調整的位置精確，我們獲取預覽 DOM 的實際寬度來計算比例
-    const domWorkspace = document.getElementById('workspaceContainer');
-    const domW = domWorkspace.offsetWidth;
-    const exportRatio = outW / domW; // 實體與 DOM 的比例
-
-    const dx = centerX - drawW / 2 + (s.ox * exportRatio);
-    const dy = centerY - drawH / 2 + (s.oy * exportRatio);
-
-    ctx.drawImage(img, dx, dy, drawW, drawH);
-  }
-
-  // 繪製帶有柔邊模糊遮罩的圖層 (模糊融合的核心)
-  function drawBlurredLayer(mainCtx, img, s, cellInfo, blurPX, outW, outH) {
-    return new Promise((resolve) => {
-      // 建立臨時 Canvas
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = outW;
-      tempCanvas.height = outH;
-      const tCtx = tempCanvas.getContext('2d');
-
-      // 1. 繪製調整後的圖片到臨時 Canvas 上
-      drawTransformedImage(tCtx, img, s, cellInfo);
-
-      // 2. 應用模糊濾鏡 (僅對該圖層)
-      // 原理：使用 Destination-In 組合模式，將圖片與一個帶羽化的遮罩相乘
-      tCtx.globalCompositeOperation = 'destination-in';
-      
-      // 建立遮罩：格子區域為純白(不透明)，邊緣有漸層透明
-      // 為了簡化，我們直接在臨時 Canvas 上繪製一個帶陰影(模糊)的白色矩形
-      tCtx.shadowBlur = blurPX; // 陰影模糊程度
-      tCtx.shadowColor = 'black'; // 陰影顏色 (不重要，主要是要它的 alpha)
-      tCtx.fillStyle = 'white'; // 遮罩主體顏色
-      
-      // 繪製矩形 (稍微縮小，讓陰影剛好落在邊界上)
-      // 陰影向內模糊效果較好，這裡使用向外模糊模擬
-      const feather = blurPX / 2;
-      tCtx.fillRect(cellInfo.x + feather, cellInfo.y + feather, cellInfo.w - blurPX, cellInfo.h - blurPX);
-
-      // 3. 將臨時 Canvas (帶有柔邊的圖片) 疊加到主 Canvas
-      mainCtx.drawImage(tempCanvas, 0, 0);
-      resolve();
+    window.addEventListener('resize', resizeWorkspace);
+    window.addEventListener('DOMContentLoaded', () => {
+        resizeWorkspace();
+        toggleBorderPreview();
     });
-  }
 
-  // 完成匯出，產生下載連結
-  function finalizeExport(canvas) {
-    const statusEl = document.getElementById('status');
-    try {
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-      
-      // 建立下載連結
-      const link = document.createElement('a');
-      link.download = `blog-collage-${Date.now()}.jpg`;
-      link.href = dataUrl;
-      link.click();
-      
-      statusEl.innerText = '產生完成！圖片已嘗試下載。';
-    } catch (e) {
-      statusEl.innerText = '匯出失敗，可能是圖片跨域問題或瀏覽器限制。';
-      console.error(e);
+    function updatePxDisplay(val) { 
+        document.getElementById('pxDisplay').innerText = val + ' px'; 
     }
-  }
+    
+    function toggleBorderPreview() {
+        const style = document.getElementById('style').value;
+        const colorSelect = document.getElementById('borderColorGroup');
+        const borderColor = document.getElementById('borderColor').value;
 
+        if (style === 'blur') {
+            colorSelect.style.display = 'none'; 
+            document.querySelectorAll('.img-cell.has-image').forEach(cell => {
+                cell.style.border = 'none';
+                cell.style.boxShadow = 'none';
+            });
+        } else {
+            colorSelect.style.display = 'block'; 
+            document.querySelectorAll('.img-cell.has-image').forEach(cell => {
+                cell.style.border = `3px solid ${borderColor}`; 
+                cell.style.boxShadow = borderColor === '#ffffff' ? '0 0 0 1px #cbd5e1' : '0 0 0 1px #333';
+            });
+        }
+    }
+
+    function resizeWorkspace() {
+        const wrapper = document.getElementById('previewWrapper');
+        const container = document.getElementById('workspaceContainer');
+        const sizeStr = document.getElementById('outSize').value;
+        const [w, h] = sizeStr.split('x').map(Number);
+        
+        const targetRatio = w / h;
+        const availW = wrapper.clientWidth - 40; 
+        const availH = wrapper.clientHeight - 80; 
+        
+        if (availW / availH > targetRatio) {
+            container.style.height = `${availH}px`;
+            container.style.width = `${availH * targetRatio}px`;
+        } else {
+            container.style.width = `${availW}px`;
+            container.style.height = `${availW / targetRatio}px`;
+        }
+        
+        updatePreviewDOM(); 
+    }
+
+    function switchTab(num, element) {
+        document.querySelectorAll('.layout-tab').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        document.getElementById('layoutGroup_2').style.display = 'none';
+        document.getElementById('layoutGroup_3').style.display = 'none';
+        document.getElementById('layoutGroup_4').style.display = 'none';
+        document.getElementById('layoutGroup_' + num).style.display = 'grid';
+
+        const firstLayoutId = {2: 'fb2v', 3: 'top-1', 4: 'top-1-bottom-3'}[num];
+        selectLayout(firstLayoutId);
+    }
+
+    function selectLayout(layoutId) {
+        state.currentLayout = layoutId;
+        
+        document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.layout-card').forEach(c => {
+            if (c.getAttribute('onclick').includes(`'${layoutId}'`)) c.classList.add('selected');
+        });
+        
+        resetImageStates(); updatePreviewDOM();
+    }
+
+    function resetImageStates() {
+        for(let i=0; i<4; i++) state.cellStates[i] = {ox: 0, oy: 0, scale: 1};
+    }
+
+    function updatePreviewDOM() {
+        const workspace = document.getElementById('workspaceContainer');
+        workspace.innerHTML = '';
+        
+        const layoutConfig = fbLayouts[state.currentLayout];
+        workspace.style.gridTemplateColumns = layoutConfig.cols;
+        workspace.style.gridTemplateRows = layoutConfig.rows;
+
+        for (let i = 0; i < layoutConfig.count; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'img-cell'; cell.id = `cell-${i}`; 
+            cell.style.gridArea = layoutConfig.getArea(i);
+
+            const layer = document.createElement('div');
+            layer.className = 'img-layer';
+            cell.appendChild(layer);
+
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file'; fileInput.accept = 'image/*';
+            fileInput.onchange = function() { handleFile(i, this); };
+            cell.appendChild(fileInput);
+
+            if (state.images[i]) {
+                cell.classList.add('has-image');
+                applyImageTransform(cell, i);
+                setupImageInteraction(cell, i);
+
+                const overlay = document.createElement('div');
+                overlay.className = 'interaction-overlay';
+                overlay.innerHTML = '<span>✥ 移動</span><span>|</span><span>🖱️/🤏 縮放</span>';
+                cell.appendChild(overlay);
+
+                const reuploadBtn = document.createElement('div');
+                reuploadBtn.className = 'reupload-btn';
+                reuploadBtn.innerText = '更換';
+                reuploadBtn.onclick = (e) => { e.stopPropagation(); fileInput.click(); };
+                cell.appendChild(reuploadBtn);
+            }
+            workspace.appendChild(cell);
+        }
+        
+        toggleBorderPreview(); 
+    }
+
+    function handleFile(index, input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => { state.images[index] = img; updatePreviewDOM(); };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function applyImageTransform(cell, i) {
+        const cs = state.cellStates[i];
+        const layer = cell.querySelector('.img-layer');
+        layer.style.backgroundImage = `url(${state.images[i].src})`;
+        layer.style.transform = `translate(${cs.ox}px, ${cs.oy}px) scale(${cs.scale})`;
+    }
+
+    // 整合滑鼠與手機多點觸控手勢
+    function setupImageInteraction(cell, i) {
+        let cs = state.cellStates[i];
+        let evCache = [];
+        let prevDiff = -1;
+        let isDragging = false;
+        let dragStartX = 0, dragStartY = 0;
+        let initialOx = 0, initialOy = 0;
+
+        cell.onwheel = function(e) {
+            if (e.target.tagName === 'INPUT') return;
+            e.preventDefault();
+            cs.scale = Math.max(0.1, Math.min(10, cs.scale + (e.deltaY > 0 ? -0.05 : 0.05)));
+            applyImageTransform(cell, i);
+        };
+
+        cell.onpointerdown = function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.classList.contains('reupload-btn')) return;
+            evCache.push(e);
+            cell.setPointerCapture(e.pointerId);
+            cell.classList.add('dragging');
+
+            if (evCache.length === 1) {
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                initialOx = cs.ox;
+                initialOy = cs.oy;
+            } else if (evCache.length === 2) {
+                isDragging = false;
+                prevDiff = Math.hypot(
+                    evCache[0].clientX - evCache[1].clientX,
+                    evCache[0].clientY - evCache[1].clientY
+                );
+            }
+        };
+
+        cell.onpointermove = function(e) {
+            const index = evCache.findIndex(ev => ev.pointerId === e.pointerId);
+            if (index > -1) evCache[index] = e;
+
+            if (evCache.length === 1 && isDragging) {
+                const dx = e.clientX - dragStartX;
+                const dy = e.clientY - dragStartY;
+                cs.ox = initialOx + dx;
+                cs.oy = initialOy + dy;
+                applyImageTransform(cell, i);
+            } else if (evCache.length === 2) {
+                const curDiff = Math.hypot(
+                    evCache[0].clientX - evCache[1].clientX,
+                    evCache[0].clientY - evCache[1].clientY
+                );
+                if (prevDiff > 0) {
+                    const ratio = curDiff / prevDiff;
+                    cs.scale = Math.max(0.1, Math.min(10, cs.scale * ratio));
+                    applyImageTransform(cell, i);
+                }
+                prevDiff = curDiff;
+            }
+        };
+
+        function pointerEnd(e) {
+            const index = evCache.findIndex(ev => ev.pointerId === e.pointerId);
+            if (index > -1) evCache.splice(index, 1);
+
+            if (evCache.length < 2) prevDiff = -1;
+
+            if (evCache.length === 0) {
+                isDragging = false;
+                cell.classList.remove('dragging');
+                try { cell.releasePointerCapture(e.pointerId); } catch(err){}
+            } else if (evCache.length === 1) {
+                isDragging = true;
+                dragStartX = evCache[0].clientX;
+                dragStartY = evCache[0].clientY;
+                initialOx = cs.ox;
+                initialOy = cs.oy;
+            }
+        }
+
+        cell.onpointerup = pointerEnd;
+        cell.onpointercancel = pointerEnd;
+        cell.onpointerout = pointerEnd;
+        cell.onpointerleave = pointerEnd;
+    }
+
+    function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceW, workspaceH, outW, outH, overlapPad = 0) {
+        ctx.save();
+        
+        const targetW = cellConfig.w + overlapPad * 2;
+        const targetH = cellConfig.h + overlapPad * 2;
+        const targetX = cellConfig.x - overlapPad;
+        const targetY = cellConfig.y - overlapPad;
+
+        ctx.beginPath();
+        ctx.rect(targetX, targetY, targetW, targetH);
+        ctx.clip();
+
+        const imgRatio = img.width / img.height;
+        const cellRatio = cellConfig.w / cellConfig.h;
+        let baseW, baseH;
+
+        if (imgRatio > cellRatio) {
+            baseW = cellConfig.w; 
+            baseH = cellConfig.w / imgRatio;
+        } else {
+            baseH = cellConfig.h; 
+            baseW = cellConfig.h * imgRatio;
+        }
+
+        const finalScale = cs.scale; 
+        const drawW = baseW * finalScale;
+        const drawH = baseH * finalScale;
+
+        const ratioX = outW / workspaceW;
+        const ratioY = outH / workspaceH;
+        const panX = cs.ox * ratioX;
+        const panY = cs.oy * ratioY;
+
+        const dx = cellConfig.x + (cellConfig.w - drawW) / 2 + panX;
+        const dy = cellConfig.y + (cellConfig.h - drawH) / 2 + panY;
+
+        ctx.drawImage(img, dx, dy, drawW, drawH);
+        ctx.restore();
+    }
+
+    function exportCollage() {
+        const layoutConfig = fbLayouts[state.currentLayout];
+        const requiredImgs = layoutConfig.count;
+        
+        if (state.images.filter((img, i) => i < requiredImgs && img !== null).length < requiredImgs) {
+            alert(`⚠️ 請上傳完整的 ${requiredImgs} 張圖片！`); return;
+        }
+
+        const style = document.getElementById('style').value;
+        const effectPX = parseInt(document.getElementById('effectValue').value);
+        const borderColor = document.getElementById('borderColor').value; 
+        
+        const sizeStr = document.getElementById('outSize').value;
+        const outW = parseInt(sizeStr.split('x')[0]);
+        const outH = parseInt(sizeStr.split('x')[1]);
+        
+        const workspaceRect = document.getElementById('workspaceContainer').getBoundingClientRect();
+        const workspaceW = workspaceRect.width;
+        const workspaceH = workspaceRect.height;
+
+        const statusEl = document.getElementById('status');
+        statusEl.innerText = '正在運算影像效果，請稍候...';
+        
+        setTimeout(() => {
+            const canvas = document.createElement('canvas');
+            canvas.width = outW; canvas.height = outH;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = style === 'border' ? borderColor : '#ffffff'; 
+            ctx.fillRect(0, 0, outW, outH);
+            
+            const relativeCells = layoutConfig.getExport();
+            const cells = relativeCells.map(c => ({
+                x: c.x * outW, y: c.y * outH, w: c.w * outW, h: c.h * outH
+            }));
+
+            for (let i = 0; i < requiredImgs; i++) {
+                const cell = cells[i], img = state.images[i], cs = state.cellStates[i];
+                
+                if (style === 'border') {
+                    const cellShrunk = { 
+                        x: cell.x + effectPX, y: cell.y + effectPX, 
+                        w: Math.max(1, cell.w - effectPX * 2), h: Math.max(1, cell.h - effectPX * 2) 
+                    };
+                    drawImageCoverTransformed(ctx, img, cellShrunk, cs, workspaceW, workspaceH, outW, outH, 0);
+                } 
+                else if (style === 'blur') {
+                    const pad = effectPX;
+                    const tCanvas = document.createElement('canvas'); 
+                    tCanvas.width = outW; tCanvas.height = outH; 
+                    const tCtx = tCanvas.getContext('2d');
+                    
+                    let mLeft = cell.x, mTop = cell.y, mRight = cell.x + cell.w, mBottom = cell.y + cell.h;
+                    const safePad = pad * 4; 
+                    if (mLeft <= 1) mLeft -= safePad;
+                    if (mTop <= 1) mTop -= safePad;
+                    if (mRight >= outW - 1) mRight += safePad;
+                    if (mBottom >= outH - 1) mBottom += safePad;
+                    
+                    tCtx.filter = `blur(${pad}px)`; 
+                    tCtx.fillStyle = '#ffffff';
+                    tCtx.fillRect(mLeft, mTop, mRight - mLeft, mBottom - mTop);
+                    
+                    tCtx.filter = 'none'; 
+                    tCtx.globalCompositeOperation = 'source-in';
+                    
+                    drawImageCoverTransformed(tCtx, img, cell, cs, workspaceW, workspaceH, outW, outH, pad * 2); 
+                    
+                    ctx.drawImage(tCanvas, 0, 0);
+                }
+            }
+
+            const link = document.createElement('a');
+            link.download = `fb_collage_${outW}x${outH}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+            statusEl.innerHTML = `✅ 下載完成！<br>真實輸出：鎖定 ${outW}x${outH}，所見即所得。`;
+        }, 100);
+    }
 </script>
 </body>
 </html>
