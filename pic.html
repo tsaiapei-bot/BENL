@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB 完美比例組合工具 - 邊線調整 + 無縫融合版</title>
+<title>FB 完美比例組合工具 - 固定排版 + 無縫融合版</title>
 <style>
   :root {
     --primary: #1877F2; 
@@ -42,7 +42,7 @@
   
   .step-heading { font-weight: bold; font-size: 1.05em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; color: #0f172a;}
   
-  .layout-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .layout-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
   .layout-tab { padding: 10px; text-align: center; color: #606770; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 0.9em; }
   .layout-tab.selected { color: var(--primary); border-color: var(--primary); }
 
@@ -73,7 +73,7 @@
     position: relative; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
     display: grid; overflow: hidden; user-select: none;
     max-width: 100%; max-height: 100%;
-    aspect-ratio: 1 / 1; /* 預設 1:1，會由 JS 動態修改 */
+    aspect-ratio: 1 / 1; 
   }
 
   /* 圖片格子 (包含虛線與白邊樣式) */
@@ -121,22 +121,11 @@
   }
   .img-cell.has-image:hover .reupload-btn { opacity: 1; }
 
-  /* 分割線把手 (視覺輔助線) */
-  .splitter { position: absolute; z-index: 10; background: rgba(24, 119, 242, 0); transition: background 0.2s; }
-  .splitter:hover, .splitter.active { background: rgba(24, 119, 242, 0.6); }
-  
-  .splitter::after { content: ''; position: absolute; background: rgba(0, 0, 0, 0.15); }
-  .v-split { cursor: col-resize; width: 14px; top: 0; bottom: 0; transform: translateX(-7px); }
-  .v-split::after { width: 2px; height: 100%; left: 6px; top: 0; }
-  
-  .h-split { cursor: row-resize; height: 14px; left: 0; right: 0; transform: translateY(-7px); }
-  .h-split::after { height: 2px; width: 100%; top: 6px; left: 0; }
-
 </style>
 </head>
 <body>
 
-<header>🖼️ FB 比例組合工具 (邊線調整 + 無縫融合版)</header>
+<header>🖼️ FB 比例組合工具 (固定排版 + 無縫融合版)</header>
 
 <div class="app-container">
   <!-- 左側控制面板 -->
@@ -155,43 +144,48 @@
     <div>
       <div class="step-heading">Step 2: 選擇版型數量</div>
       <div class="layout-tabs">
-        <div class="layout-tab selected" id="tab3Image" onclick="selectType(3)">3張圖片</div>
-        <div class="layout-tab" id="tab4Grid" onclick="selectType(4)">4張圖片</div>
+        <div class="layout-tab" onclick="switchTab(2, this)">2張圖</div>
+        <div class="layout-tab selected" onclick="switchTab(3, this)">3張圖</div>
+        <div class="layout-tab" onclick="switchTab(4, this)">4張圖</div>
+      </div>
+    </div>
+
+    <!-- 2張圖排版選項 -->
+    <div id="layoutGroup_2" class="card-grid" style="display: none;">
+      <div class="layout-card selected" onclick="selectLayout('fb2v')">
+        <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(左右對分)</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('fb2h')">
+        <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式<br>(上下對分)</div>
       </div>
     </div>
 
     <!-- 3張圖排版選項 -->
-    <div id="subLayoutList_3">
-      <div class="step-heading">Step 2-2: 排版位置 (支援拉動邊框)</div>
-      <div class="card-grid">
-        <div class="layout-card selected" onclick="selectSubLayout('top-1')">
-          <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
-        </div>
-        <div class="layout-card" onclick="selectSubLayout('bottom-1')">
-          <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
-        </div>
-        <div class="layout-card" onclick="selectSubLayout('left-1')">
-          <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
-        </div>
-        <div class="layout-card" onclick="selectSubLayout('right-1')">
-          <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
-        </div>
+    <div id="layoutGroup_3" class="card-grid">
+      <div class="layout-card selected" onclick="selectLayout('top-1')">
+        <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('bottom-1')">
+        <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('left-1')">
+        <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('right-1')">
+        <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
       </div>
     </div>
 
     <!-- 4張圖排版選項 -->
-    <div id="subLayoutList_4" style="display: none;">
-      <div class="step-heading">Step 2-2: 排版位置 (支援拉動邊框)</div>
-      <div class="card-grid cols-3">
-        <div class="layout-card selected" onclick="selectSubLayout('grid')">
-          <div class="card-icon">🪟</div><div class="card-label">均分四格</div>
-        </div>
-        <div class="layout-card" onclick="selectSubLayout('top-1-bottom-3')">
-          <div class="card-icon">⬆️</div><div class="card-label">上一大<br>下三小</div>
-        </div>
-        <div class="layout-card" onclick="selectSubLayout('left-1-right-3')">
-          <div class="card-icon">⬅️</div><div class="card-label">左一大<br>右三小</div>
-        </div>
+    <div id="layoutGroup_4" class="card-grid cols-3" style="display: none;">
+      <div class="layout-card selected" onclick="selectLayout('grid')">
+        <div class="card-icon">🪟</div><div class="card-label">均分四格</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('top-1-bottom-3')">
+        <div class="card-icon">⬆️</div><div class="card-label">上一大<br>下三小</div>
+      </div>
+      <div class="layout-card" onclick="selectLayout('left-1-right-3')">
+        <div class="card-icon">⬅️</div><div class="card-label">左一大<br>右三小</div>
       </div>
     </div>
     
@@ -226,13 +220,61 @@
 </div>
 
 <script>
-    // --- 狀態管理與彈性版型計算 (支援 splitX / splitY) ---
+    // --- 核心邏輯：FB 絕對網格比例定義 ---
+    // 這裡鎖定了所有版型的比例，讓 CSS Grid 與輸出 Canvas 共用同一套數學邏輯
+    const fbLayouts = {
+        'fb2v': { count: 2, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/2' : '1/2/2/3', 
+            getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1}] 
+        },
+        'fb2h': { count: 2, 
+            gridTpl: 'grid-template-columns: 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/2' : '2/1/3/2', 
+            getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] 
+        },
+        'top-1': { count: 3, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/3' : (i===1 ? '2/1/3/2' : '2/2/3/3'), 
+            getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] 
+        },
+        'bottom-1': { count: 3, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : '2/1/3/3'), 
+            getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] 
+        },
+        'left-1': { count: 3, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/3/2' : (i===1 ? '1/2/2/3' : '2/2/3/3'), 
+            getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] 
+        },
+        'right-1': { count: 3, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '2/1/3/2' : '1/2/3/3'), 
+            getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1}] 
+        },
+        'top-1-bottom-3': { count: 4, 
+            gridTpl: 'grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 2fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/4' : `2/${i}/3/${i+1}`, 
+            getExport: () => [{x:0,y:0,w:1,h:2/3}, {x:0,y:2/3,w:1/3,h:1/3}, {x:1/3,y:2/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] 
+        },
+        'left-1-right-3': { count: 4, 
+            gridTpl: 'grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/4/2' : `${i}/2/${i+1}/3`, 
+            getExport: () => [{x:0,y:0,w:2/3,h:1}, {x:2/3,y:0,w:1/3,h:1/3}, {x:2/3,y:1/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] 
+        },
+        'grid': { count: 4, 
+            gridTpl: 'grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;', 
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : (i===2 ? '2/1/3/2' : '2/2/3/3')), 
+            getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] 
+        }
+    };
+
     const state = {
-        type: 3, subLayout: 'top-1',
+        currentLayout: 'top-1',
         images: [null, null, null, null],
         cellStates: [ {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1} ],
-        splitX: 50, splitY: 50, 
-        isDraggingSplitter: null, isDraggingImage: null, dragStartX: 0, dragStartY: 0
+        isDraggingImage: null, dragStartX: 0, dragStartY: 0
     };
 
     updateAspectRatio();
@@ -241,19 +283,15 @@
         document.getElementById('pxDisplay').innerText = val + ' px'; 
     }
     
-    // 切換預覽的邊線模式 (如果是 blur 就藏掉白邊，更逼近真實效果)
+    // 切換預覽的視覺提示 (融合模式隱藏白邊)
     function toggleBorderPreview() {
         const style = document.getElementById('style').value;
-        const container = document.getElementById('workspaceContainer');
         if (style === 'blur') {
-            container.classList.add('preview-blur-mode');
-            // 動態注入一段 CSS 來把白邊藏起來
             document.querySelectorAll('.img-cell.has-image').forEach(cell => {
                 cell.style.border = 'none';
                 cell.style.boxShadow = 'none';
             });
         } else {
-            container.classList.remove('preview-blur-mode');
             document.querySelectorAll('.img-cell.has-image').forEach(cell => {
                 cell.style.border = ''; // 恢復 CSS 預設白邊
                 cell.style.boxShadow = '';
@@ -261,7 +299,6 @@
         }
     }
 
-    // 更新外層畫布比例
     function updateAspectRatio() {
         const sizeStr = document.getElementById('outSize').value;
         const [w, h] = sizeStr.split('x');
@@ -271,35 +308,27 @@
         updatePreviewDOM(); 
     }
 
-    // 切換 3/4 張圖
-    function selectType(num) {
-        state.type = num;
-        document.getElementById('tab3Image').classList.toggle('selected', num === 3);
-        document.getElementById('tab4Grid').classList.toggle('selected', num === 4);
+    function switchTab(num, element) {
+        document.querySelectorAll('.layout-tab').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
         
-        if (num === 3) {
-            document.getElementById('subLayoutList_3').style.display = 'block';
-            document.getElementById('subLayoutList_4').style.display = 'none';
-            state.subLayout = 'top-1';
-            document.querySelectorAll('#subLayoutList_3 .layout-card').forEach((c, i) => c.classList.toggle('selected', i===0));
-        } else {
-            document.getElementById('subLayoutList_3').style.display = 'none';
-            document.getElementById('subLayoutList_4').style.display = 'block';
-            state.subLayout = 'grid';
-            document.querySelectorAll('#subLayoutList_4 .layout-card').forEach((c, i) => c.classList.toggle('selected', i===0));
-        }
+        document.getElementById('layoutGroup_2').style.display = 'none';
+        document.getElementById('layoutGroup_3').style.display = 'none';
+        document.getElementById('layoutGroup_4').style.display = 'none';
+        document.getElementById('layoutGroup_' + num).style.display = 'grid';
 
-        state.splitX = 50; state.splitY = 50;
-        resetImageStates(); updatePreviewDOM();
+        const firstLayoutId = {2: 'fb2v', 3: 'top-1', 4: 'grid'}[num];
+        selectLayout(firstLayoutId);
     }
 
-    function selectSubLayout(layout) {
-        state.subLayout = layout;
-        const parentId = state.type === 3 ? '#subLayoutList_3' : '#subLayoutList_4';
-        document.querySelectorAll(`${parentId} .layout-card`).forEach(c => c.classList.remove('selected'));
-        event.currentTarget.classList.add('selected');
+    function selectLayout(layoutId) {
+        state.currentLayout = layoutId;
         
-        state.splitX = 50; state.splitY = 50; // 切換版型時重置邊線置中
+        document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.layout-card').forEach(c => {
+            if (c.getAttribute('onclick').includes(`'${layoutId}'`)) c.classList.add('selected');
+        });
+        
         resetImageStates(); updatePreviewDOM();
     }
 
@@ -312,28 +341,13 @@
         const workspace = document.getElementById('workspaceContainer');
         workspace.innerHTML = '';
         
-        // 依照動態 splitX / splitY 設定 Grid
-        if (state.type === 4) {
-            if (state.subLayout === 'top-1-bottom-3') {
-                workspace.style.gridTemplateColumns = `1fr 1fr 1fr`;
-                workspace.style.gridTemplateRows = `${state.splitY}% ${100 - state.splitY}%`;
-            } else if (state.subLayout === 'left-1-right-3') {
-                workspace.style.gridTemplateColumns = `${state.splitX}% ${100 - state.splitX}%`;
-                workspace.style.gridTemplateRows = `1fr 1fr 1fr`;
-            } else { // grid
-                workspace.style.gridTemplateColumns = `${state.splitX}% ${100 - state.splitX}%`;
-                workspace.style.gridTemplateRows = `${state.splitY}% ${100 - state.splitY}%`;
-            }
-        } else {
-            workspace.style.gridTemplateColumns = `${state.splitX}% ${100 - state.splitX}%`;
-            workspace.style.gridTemplateRows = `${state.splitY}% ${100 - state.splitY}%`;
-        }
+        const layoutConfig = fbLayouts[state.currentLayout];
+        workspace.style.cssText = layoutConfig.gridTpl;
 
-        const numImages = (state.type === 4) ? 4 : 3;
-        for (let i = 0; i < numImages; i++) {
+        for (let i = 0; i < layoutConfig.count; i++) {
             const cell = document.createElement('div');
             cell.className = 'img-cell'; cell.id = `cell-${i}`; 
-            cell.style.gridArea = getCellGridArea(i);
+            cell.style.gridArea = layoutConfig.getArea(i);
 
             // 圖片圖層
             const layer = document.createElement('div');
@@ -364,58 +378,7 @@
             workspace.appendChild(cell);
         }
         
-        toggleBorderPreview(); // 確保樣式正確
-        addSplitters(workspace);
-    }
-
-    function getCellGridArea(i) {
-        const sl = state.subLayout;
-        if (state.type === 4) {
-            if (sl === 'top-1-bottom-3') {
-                if (i === 0) return '1 / 1 / 2 / 4'; if (i === 1) return '2 / 1 / 3 / 2'; if (i === 2) return '2 / 2 / 3 / 3'; if (i === 3) return '2 / 3 / 3 / 4';
-            } else if (sl === 'left-1-right-3') {
-                if (i === 0) return '1 / 1 / 4 / 2'; if (i === 1) return '1 / 2 / 2 / 3'; if (i === 2) return '2 / 2 / 3 / 3'; if (i === 3) return '3 / 2 / 4 / 3';
-            } else { // grid
-                if (i === 0) return '1 / 1 / 2 / 2'; if (i === 1) return '1 / 2 / 2 / 3'; if (i === 2) return '2 / 1 / 3 / 2'; if (i === 3) return '2 / 2 / 3 / 3';
-            }
-        } else {
-            if (sl === 'top-1') { if (i === 0) return '1/1/2/3'; else if (i === 1) return '2/1/3/2'; else return '2/2/3/3'; } 
-            else if (sl === 'bottom-1') { if (i === 0) return '1/1/2/2'; else if (i === 1) return '1/2/2/3'; else return '2/1/3/3'; } 
-            else if (sl === 'left-1') { if (i === 0) return '1/1/3/2'; else if (i === 1) return '1/2/2/3'; else return '2/2/3/3'; } 
-            else if (sl === 'right-1') { if (i === 0) return '1/1/2/2'; else if (i === 1) return '2/1/3/2'; else return '1/2/3/3'; }
-        }
-    }
-
-    // 加入可拖曳的邊界線 (Splitters)
-    function addSplitters(workspace) {
-        const sl = state.subLayout;
-        
-        // 水平拉桿
-        if (sl !== 'left-1-right-3') { 
-            const hSplit = document.createElement('div'); hSplit.className = 'splitter h-split';
-            hSplit.style.top = `${state.splitY}%`; 
-            hSplit.onmousedown = () => state.isDraggingSplitter = 'y';
-            
-            // 如果是左右排版，稍微縮短拉桿長度避免干擾視覺
-            if (state.type === 3) {
-                if (sl === 'left-1') hSplit.style.left = `${state.splitX}%`; 
-                else if (sl === 'right-1') { hSplit.style.right = `${100 - state.splitX}%`; hSplit.style.left = '0'; }
-            }
-            workspace.appendChild(hSplit);
-        }
-
-        // 垂直拉桿
-        if (sl !== 'top-1-bottom-3') { 
-            const vSplit = document.createElement('div'); vSplit.className = 'splitter v-split';
-            vSplit.style.left = `${state.splitX}%`;
-            vSplit.onmousedown = () => state.isDraggingSplitter = 'x';
-            
-            if (state.type === 3) {
-                if (sl === 'top-1') vSplit.style.top = `${state.splitY}%`; 
-                else if (sl === 'bottom-1') vSplit.style.bottom = `${100 - state.splitY}%`; 
-            }
-            workspace.appendChild(vSplit);
-        }
+        toggleBorderPreview(); // 確保重新繪製後，樣式依然正確
     }
 
     // --- 圖片處理與互動 ---
@@ -436,7 +399,6 @@
         const cs = state.cellStates[i];
         const layer = cell.querySelector('.img-layer');
         layer.style.backgroundImage = `url(${state.images[i].src})`;
-        // 最低縮放 1，最高 4
         const finalScale = Math.max(1, cs.scale);
         layer.style.transform = `translate(${cs.ox}px, ${cs.oy}px) scale(${finalScale})`;
     }
@@ -456,18 +418,9 @@
         };
     }
 
-    // 全域滑鼠監聽 (負責拉邊框與移圖片)
+    // 全域滑鼠監聽 (負責移圖片)
     window.addEventListener('mousemove', (e) => {
-        const rect = document.getElementById('workspaceContainer').getBoundingClientRect();
-        
-        if (state.isDraggingSplitter) {
-            if (state.isDraggingSplitter === 'x') {
-                state.splitX = Math.max(10, Math.min(90, ((e.clientX - rect.left) / rect.width) * 100));
-            } else if (state.isDraggingSplitter === 'y') {
-                state.splitY = Math.max(10, Math.min(90, ((e.clientY - rect.top) / rect.height) * 100));
-            }
-            updatePreviewDOM(); // 邊框變動即時重繪
-        } else if (state.isDraggingImage !== null) {
+        if (state.isDraggingImage !== null) {
             const i = state.isDraggingImage;
             state.cellStates[i].ox += e.clientX - state.dragStartX;
             state.cellStates[i].oy += e.clientY - state.dragStartY;
@@ -477,7 +430,6 @@
     });
 
     window.addEventListener('mouseup', () => { 
-        state.isDraggingSplitter = null; 
         if (state.isDraggingImage !== null) {
             document.getElementById(`cell-${state.isDraggingImage}`).classList.remove('dragging');
             state.isDraggingImage = null; 
@@ -485,27 +437,6 @@
     });
 
     // --- 輸出運算 ---
-    // 取得絕對座標的工具函數 (考量 splitX / splitY)
-    function getExportCells(w, h) {
-        const sx = w * (state.splitX / 100); 
-        const sy = h * (state.splitY / 100);
-        const sl = state.subLayout;
-        
-        if (state.type === 3) {
-            if (sl === 'top-1') return [{x:0,y:0,w:w,h:sy}, {x:0,y:sy,w:sx,h:h-sy}, {x:sx,y:sy,w:w-sx,h:h-sy}];
-            if (sl === 'bottom-1') return [{x:0,y:0,w:sx,h:sy}, {x:sx,y:0,w:w-sx,h:sy}, {x:0,y:sy,w:w,h:h-sy}];
-            if (sl === 'left-1') return [{x:0,y:0,w:sx,h:h}, {x:sx,y:0,w:w-sx,h:sy}, {x:sx,y:sy,w:w-sx,h:h-sy}];
-            if (sl === 'right-1') return [{x:0,y:0,w:sx,h:sy}, {x:0,y:sy,w:sx,h:h-sy}, {x:sx,y:0,w:w-sx,h:h}];
-        } else {
-            if (sl === 'top-1-bottom-3') {
-                const cw = w / 3; return [{x:0,y:0,w:w,h:sy}, {x:0,y:sy,w:cw,h:h-sy}, {x:cw,y:sy,w:cw,h:h-sy}, {x:cw*2,y:sy,w:cw,h:h-sy}];
-            } else if (sl === 'left-1-right-3') {
-                const ch = h / 3; return [{x:0,y:0,w:sx,h:h}, {x:sx,y:0,w:w-sx,h:ch}, {x:sx,y:ch,w:w-sx,h:ch}, {x:sx,y:ch*2,w:w-sx,h:ch}];
-            } else { // grid
-                return [{x:0,y:0,w:sx,h:sy}, {x:sx,y:0,w:w-sx,h:sy}, {x:0,y:sy,w:sx,h:h-sy}, {x:sx,y:sy,w:w-sx,h:h-sy}];
-            }
-        }
-    }
 
     // 完美無縫漸層疊加演算法 (擴充 overlapPad 並裁剪)
     function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceW, workspaceH, outW, outH, overlapPad = 0) {
@@ -550,7 +481,9 @@
     }
 
     function exportCollage() {
-        const requiredImgs = (state.type === 4) ? 4 : 3;
+        const layoutConfig = fbLayouts[state.currentLayout];
+        const requiredImgs = layoutConfig.count;
+        
         if (state.images.filter((img, i) => i < requiredImgs && img !== null).length < requiredImgs) {
             alert(`⚠️ 請上傳完整的 ${requiredImgs} 張圖片！`); return;
         }
@@ -567,7 +500,7 @@
         const workspaceH = workspaceRect.height;
 
         const statusEl = document.getElementById('status');
-        statusEl.innerText = '正在運算無縫融合效果，請稍候...';
+        statusEl.innerText = '正在運算影像效果，請稍候...';
         
         setTimeout(() => {
             const canvas = document.createElement('canvas');
@@ -577,7 +510,10 @@
             ctx.fillStyle = '#000000'; // 融合模式底色設為黑
             ctx.fillRect(0, 0, outW, outH);
             
-            const cells = getExportCells(outW, outH);
+            const relativeCells = layoutConfig.getExport();
+            const cells = relativeCells.map(c => ({
+                x: c.x * outW, y: c.y * outH, w: c.w * outW, h: c.h * outH
+            }));
 
             for (let i = 0; i < requiredImgs; i++) {
                 const cell = cells[i], img = state.images[i], cs = state.cellStates[i];
@@ -621,7 +557,7 @@
             link.download = `fb_collage_${outW}x${outH}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            statusEl.innerHTML = `✅ 下載完成！<br>圖片已鎖定尺寸，排版 100% 無偏移。`;
+            statusEl.innerHTML = `✅ 下載完成！<br>真實輸出：鎖定 <span id="statusSize">${outW}x${outH}</span>，所見即所得。`;
         }, 100);
     }
 </script>
