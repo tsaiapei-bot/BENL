@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB 原生多圖比例 - 完美同步版</title>
+<title>FB 原生多圖比例 - 無縫色彩融合版</title>
 <style>
   :root {
     --primary: #1877F2; 
@@ -34,7 +34,6 @@
   }
   @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; overflow-y: auto; } }
   
-  /* 左側控制面板 */
   .controls-panel {
     background: #fff; border: 1px solid var(--border); border-radius: 8px;
     padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;
@@ -59,7 +58,7 @@
   button.generate-btn:hover { background: #166fe5; }
   .status-text { font-size: 0.85em; text-align: center; color: #606770; margin-top: 8px; line-height: 1.4; }
 
-  /* 右側預覽區 */
+  /* 預覽區 */
   .preview-section { 
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     overflow: hidden; background: #f0f2f5; border-radius: 8px; padding: 20px; position: relative;
@@ -73,11 +72,10 @@
     position: relative; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
     display: grid; overflow: hidden; user-select: none;
     max-width: 100%; max-height: 100%;
-    aspect-ratio: 2 / 3; /* 預設 2:3，會由 JS 動態修改 */
-    width: 100%; /* 響應式填滿，但受 max-height 和 aspect-ratio 限制 */
+    aspect-ratio: 2 / 3; /* 預設，由 JS 控制 */
+    width: 100%; 
   }
 
-  /* 圖片格子 */
   .img-cell {
     position: relative; background-color: #e4e6eb; background-size: cover; background-position: center;
     overflow: hidden; box-sizing: border-box;
@@ -89,12 +87,11 @@
     text-align: center; font-size: 1em; color: #606770; font-weight: bold; line-height: 1.5; pointer-events: none;
   }
   
-  .img-cell.has-image { cursor: grab; }
+  .img-cell.has-image { cursor: grab; border: 1px dashed rgba(255,255,255,0.3); } /* 淡淡的提示線 */
   .img-cell.has-image:active { cursor: grabbing; }
   .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
   .img-cell.has-image input[type="file"] { display: none; }
   
-  /* 互動提示 */
   .interaction-overlay {
     position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.6); color: white; padding: 6px 12px; border-radius: 15px;
@@ -115,18 +112,17 @@
 </head>
 <body>
 
-<header>🖼️ FB 比例組合工具 (真實比例預覽版)</header>
+<header>🖼️ FB 比例組合工具 (無縫色彩融合版)</header>
 
 <div class="app-container">
-  <!-- 左側：控制面板 -->
   <aside class="controls-panel">
     
     <div>
       <div class="step-heading">Step 1: 選擇輸出畫布尺寸</div>
       <div class="control-group">
         <select id="outSize" onchange="updateAspectRatio()">
-          <option value="1200x1800">2:3 長形尺寸 (1200 x 1800 像素)</option>
-          <option value="1200x1200">1:1 正方形尺寸 (1200 x 1200 像素)</option>
+          <option value="1200x1800">2:3 尺寸 (1200 x 1800) - 適合直立大圖</option>
+          <option value="1200x1200">1:1 尺寸 (1200 x 1200) - 適合正方形</option>
         </select>
       </div>
     </div>
@@ -139,7 +135,6 @@
         <div class="layout-tab" onclick="switchTab(4, this)">4張圖</div>
       </div>
       
-      <!-- 2張圖版型 -->
       <div id="layoutGroup_2" class="card-grid">
         <div class="layout-card selected" onclick="selectLayout('fb2v')">
           <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(左右對分)</div>
@@ -149,7 +144,6 @@
         </div>
       </div>
 
-      <!-- 3張圖版型 -->
       <div id="layoutGroup_3" class="card-grid" style="display: none;">
         <div class="layout-card" onclick="selectLayout('fb3v')">
           <div class="card-icon">◧</div><div class="card-label">三張圖直式<br>(左一大右二小)</div>
@@ -159,7 +153,6 @@
         </div>
       </div>
 
-      <!-- 4張圖版型 -->
       <div id="layoutGroup_4" class="card-grid" style="display: none;">
         <div class="layout-card" onclick="selectLayout('fb4v')">
           <div class="card-icon">◨</div><div class="card-label">四張圖直式<br>(左一右三)</div>
@@ -174,39 +167,38 @@
     </div>
     
     <div>
-      <div class="step-heading">Step 3: 圖片間隙融合方式</div>
+      <div class="step-heading">Step 3: 圖片間隙處理方式</div>
       <div class="control-group">
         <select id="style">
-          <option value="blur">柔邊模糊融合 (無縫過渡)</option>
+          <option value="blur">色彩模糊融合 (無縫過渡)</option>
           <option value="border">保留實線邊緣 (純白邊線)</option>
         </select>
       </div>
       <div class="control-group" style="margin-top: 15px;">
         <label style="font-weight: 600; font-size: 0.85em; display: flex; justify-content: space-between; color: #606770;">
-          <span>邊線寬度 / 筆刷渲染 (PX)：</span>
-          <span id="pxDisplay" style="color: var(--primary);">20 px</span>
+          <span>邊界渲染深度 (PX)：</span>
+          <span id="pxDisplay" style="color: var(--primary);">50 px</span>
         </label>
-        <input type="range" id="effectValue" min="0" max="80" value="20" oninput="updatePxDisplay(this.value)" style="margin-top: 5px;">
+        <!-- 加大了模糊數值上限，讓融合效果更像您的範例 -->
+        <input type="range" id="effectValue" min="0" max="150" value="50" step="5" oninput="updatePxDisplay(this.value)" style="margin-top: 5px;">
       </div>
     </div>
 
     <div style="margin-top: auto;">
       <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載圖片</button>
-      <div id="status" class="status-text">輸出畫布將與您的選擇 100% 同步<br>確保所見即所得，絕不裁切偏移。</div>
+      <div id="status" class="status-text">輸出畫布將與您的選擇 100% 同步<br>色彩交疊處會產生完美的漸層融合。</div>
     </div>
   </aside>
 
   <!-- 右側：互動工作區 -->
   <div class="preview-section">
-    <div class="workspace-heading">真實比例預覽區 (自動同步 Step 1 尺寸)</div>
-    <!-- 預覽容器 -->
+    <div class="workspace-heading">真實比例預覽區 (完全同步輸出尺寸)</div>
     <div id="workspaceContainer"></div>
   </div>
 </div>
 
 <script>
-    // --- 核心邏輯：FB 原生尺寸網格定義 (相對比例) ---
-    // 改用「分數(Fraction)」來定義版型，這樣無論畫布是 1200x1200 還是 1200x1800 都能完美適應！
+    // 定義版型 (使用相對比例，適用於任何尺寸)
     const fbLayouts = {
         'fb2v': { count: 2, 
             gridTpl: `grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;`,
@@ -231,20 +223,14 @@
         'fb4v': { count: 4, 
             gridTpl: `grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr 1fr;`,
             getArea: (i) => {
-                if(i===0) return '1/1/4/2';
-                if(i===1) return '1/2/2/3';
-                if(i===2) return '2/2/3/3';
-                return '3/2/4/3';
+                if(i===0) return '1/1/4/2'; if(i===1) return '1/2/2/3'; if(i===2) return '2/2/3/3'; return '3/2/4/3';
             },
             getExport: () => [{x:0, y:0, w:2/3, h:1}, {x:2/3, y:0, w:1/3, h:1/3}, {x:2/3, y:1/3, w:1/3, h:1/3}, {x:2/3, y:2/3, w:1/3, h:1/3}]
         },
         'fb4h': { count: 4, 
             gridTpl: `grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 2fr 1fr;`,
             getArea: (i) => {
-                if(i===0) return '1/1/2/4';
-                if(i===1) return '2/1/3/2';
-                if(i===2) return '2/2/3/3';
-                return '2/3/3/4';
+                if(i===0) return '1/1/2/4'; if(i===1) return '2/1/3/2'; if(i===2) return '2/2/3/3'; return '2/3/3/4';
             },
             getExport: () => [{x:0, y:0, w:1, h:2/3}, {x:0, y:2/3, w:1/3, h:1/3}, {x:1/3, y:2/3, w:1/3, h:1/3}, {x:2/3, y:2/3, w:1/3, h:1/3}]
         },
@@ -256,30 +242,23 @@
     };
 
     const state = {
-        currentLayout: 'fb2v',
-        images: [null, null, null, null],
+        currentLayout: 'fb2v', images: [null, null, null, null],
         cellStates: [ {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1} ],
         isDraggingImage: null, dragStartX: 0, dragStartY: 0
     };
 
-    // 啟動初始化
     updateAspectRatio();
 
-    function updatePxDisplay(val) {
-        document.getElementById('pxDisplay').innerText = val + ' px';
-    }
+    function updatePxDisplay(val) { document.getElementById('pxDisplay').innerText = val + ' px'; }
     
     function updateAspectRatio() {
         const sizeStr = document.getElementById('outSize').value;
         const [w, h] = sizeStr.split('x');
         const container = document.getElementById('workspaceContainer');
-        
-        // 動態調整預覽區的 CSS aspect-ratio，保證預覽與輸出比例100%一致
         container.style.aspectRatio = `${w} / ${h}`;
         updatePreviewDOM(); 
     }
 
-    // --- UI 切換邏輯 --- //
     function switchTab(num, element) {
         document.querySelectorAll('.layout-tab').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
@@ -295,17 +274,14 @@
 
     function selectLayout(layoutId) {
         state.currentLayout = layoutId;
-        
         document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
         document.querySelectorAll('.layout-card').forEach(c => {
             if (c.getAttribute('onclick').includes(`'${layoutId}'`)) c.classList.add('selected');
         });
-
         for(let i=0; i<4; i++) state.cellStates[i] = {ox: 0, oy: 0, scale: 1};
         updatePreviewDOM();
     }
 
-    // --- 預覽區 DOM 生成與互動綁定 --- //
     function updatePreviewDOM() {
         const workspace = document.getElementById('workspaceContainer');
         workspace.innerHTML = '';
@@ -335,7 +311,7 @@
 
                 const reuploadBtn = document.createElement('div');
                 reuploadBtn.className = 'reupload-btn';
-                reuploadBtn.innerText = '更換';
+                reuploadBtn.innerText = '更換圖片';
                 reuploadBtn.onclick = (e) => { e.stopPropagation(); fileInput.click(); };
                 cell.appendChild(reuploadBtn);
             }
@@ -356,12 +332,10 @@
         }
     }
 
-    // 將資料同步到預覽畫面上
     function applyImageTransform(cell, i) {
         const cs = state.cellStates[i];
         cell.style.backgroundImage = `url(${state.images[i].src})`;
         cell.style.backgroundSize = `${cs.scale * 100}% auto`; 
-        // 使用 CSS calc 將拖曳的 Pixel offset 直接反映到 background position 上
         cell.style.backgroundPosition = `calc(50% + ${cs.ox}px) calc(50% + ${cs.oy}px)`;
     }
 
@@ -375,7 +349,6 @@
         cell.onwheel = function(e) {
             if (e.target.tagName === 'INPUT') return;
             e.preventDefault();
-            // 縮放限制 0.1 到 3 倍
             state.cellStates[i].scale = Math.max(0.1, Math.min(3, state.cellStates[i].scale + (e.deltaY > 0 ? -0.05 : 0.05)));
             applyImageTransform(cell, i);
         };
@@ -398,35 +371,32 @@
         }
     });
 
-    // --- 絕對精準輸出繪製邏輯 (Canvas Clipping 演算法) --- //
-    // 這個演算法完美模擬了 CSS background-size: cover 以及 background-position 的運算
-    function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceRect, outW, outH) {
+    // --- 核心：無縫疊加與精準座標繪圖 ---
+    function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceRect, outW, outH, overlapPad = 0) {
         ctx.save();
         
-        // 建立 Clipping Mask，確保圖片不會超出格子範圍
+        // 將繪圖區域外擴，這是達成兩張圖色彩重疊融合的關鍵
+        const targetW = cellConfig.w + overlapPad * 2;
+        const targetH = cellConfig.h + overlapPad * 2;
+        const targetX = cellConfig.x - overlapPad;
+        const targetY = cellConfig.y - overlapPad;
+
         ctx.beginPath();
-        ctx.rect(cellConfig.x, cellConfig.y, cellConfig.w, cellConfig.h);
+        ctx.rect(targetX, targetY, targetW, targetH);
         ctx.clip();
 
-        // 1. 基礎 Cover 縮放演算法
-        let scale = Math.max(cellConfig.w / img.width, cellConfig.h / img.height);
-        
-        // 2. 套用使用者滑鼠滾輪自訂的縮放倍率
+        // 使用擴大後的區域來計算覆蓋比例，確保無縫區域內 100% 填滿圖像像素
+        let scale = Math.max(targetW / img.width, targetH / img.height);
         scale *= cs.scale;
-
-        // 3. 計算圖片實際繪製寬高
+        
         const dw = img.width * scale;
         const dh = img.height * scale;
+        
+        let dx = targetX + (targetW - dw) / 2;
+        let dy = targetY + (targetH - dh) / 2;
 
-        // 4. 將圖片置中於格子內
-        let dx = cellConfig.x + (cellConfig.w - dw) / 2;
-        let dy = cellConfig.y + (cellConfig.h - dh) / 2;
-
-        // 5. 轉換 UI 的 Pixel Offset 為 Canvas 實際的 Pixel Offset
-        // 這解決了「預覽與實際輸出不同」的最核心問題
         const ratioX = outW / workspaceRect.width;
         const ratioY = outH / workspaceRect.height;
-        
         dx += cs.ox * ratioX;
         dy += cs.oy * ratioY;
 
@@ -445,29 +415,26 @@
         const style = document.getElementById('style').value;
         const effectPX = parseInt(document.getElementById('effectValue').value);
         
-        // 取得 Step 1 使用者選擇的實際寬高
         const sizeStr = document.getElementById('outSize').value;
         const outW = parseInt(sizeStr.split('x')[0]);
         const outH = parseInt(sizeStr.split('x')[1]);
         
         const workspaceRect = document.getElementById('workspaceContainer').getBoundingClientRect();
         const statusEl = document.getElementById('status');
-        statusEl.innerText = '影像處理中，請稍候...';
+        statusEl.innerText = '正在運算無縫融合效果，請稍候...';
         
         setTimeout(() => {
             const canvas = document.createElement('canvas');
-            canvas.width = outW; 
-            canvas.height = outH;
+            canvas.width = outW; canvas.height = outH;
             const ctx = canvas.getContext('2d');
             
-            ctx.fillStyle = style === 'blur' ? '#000000' : '#ffffff'; 
+            // 模糊交疊的底色設為黑，有助於隱藏極微小的半透明瑕疵
+            ctx.fillStyle = '#000000'; 
             ctx.fillRect(0, 0, outW, outH);
             
-            // 將分數比例轉為 Canvas 絕對座標
             const relativeCells = layoutConfig.getExport();
             const cells = relativeCells.map(c => ({
-                x: c.x * outW, y: c.y * outH, 
-                w: c.w * outW, h: c.h * outH
+                x: c.x * outW, y: c.y * outH, w: c.w * outW, h: c.h * outH
             }));
 
             for (let i = 0; i < requiredImgs; i++) {
@@ -475,33 +442,40 @@
                 
                 if (style === 'border') {
                     const cellShrunk = { x: cell.x + effectPX, y: cell.y + effectPX, w: Math.max(1, cell.w - effectPX * 2), h: Math.max(1, cell.h - effectPX * 2) };
-                    drawImageCoverTransformed(ctx, img, cellShrunk, cs, workspaceRect, outW, outH);
+                    drawImageCoverTransformed(ctx, img, cellShrunk, cs, workspaceRect, outW, outH, 0);
                 } 
                 else if (style === 'blur') {
                     const tCanvas = document.createElement('canvas'); 
-                    tCanvas.width = cell.w; tCanvas.height = cell.h;
+                    tCanvas.width = outW; tCanvas.height = outH; 
                     const tCtx = tCanvas.getContext('2d');
+                    
+                    // 遮罩定位：確保畫布外邊界不被模糊，只模糊與其他圖片交界的接縫
+                    let mx = cell.x, my = cell.y, mw = cell.w, mh = cell.h;
+                    const pad = effectPX * 2; 
+                    if (mx <= 2) { mx -= pad; mw += pad; }
+                    if (my <= 2) { my -= pad; mh += pad; }
+                    if (Math.abs(mx + mw - outW) <= 2) { mw += pad; }
+                    if (Math.abs(my + mh - outH) <= 2) { mh += pad; }
                     
                     tCtx.filter = `blur(${effectPX}px)`; 
                     tCtx.fillStyle = '#ffffff';
-                    tCtx.fillRect(effectPX, effectPX, cell.w - effectPX * 2, cell.h - effectPX * 2);
+                    tCtx.fillRect(mx, my, mw, mh);
                     
                     tCtx.filter = 'none'; 
                     tCtx.globalCompositeOperation = 'source-in';
                     
-                    // 繪製於暫存畫布，座標從 0,0 開始
-                    const cellLocal = { x:0, y:0, w:cell.w, h:cell.h };
-                    drawImageCoverTransformed(tCtx, img, cellLocal, cs, workspaceRect, outW, outH); 
+                    // 將圖片往外交疊放大 (effectPX * 2) 以確保交疊區有真實的影像色彩
+                    drawImageCoverTransformed(tCtx, img, cell, cs, workspaceRect, outW, outH, effectPX * 2); 
                     
-                    ctx.drawImage(tCanvas, cell.x, cell.y);
+                    ctx.drawImage(tCanvas, 0, 0);
                 }
             }
 
             const link = document.createElement('a');
-            link.download = `fb_collage_${outW}x${outH}.jpg`;
+            link.download = `fb_blend_collage_${outW}x${outH}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            statusEl.innerHTML = `✅ 下載完成！<br>圖片已完美對齊 ${outW} x ${outH} 尺寸。`;
+            statusEl.innerHTML = `✅ 下載完成！<br>圖片已完美融合，並對齊 ${outW} x ${outH} 尺寸。`;
         }, 100);
     }
 </script>
