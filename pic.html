@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-<title>FB 完美比例組合工具</title>
+<title>FB 完美比例組合工具 - 手機終極優化版</title>
 <style>
   :root {
     --primary: #1877F2; 
@@ -33,17 +33,14 @@
     padding: 20px; box-sizing: border-box;
   }
   
-  /* 手機版專屬排版優化 */
+  /* 手機版排版 */
   @media (max-width: 1000px) { 
     body { height: auto; padding: 10px; }
     .app-container { 
-      display: flex; flex-direction: column; /* 改為上下排列 */
+      display: flex; flex-direction: column; 
       overflow-y: auto; height: auto; padding: 10px; border-radius: 8px;
     }
-    .preview-section { 
-      order: -1; /* 強制將預覽區排在最上面 */
-      padding: 10px !important; 
-    }
+    .preview-section { order: -1; padding: 10px !important; }
     .controls-panel { padding: 15px; }
   }
   
@@ -100,9 +97,9 @@
   }
   
   .img-cell:not(.has-image)::before {
-    content: "＋\000A點擊上傳圖片";
+    content: "＋\000A點擊上傳";
     white-space: pre-wrap; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center; font-size: 1.1em; color: #64748b; font-weight: bold; line-height: 1.5; pointer-events: none; z-index: 5;
+    text-align: center; font-size: 1em; color: #64748b; font-weight: bold; line-height: 1.5; pointer-events: none; z-index: 5;
   }
   
   .img-cell.has-image { cursor: grab; border: 3px solid #ffffff; box-shadow: 0 0 0 1px #cbd5e1; } 
@@ -112,20 +109,36 @@
   
   .interaction-overlay {
     position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.75); color: white; padding: 6px 14px; border-radius: 20px;
-    font-size: 0.85em; display: flex; gap: 12px; pointer-events: none; opacity: 0.9; transition: opacity 0.3s;
+    background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 10px; border-radius: 12px;
+    font-size: 0.75em; display: flex; gap: 8px; pointer-events: none; opacity: 0.9; transition: opacity 0.3s;
     white-space: nowrap; backdrop-filter: blur(2px); z-index: 5;
   }
   .img-cell.has-image:hover .interaction-overlay { opacity: 0.2; }
   .img-cell.dragging .interaction-overlay { opacity: 0; }
 
+  /* 縮小後的更換圖片按鈕 */
   .reupload-btn {
-    position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); color: #333;
-    padding: 4px 8px; border-radius: 4px; font-size: 0.75em; cursor: pointer; opacity: 0; transition: 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; z-index: 20;
+    position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.9); color: #333;
+    padding: 3px 6px; border-radius: 4px; font-size: 0.7em; cursor: pointer; opacity: 0; transition: 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: normal; z-index: 20;
   }
   .img-cell.has-image:hover .reupload-btn { opacity: 1; }
+  
+  /* 手機版：更換按鈕常駐顯示，避免找不到 */
+  @media (max-width: 1000px) {
+    .reupload-btn { opacity: 0.85; padding: 2px 5px; font-size: 0.65em; top: 4px; right: 4px;}
+  }
 
+  /* 彈出視窗：專為手機版「長按儲存到相簿」設計 */
+  #imageModal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; 
+    align-items: center; justify-content: center; backdrop-filter: blur(5px);
+  }
+  .modal-content {
+    background: white; padding: 20px; border-radius: 12px; text-align: center; 
+    max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;
+  }
 </style>
 </head>
 <body>
@@ -216,14 +229,24 @@
     </div>
 
     <div style="margin-top: auto;">
-      <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並下載圖片</button>
-      <div id="status" class="status-text">預設完整載入不裁切，滑鼠/手指縮放再移動。</div>
+      <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並儲存圖片</button>
+      <div id="status" class="status-text">手機版會自動跳出存入相簿畫面</div>
     </div>
   </aside>
 
   <div class="preview-section" id="previewWrapper">
-    <div class="workspace-heading">真實比例預覽區</div>
+    <div class="workspace-heading">預覽區</div>
     <div id="workspaceContainer"></div>
+  </div>
+</div>
+
+<!-- 手機版：長按儲存圖片的彈出視窗 -->
+<div id="imageModal">
+  <div class="modal-content">
+    <p style="margin: 0 0 5px 0; font-weight: bold; color: #1c1e21; font-size: 1.1em;">✨ 圖片組合成功！</p>
+    <p style="margin: 0 0 15px 0; color: #606770; font-size: 0.9em; background: #e7f3ff; padding: 5px 10px; border-radius: 10px;">👇 請「長按圖片」並選擇「儲存到照片/相簿」</p>
+    <img id="resultImage" style="max-width: 100%; max-height: 55vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: contain;">
+    <button onclick="document.getElementById('imageModal').style.display='none'" style="margin-top: 20px; padding: 10px 40px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer;">關閉視窗</button>
   </div>
 </div>
 
@@ -285,17 +308,14 @@
         const targetRatio = w / h;
         const isMobile = window.innerWidth <= 1000;
         
-        // 考量手機版和電腦版不同的 padding
         const availW = wrapper.clientWidth - (isMobile ? 20 : 40); 
         const availH = wrapper.clientHeight - (isMobile ? 60 : 80); 
         
         if (isMobile) {
-            // 手機版：直接以寬度滿版為主，確保有最大預覽空間
             container.style.width = `${availW}px`;
             container.style.height = `${availW / targetRatio}px`;
             wrapper.style.minHeight = `${(availW / targetRatio) + 80}px`; 
         } else {
-            // 電腦版：考量高度避免超出畫面
             if (availW / availH > targetRatio) {
                 container.style.height = `${availH}px`;
                 container.style.width = `${availH * targetRatio}px`;
@@ -305,7 +325,6 @@
             }
             wrapper.style.minHeight = 'auto';
         }
-        
         updatePreviewDOM(); 
     }
 
@@ -401,7 +420,6 @@
         layer.style.transform = `translate(${cs.ox}px, ${cs.oy}px) scale(${cs.scale})`;
     }
 
-    // 整合滑鼠與手機多點觸控手勢
     function setupImageInteraction(cell, i) {
         let cs = state.cellStates[i];
         let evCache = [];
@@ -527,6 +545,15 @@
         ctx.restore();
     }
 
+    // 將圖片結果顯示在視窗中，讓手機使用者「長按儲存」
+    function showImageModal(dataUrl) {
+        const modal = document.getElementById('imageModal');
+        const img = document.getElementById('resultImage');
+        img.src = dataUrl;
+        modal.style.display = 'flex';
+        document.getElementById('status').innerHTML = `✅ 請長按視窗內的圖片儲存至相簿。`;
+    }
+
     function exportCollage() {
         const layoutConfig = fbLayouts[state.currentLayout];
         const requiredImgs = layoutConfig.count;
@@ -563,6 +590,16 @@
                 x: c.x * outW, y: c.y * outH, w: c.w * outW, h: c.h * outH
             }));
 
+            // [修復手機版 Blur 記憶體崩潰]：將 tCanvas 提取到迴圈外重複利用，大幅節省記憶體
+            let tCanvas = null;
+            let tCtx = null;
+            if (style === 'blur') {
+                tCanvas = document.createElement('canvas'); 
+                tCanvas.width = outW; 
+                tCanvas.height = outH; 
+                tCtx = tCanvas.getContext('2d');
+            }
+
             for (let i = 0; i < requiredImgs; i++) {
                 const cell = cells[i], img = state.images[i], cs = state.cellStates[i];
                 
@@ -575,9 +612,10 @@
                 } 
                 else if (style === 'blur') {
                     const pad = effectPX;
-                    const tCanvas = document.createElement('canvas'); 
-                    tCanvas.width = outW; tCanvas.height = outH; 
-                    const tCtx = tCanvas.getContext('2d');
+                    
+                    // 清空畫布，準備處理下一張圖
+                    tCtx.clearRect(0, 0, outW, outH);
+                    tCtx.globalCompositeOperation = 'source-over';
                     
                     let mLeft = cell.x, mTop = cell.y, mRight = cell.x + cell.w, mBottom = cell.y + cell.h;
                     const safePad = pad * 4; 
@@ -599,11 +637,40 @@
                 }
             }
 
-            const link = document.createElement('a');
-            link.download = `fb_collage_${outW}x${outH}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.95);
-            link.click();
-            statusEl.innerHTML = `✅ 下載完成！<br>真實輸出：鎖定 ${outW}x${outH}，所見即所得。`;
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const filename = `fb_collage_${outW}x${outH}.jpg`;
+
+            // 手機版：優先嘗試原生分享/儲存，若不支援則顯示長按視窗
+            if (isMobile) {
+                try {
+                    canvas.toBlob((blob) => {
+                        const file = new File([blob], filename, { type: 'image/jpeg' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: 'FB 比例組合圖',
+                            }).then(() => {
+                                statusEl.innerHTML = `✅ 已成功呼叫手機原生儲存/分享！`;
+                            }).catch((err) => {
+                                // 使用者取消或失敗，降級使用長按視窗
+                                showImageModal(dataUrl);
+                            });
+                        } else {
+                            showImageModal(dataUrl);
+                        }
+                    }, 'image/jpeg', 0.95);
+                } catch (err) {
+                    showImageModal(dataUrl);
+                }
+            } else {
+                // 電腦版：直接觸發下載
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
+                statusEl.innerHTML = `✅ 下載完成！`;
+            }
         }, 100);
     }
 </script>
