@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>圖片多合一組合工具 (純前端版)</title>
+    <title>進階版圖片組合工具 - 渲染融合與自訂排版</title>
     <style>
         :root {
             --primary: #3b82f6;
@@ -12,10 +12,10 @@
             --border: #e2e8f0;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -25,48 +25,89 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        h1 { text-align: center; color: var(--text); }
+        h1 { text-align: center; color: var(--text); margin-bottom: 30px; }
         
-        .grid-2col {
+        .layout-panel {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
         }
         
-        .upload-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .file-input-wrapper {
-            border: 2px dashed var(--border);
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            background: #fafafa;
+        @media (max-width: 768px) {
+            .layout-panel { grid-template-columns: 1fr; }
         }
 
-        .controls {
+        .controls-section {
             background: #f1f5f9;
             padding: 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
         }
 
-        .control-group {
-            margin-bottom: 15px;
-        }
+        .control-group { margin-bottom: 15px; }
+        .control-group label { display: block; font-weight: bold; margin-bottom: 8px; }
         
-        .control-group label {
-            display: inline-block;
-            width: 150px;
-            font-weight: bold;
+        select, input[type="number"], input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .file-upload-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 預覽工作區 (互動式 Grid) */
+        #workspace {
+            position: relative;
+            width: 100%;
+            background: #fff;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: grid;
+            overflow: hidden;
+            /* 預設長寬比，適合部落格首圖 */
+            aspect-ratio: 1200 / 800; 
+            user-select: none; /* 防止拖曳時選取到圖片 */
+        }
+
+        .img-cell {
+            background-size: cover;
+            background-position: center;
+            background-color: #e2e8f0;
+            position: relative;
+            transition: opacity 0.3s;
+        }
+
+        /* 拖曳把手 */
+        .splitter {
+            position: absolute;
+            z-index: 10;
+            background: rgba(59, 130, 246, 0); /* 預設透明 */
+            transition: background 0.2s;
+        }
+        .splitter:hover, .splitter.active {
+            background: rgba(59, 130, 246, 0.8);
+        }
+        .v-split {
+            cursor: col-resize;
+            width: 14px;
+            top: 0; bottom: 0;
+            transform: translateX(-7px);
+        }
+        .h-split {
+            cursor: row-resize;
+            height: 14px;
+            left: 0; right: 0;
+            transform: translateY(-7px);
         }
 
         button.primary-btn {
-            display: block;
             width: 100%;
             background: var(--primary);
             color: white;
@@ -76,137 +117,244 @@
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            margin-top: 20px;
         }
         button.primary-btn:hover { background: #2563eb; }
-
-        .result-section {
-            margin-top: 30px;
+        
+        #downloadBtn { display: none; background: #10b981; }
+        #downloadBtn:hover { background: #059669; }
+        
+        .hint {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-top: 10px;
             text-align: center;
         }
-        #resultCanvas {
-            max-width: 100%;
-            height: auto;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none;
-        }
-        
-        .status { margin-top: 10px; color: #dc2626; font-weight: bold; }
-        
-        #downloadBtn {
-            margin-top: 15px;
-            display: none;
-            background: #10b981;
-        }
-        #downloadBtn:hover { background: #059669; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🖼️ 圖片多合一組合工具</h1>
+    <h1>🖼️ 進階圖片組合工具 (排版拖曳 & 筆刷融合)</h1>
     
-    <div class="grid-2col">
-        <div class="upload-group">
-            <div class="file-input-wrapper">
-                <label>圖片 1 (必填)：</label>
-                <input type="file" id="img1" accept="image/*">
+    <div class="layout-panel">
+        <!-- 左側：控制面板 -->
+        <div class="controls-section">
+            <div class="file-upload-list">
+                <div class="control-group">
+                    <label>圖片 1 (必填)：</label>
+                    <input type="file" id="img1" accept="image/*" onchange="handleFile(0, this)">
+                </div>
+                <div class="control-group">
+                    <label>圖片 2 (必填)：</label>
+                    <input type="file" id="img2" accept="image/*" onchange="handleFile(1, this)">
+                </div>
+                <div class="control-group">
+                    <label>圖片 3 (必填)：</label>
+                    <input type="file" id="img3" accept="image/*" onchange="handleFile(2, this)">
+                </div>
+                <div class="control-group" id="img4-group" style="display:none;">
+                    <label>圖片 4 (田字專用)：</label>
+                    <input type="file" id="img4" accept="image/*" onchange="handleFile(3, this)">
+                </div>
             </div>
-            <div class="file-input-wrapper">
-                <label>圖片 2 (必填)：</label>
-                <input type="file" id="img2" accept="image/*">
-            </div>
-        </div>
-        <div class="upload-group">
-            <div class="file-input-wrapper">
-                <label>圖片 3 (必填)：</label>
-                <input type="file" id="img3" accept="image/*">
-            </div>
-            <div class="file-input-wrapper">
-                <label>圖片 4 (選填)：</label>
-                <input type="file" id="img4" accept="image/*">
-            </div>
-        </div>
-    </div>
 
-    <div class="controls">
-        <div class="grid-2col">
-            <div>
-                <div class="control-group">
-                    <label>排列位置：</label>
-                    <select id="layout">
-                        <option value="grid">田字排列 (Grid)</option>
-                        <option value="horizontal">水平排列 (Horizontal)</option>
-                        <option value="vertical">垂直排列 (Vertical)</option>
-                    </select>
+            <div class="control-group">
+                <label>排列版型：</label>
+                <select id="layout" onchange="changeLayout()">
+                    <option value="3top">3張：大圖在上</option>
+                    <option value="3bottom">3張：大圖在下</option>
+                    <option value="grid">4張：田字排列</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>組合樣式：</label>
+                <select id="style" onchange="updatePreviewStyle()">
+                    <option value="brush">筆刷渲染融合 (Watercolor Blend)</option>
+                    <option value="border">保留邊線 (Solid Border)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>效果程度 (邊線寬度 / 渲染範圍)：</label>
+                <input type="range" id="effectValue" min="0" max="100" value="30" oninput="updatePreviewStyle()">
+            </div>
+
+            <div class="control-group" style="display: flex; gap: 10px;">
+                <div style="flex:1;">
+                    <label>輸出寬度：</label>
+                    <input type="number" id="outW" value="1200" step="100" onchange="updateAspectRatio()">
                 </div>
-                <div class="control-group">
-                    <label>組合樣式：</label>
-                    <select id="style">
-                        <option value="border">邊線 (Border)</option>
-                        <option value="blend">融合 (Blend)</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label>邊距/融合程度：</label>
-                    <input type="range" id="effectValue" min="0" max="100" value="10">
-                    <span id="effectDisplay">10</span> px
+                <div style="flex:1;">
+                    <label>輸出高度：</label>
+                    <input type="number" id="outH" value="800" step="100" onchange="updateAspectRatio()">
                 </div>
             </div>
-            <div>
-                <div class="control-group">
-                    <label>輸出寬度 (px)：</label>
-                    <input type="number" id="outW" value="1200" step="100">
-                </div>
-                <div class="control-group">
-                    <label>輸出高度 (px)：</label>
-                    <input type="number" id="outH" value="1200" step="100">
-                </div>
-            </div>
+
+            <button class="primary-btn" onclick="exportImage()">⬇️ 產生並下載最終圖片</button>
+            <div class="hint">預覽圖為排版示意，點擊下載會以高畫質及完美筆刷效果輸出。</div>
         </div>
-    </div>
 
-    <button class="primary-btn" onclick="generateCollage()">開始組合圖片</button>
-    <div id="status" class="status"></div>
-
-    <div class="result-section">
-        <canvas id="resultCanvas"></canvas>
-        <button id="downloadBtn" class="primary-btn" onclick="downloadImage()">下載組合結果</button>
+        <!-- 右側：互動預覽區 -->
+        <div class="preview-section">
+            <div id="workspace">
+                <!-- 圖片區塊會由 JS 動態生成 -->
+            </div>
+            <div class="hint">💡 提示：可以在圖片之間的交界處「點擊並拖曳」來自由調整版面比例！</div>
+        </div>
     </div>
 </div>
 
 <script>
-    // 更新拉桿顯示數值
-    document.getElementById('effectValue').addEventListener('input', function(e) {
-        document.getElementById('effectDisplay').innerText = e.target.value;
-    });
+    // 全局狀態
+    const state = {
+        images: [null, null, null, null],
+        splitX: 50, // 垂直分割線百分比 (0-100)
+        splitY: 50, // 水平分割線百分比 (0-100)
+        isDragging: null // 'x' 或 'y'
+    };
 
-    // 讀取檔案轉為 Image 物件的 Promise
-    function loadImage(file) {
-        return new Promise((resolve, reject) => {
-            if (!file) {
-                resolve(null);
-                return;
-            }
+    // 處理圖片上傳
+    function handleFile(index, input) {
+        const file = input.files[0];
+        if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = reject;
+                img.onload = () => {
+                    state.images[index] = img;
+                    updatePreviewDOM();
+                };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        });
+        }
     }
 
-    // 類似 CSS object-fit: cover 的 Canvas 繪製法
+    // 更新輸出長寬比以對齊預覽畫面
+    function updateAspectRatio() {
+        const w = document.getElementById('outW').value;
+        const h = document.getElementById('outH').value;
+        document.getElementById('workspace').style.aspectRatio = `${w} / ${h}`;
+    }
+
+    // 切換版型時調整 DOM
+    function changeLayout() {
+        const layout = document.getElementById('layout').value;
+        document.getElementById('img4-group').style.display = (layout === 'grid') ? 'block' : 'none';
+        
+        // 重置分割線回到 50%
+        state.splitX = 50;
+        state.splitY = 50;
+        updatePreviewDOM();
+    }
+
+    // 重新建構預覽區的 HTML 結構 (Grid + Splitters)
+    function updatePreviewDOM() {
+        const workspace = document.getElementById('workspace');
+        const layout = document.getElementById('layout').value;
+        const effectVal = document.getElementById('effectValue').value;
+        const style = document.getElementById('style').value;
+        
+        workspace.innerHTML = '';
+        
+        // 依照拖曳狀態設定 Grid
+        workspace.style.gridTemplateColumns = `${state.splitX}% ${100 - state.splitX}%`;
+        workspace.style.gridTemplateRows = `${state.splitY}% ${100 - state.splitY}%`;
+
+        // 插入圖片容器
+        const numImages = layout === 'grid' ? 4 : 3;
+        for (let i = 0; i < numImages; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'img-cell';
+            cell.id = `cell-${i}`;
+            
+            // 處理排版跨欄
+            if (layout === '3top') {
+                if (i === 0) cell.style.gridArea = '1 / 1 / 2 / 3'; // 大圖跨兩行
+                else if (i === 1) cell.style.gridArea = '2 / 1 / 3 / 2';
+                else if (i === 2) cell.style.gridArea = '2 / 2 / 3 / 3';
+            } else if (layout === '3bottom') {
+                if (i === 0) cell.style.gridArea = '1 / 1 / 2 / 2';
+                else if (i === 1) cell.style.gridArea = '1 / 2 / 2 / 3';
+                else if (i === 2) cell.style.gridArea = '2 / 1 / 3 / 3'; // 大圖跨兩行
+            }
+
+            // 設定背景圖
+            if (state.images[i]) {
+                cell.style.backgroundImage = `url(${state.images[i].src})`;
+            }
+
+            // 在預覽畫面套用簡易的 CSS 效果
+            if (style === 'border') {
+                cell.style.border = `${effectVal / 4}px solid white`; // 預覽時稍微縮小比例
+                cell.style.boxSizing = 'border-box';
+            } else {
+                cell.style.filter = `blur(0px)`; 
+                // 註：即時的高階筆刷遮罩在拖曳時太耗效能，所以預覽採用乾淨原圖，最終下載時才運算水彩渲染
+            }
+
+            workspace.appendChild(cell);
+        }
+
+        // 插入拖曳把手
+        const splitY = document.createElement('div');
+        splitY.className = 'splitter h-split';
+        splitY.style.top = `${state.splitY}%`;
+        splitY.addEventListener('mousedown', () => state.isDragging = 'y');
+        workspace.appendChild(splitY);
+
+        const splitX = document.createElement('div');
+        splitX.className = 'splitter v-split';
+        splitX.style.left = `${state.splitX}%`;
+        
+        // 依照版型調整 X 軸把手的位置 (只出現在兩張小圖之間)
+        if (layout === '3top') {
+            splitX.style.top = `${state.splitY}%`;
+            splitX.style.bottom = `0`;
+        } else if (layout === '3bottom') {
+            splitX.style.top = `0`;
+            splitX.style.bottom = `${100 - state.splitY}%`;
+        } else {
+            splitX.style.top = `0`;
+            splitX.style.bottom = `0`;
+        }
+        splitX.addEventListener('mousedown', () => state.isDragging = 'x');
+        workspace.appendChild(splitX);
+    }
+
+    function updatePreviewStyle() {
+        updatePreviewDOM();
+    }
+
+    // 全局拖曳事件監聽
+    window.addEventListener('mousemove', (e) => {
+        if (!state.isDragging) return;
+        const workspace = document.getElementById('workspace');
+        const rect = workspace.getBoundingClientRect();
+        
+        if (state.isDragging === 'x') {
+            let p = ((e.clientX - rect.left) / rect.width) * 100;
+            state.splitX = Math.max(10, Math.min(90, p)); // 限制在 10% ~ 90% 之間
+        } else if (state.isDragging === 'y') {
+            let p = ((e.clientY - rect.top) / rect.height) * 100;
+            state.splitY = Math.max(10, Math.min(90, p));
+        }
+        updatePreviewDOM();
+    });
+
+    window.addEventListener('mouseup', () => {
+        state.isDragging = null;
+    });
+
+    // --- 以下為輸出最終圖片的核心邏輯 --- //
+
+    // 物件覆蓋演算法 (類似 object-fit: cover)
     function drawImageCover(ctx, img, x, y, w, h) {
         const imgRatio = img.width / img.height;
         const targetRatio = w / h;
         let sx, sy, sw, sh;
-
         if (imgRatio > targetRatio) {
             sh = img.height;
             sw = img.height * targetRatio;
@@ -221,116 +369,129 @@
         ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
     }
 
-    async function generateCollage() {
-        const statusEl = document.getElementById('status');
-        const canvas = document.getElementById('resultCanvas');
-        const downloadBtn = document.getElementById('downloadBtn');
-        statusEl.innerText = '處理中...';
-        
-        const files = [
-            document.getElementById('img1').files[0],
-            document.getElementById('img2').files[0],
-            document.getElementById('img3').files[0],
-            document.getElementById('img4').files[0]
-        ];
+    // 產生「筆刷/水彩渲染」特效遮罩
+    function drawBrushMask(ctx, w, h, edgeSize) {
+        // 核心區域填滿
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(edgeSize, edgeSize, w - edgeSize * 2, h - edgeSize * 2);
 
-        // 過濾出已上傳的圖片
-        const validFiles = files.filter(f => f !== undefined);
-        if (validFiles.length < 3) {
-            statusEl.innerText = '⚠️ 請至少上傳 3 張圖片！';
+        // 在邊緣畫上隨機的圓點/筆刷痕跡來模擬渲染效果
+        // 數量依據周長決定
+        const strokes = Math.floor((w + h) * 2 / 10); 
+        
+        for(let i = 0; i < strokes; i++) {
+            let px, py;
+            const side = Math.floor(Math.random() * 4);
+            
+            // 將筆觸集中在圖片四周交界處
+            if(side === 0) { px = Math.random() * w; py = Math.random() * (edgeSize * 1.5); } // 上
+            else if(side === 1) { px = Math.random() * w; py = h - Math.random() * (edgeSize * 1.5); } // 下
+            else if(side === 2) { px = Math.random() * (edgeSize * 1.5); py = Math.random() * h; } // 左
+            else { px = w - Math.random() * (edgeSize * 1.5); py = Math.random() * h; } // 右
+
+            // 隨機筆刷大小與不透明度 (模擬水彩濃淡)
+            const radius = Math.random() * edgeSize * 0.8 + 2;
+            ctx.beginPath();
+            ctx.arc(px, py, radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.2})`;
+            ctx.fill();
+        }
+    }
+
+    // 計算各區塊絕對座標
+    function getExportCells(w, h, layout) {
+        const sx = w * (state.splitX / 100);
+        const sy = h * (state.splitY / 100);
+        
+        if (layout === '3top') {
+            return [
+                {x: 0, y: 0, w: w, h: sy}, // 上大圖
+                {x: 0, y: sy, w: sx, h: h - sy}, // 左下
+                {x: sx, y: sy, w: w - sx, h: h - sy} // 右下
+            ];
+        } else if (layout === '3bottom') {
+            return [
+                {x: 0, y: 0, w: sx, h: sy}, // 左上
+                {x: sx, y: 0, w: w - sx, h: sy}, // 右上
+                {x: 0, y: sy, w: w, h: h - sy} // 下大圖
+            ];
+        } else { // grid
+            return [
+                {x: 0, y: 0, w: sx, h: sy},
+                {x: sx, y: 0, w: w - sx, h: sy},
+                {x: 0, y: sy, w: sx, h: h - sy},
+                {x: sx, y: sy, w: w - sx, h: h - sy}
+            ];
+        }
+    }
+
+    function exportImage() {
+        const layout = document.getElementById('layout').value;
+        const style = document.getElementById('style').value;
+        const effectVal = parseInt(document.getElementById('effectValue').value);
+        const outW = parseInt(document.getElementById('outW').value);
+        const outH = parseInt(document.getElementById('outH').value);
+        
+        // 檢查必填圖片
+        const requiredImgs = layout === 'grid' ? 4 : 3;
+        const uploadedImgs = state.images.filter((img, i) => i < requiredImgs && img !== null);
+        if (uploadedImgs.length < requiredImgs) {
+            alert(`⚠️ 請上傳完整的 ${requiredImgs} 張圖片！`);
             return;
         }
 
-        try {
-            const images = [];
-            for (let file of validFiles) {
-                const img = await loadImage(file);
-                if (img) images.push(img);
+        // 建立輸出畫布
+        const canvas = document.createElement('canvas');
+        canvas.width = outW;
+        canvas.height = outH;
+        const ctx = canvas.getContext('2d');
+
+        // 背景色 (白底)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outW, outH);
+
+        const cells = getExportCells(outW, outH, layout);
+
+        for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            const img = state.images[i];
+            
+            if (style === 'border') {
+                // 保留邊線：將圖片畫在稍微縮小的範圍內
+                const ew = Math.max(1, cell.w - effectVal * 2);
+                const eh = Math.max(1, cell.h - effectVal * 2);
+                drawImageCover(ctx, img, cell.x + effectVal, cell.y + effectVal, ew, eh);
+            } 
+            else if (style === 'brush') {
+                // 筆刷渲染融合：利用暫存畫布製作水彩邊緣遮罩
+                const tCanvas = document.createElement('canvas');
+                tCanvas.width = cell.w;
+                tCanvas.height = cell.h;
+                const tCtx = tCanvas.getContext('2d');
+
+                // 1. 畫出邊緣破碎不規則的筆刷遮罩，並加上模糊產生暈染感
+                tCtx.filter = 'blur(4px)'; 
+                drawBrushMask(tCtx, cell.w, cell.h, effectVal);
+                
+                // 2. 切換合成模式，將原始圖片蓋在遮罩上 (Source-in: 只有遮罩處會顯示圖片)
+                tCtx.filter = 'none';
+                tCtx.globalCompositeOperation = 'source-in';
+                drawImageCover(tCtx, img, 0, 0, cell.w, cell.h);
+
+                // 3. 畫回主畫布
+                ctx.drawImage(tCanvas, cell.x, cell.y);
             }
-
-            const layout = document.getElementById('layout').value;
-            const style = document.getElementById('style').value;
-            const effectVal = parseInt(document.getElementById('effectValue').value);
-            const outW = parseInt(document.getElementById('outW').value);
-            const outH = parseInt(document.getElementById('outH').value);
-
-            canvas.width = outW;
-            canvas.height = outH;
-            const ctx = canvas.getContext('2d');
-
-            // 計算區塊座標 (x, y, 寬, 高)
-            const n = images.length;
-            const cells = [];
-            if (layout === 'horizontal') {
-                const cw = Math.floor(outW / n);
-                for (let i = 0; i < n; i++) cells.push([i * cw, 0, cw, outH]);
-            } else if (layout === 'vertical') {
-                const ch = Math.floor(outH / n);
-                for (let i = 0; i < n; i++) cells.push([0, i * ch, outW, ch]);
-            } else {
-                // 田字排列
-                const cw = Math.floor(outW / 2);
-                const ch = Math.floor(outH / 2);
-                cells.push([0, 0, cw, ch]);
-                cells.push([cw, 0, cw, ch]);
-                cells.push([0, ch, cw, ch]);
-                cells.push([cw, ch, cw, ch]);
-            }
-
-            // 繪製背景
-            ctx.fillStyle = style === 'border' ? '#ffffff' : '#000000';
-            ctx.fillRect(0, 0, outW, outH);
-
-            for (let i = 0; i < images.length; i++) {
-                if (i >= cells.length) break;
-                const [x, y, cw, ch] = cells[i];
-                const img = images[i];
-
-                if (style === 'border') {
-                    // 邊線模式：縮小繪製範圍保留白邊
-                    const drawW = Math.max(1, cw - effectVal * 2);
-                    const drawH = Math.max(1, ch - effectVal * 2);
-                    drawImageCover(ctx, img, x + effectVal, y + effectVal, drawW, drawH);
-                } else if (style === 'blend') {
-                    // 融合模式：使用獨立 canvas 製作遮罩
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = cw;
-                    tempCanvas.height = ch;
-                    const tCtx = tempCanvas.getContext('2d');
-
-                    // 1. 畫出帶有高斯模糊的遮罩圖形
-                    tCtx.filter = `blur(${effectVal}px)`;
-                    tCtx.fillStyle = '#ffffff';
-                    tCtx.fillRect(effectVal, effectVal, cw - effectVal * 2, ch - effectVal * 2);
-                    
-                    // 2. 切換合成模式，讓圖片只顯示在遮罩有顏色的地方
-                    tCtx.filter = 'none';
-                    tCtx.globalCompositeOperation = 'source-in';
-                    drawImageCover(tCtx, img, 0, 0, cw, ch);
-
-                    // 3. 將處理好的圖片畫回主畫布
-                    ctx.drawImage(tempCanvas, x, y);
-                }
-            }
-
-            statusEl.innerText = '✅ 組合完成！';
-            statusEl.style.color = '#10b981';
-            canvas.style.display = 'inline-block';
-            downloadBtn.style.display = 'block';
-
-        } catch (error) {
-            console.error(error);
-            statusEl.innerText = '❌ 處理圖片時發生錯誤。';
         }
-    }
 
-    function downloadImage() {
-        const canvas = document.getElementById('resultCanvas');
+        // 觸發下載
         const link = document.createElement('a');
-        link.download = 'collage_' + new Date().getTime() + '.jpg';
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.download = `collage_${new Date().getTime()}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95); // 以 95% 品質輸出
         link.click();
     }
+
+    // 初始化版面
+    updatePreviewDOM();
 </script>
 
 </body>
