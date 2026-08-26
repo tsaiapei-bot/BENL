@@ -32,9 +32,19 @@
     border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;
     padding: 20px; box-sizing: border-box;
   }
+  
+  /* 手機版專屬排版優化 */
   @media (max-width: 1000px) { 
-    .app-container { grid-template-columns: 1fr; overflow-y: auto; }
-    body { height: auto; }
+    body { height: auto; padding: 10px; }
+    .app-container { 
+      display: flex; flex-direction: column; /* 改為上下排列 */
+      overflow-y: auto; height: auto; padding: 10px; border-radius: 8px;
+    }
+    .preview-section { 
+      order: -1; /* 強制將預覽區排在最上面 */
+      padding: 10px !important; 
+    }
+    .controls-panel { padding: 15px; }
   }
   
   .controls-panel {
@@ -77,7 +87,7 @@
   .img-cell {
     position: relative; background-color: #f8fafc; overflow: hidden; box-sizing: border-box;
     border: 2px dashed #94a3b8;
-    touch-action: none; /* 允許手機觸控手勢 */
+    touch-action: none; 
   }
   
   .img-layer {
@@ -95,11 +105,7 @@
     text-align: center; font-size: 1.1em; color: #64748b; font-weight: bold; line-height: 1.5; pointer-events: none; z-index: 5;
   }
   
-  .img-cell.has-image { 
-    cursor: grab; 
-    border: 3px solid #ffffff; 
-    box-shadow: 0 0 0 1px #cbd5e1; 
-  } 
+  .img-cell.has-image { cursor: grab; border: 3px solid #ffffff; box-shadow: 0 0 0 1px #cbd5e1; } 
   .img-cell.has-image:active { cursor: grabbing; }
   .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
   .img-cell.has-image input[type="file"] { display: none; }
@@ -216,7 +222,7 @@
   </aside>
 
   <div class="preview-section" id="previewWrapper">
-    <div class="workspace-heading">真實比例預覽區 (完全同步輸出尺寸)</div>
+    <div class="workspace-heading">真實比例預覽區</div>
     <div id="workspaceContainer"></div>
   </div>
 </div>
@@ -277,15 +283,27 @@
         const [w, h] = sizeStr.split('x').map(Number);
         
         const targetRatio = w / h;
-        const availW = wrapper.clientWidth - 40; 
-        const availH = wrapper.clientHeight - 80; 
+        const isMobile = window.innerWidth <= 1000;
         
-        if (availW / availH > targetRatio) {
-            container.style.height = `${availH}px`;
-            container.style.width = `${availH * targetRatio}px`;
-        } else {
+        // 考量手機版和電腦版不同的 padding
+        const availW = wrapper.clientWidth - (isMobile ? 20 : 40); 
+        const availH = wrapper.clientHeight - (isMobile ? 60 : 80); 
+        
+        if (isMobile) {
+            // 手機版：直接以寬度滿版為主，確保有最大預覽空間
             container.style.width = `${availW}px`;
             container.style.height = `${availW / targetRatio}px`;
+            wrapper.style.minHeight = `${(availW / targetRatio) + 80}px`; 
+        } else {
+            // 電腦版：考量高度避免超出畫面
+            if (availW / availH > targetRatio) {
+                container.style.height = `${availH}px`;
+                container.style.width = `${availH * targetRatio}px`;
+            } else {
+                container.style.width = `${availW}px`;
+                container.style.height = `${availW / targetRatio}px`;
+            }
+            wrapper.style.minHeight = 'auto';
         }
         
         updatePreviewDOM(); 
