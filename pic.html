@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-<title>FB 完美比例組合工具 - 手機旗艦版</title>
+<title>FB 完美比例組合工具 - 拖曳不裁切版</title>
 <style>
   :root {
     --primary: #1877F2; 
@@ -33,7 +33,6 @@
     padding: 20px; box-sizing: border-box;
   }
   
-  /* 手機版專屬排版優化 */
   @media (max-width: 1000px) { 
     body { height: auto; padding: 10px; }
     .app-container { 
@@ -83,13 +82,21 @@
 
   .img-cell {
     position: relative; background-color: #f8fafc; overflow: hidden; box-sizing: border-box;
-    border: 2px dashed #94a3b8;
+    border: 2px dashed #94a3b8; 
     touch-action: none; 
+    transition: background-color 0.2s;
+  }
+  
+  .img-cell.has-image { border: none; cursor: grab; }
+  
+  .img-cell.drag-over::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(24, 119, 242, 0.15); border: 4px dashed var(--primary); z-index: 50; pointer-events: none;
   }
   
   .img-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: contain; 
+    background-size: cover; 
     background-repeat: no-repeat;
     background-position: center;
     transform-origin: center center;
@@ -97,12 +104,11 @@
   }
   
   .img-cell:not(.has-image)::before {
-    content: "＋\000A點擊上傳";
+    content: "＋\000A點擊或拖入圖片";
     white-space: pre-wrap; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     text-align: center; font-size: 1em; color: #64748b; font-weight: bold; line-height: 1.5; pointer-events: none; z-index: 5;
   }
   
-  .img-cell.has-image { cursor: grab; border: 3px solid #ffffff; box-shadow: 0 0 0 1px #cbd5e1; } 
   .img-cell.has-image:active { cursor: grabbing; }
   .img-cell input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
   .img-cell.has-image input[type="file"] { display: none; }
@@ -116,7 +122,6 @@
   .img-cell.has-image:hover .interaction-overlay { opacity: 0.2; }
   .img-cell.dragging .interaction-overlay { opacity: 0; }
 
-  /* 極小化的更換圖片按鈕 */
   .reupload-btn {
     position: absolute; top: 4px; right: 4px; background: rgba(255,255,255,0.85); color: #333;
     padding: 3px 6px; border-radius: 4px; font-size: 0.65em; cursor: pointer; opacity: 0.6; transition: 0.2s;
@@ -124,11 +129,29 @@
   }
   .img-cell.has-image:hover .reupload-btn { opacity: 1; }
   
-  @media (max-width: 1000px) {
-    .reupload-btn { opacity: 0.8; }
-  }
+  @media (max-width: 1000px) { .reupload-btn { opacity: 0.8; } }
 
-  /* 手機專用長按視窗 */
+  .splitter { position: absolute; z-index: 100; touch-action: none;}
+  .v-split { width: 30px; margin-left: -15px; cursor: col-resize; top: 0; bottom: 0; }
+  .v-split .drag-handle {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 8px; height: 36px; background: var(--primary); border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .v-split .drag-handle::after { content: ''; width: 2px; height: 16px; background: rgba(255,255,255,0.8); border-radius: 1px; }
+
+  .h-split { height: 30px; margin-top: -15px; cursor: row-resize; left: 0; right: 0; }
+  .h-split .drag-handle {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    height: 8px; width: 36px; background: var(--primary); border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .h-split .drag-handle::after { content: ''; height: 2px; width: 16px; background: rgba(255,255,255,0.8); border-radius: 1px; }
+
+  .splitter:hover .drag-handle, .splitter.active .drag-handle { background: #166fe5; transform: translate(-50%, -50%) scale(1.2); transition: 0.2s;}
+
   #imageModal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; 
@@ -142,7 +165,7 @@
 </head>
 <body>
 
-<header>🖼️ FB 比例組合工具</header>
+<header>🖼️ FB 比例組合工具 (拖曳不裁切版)</header>
 
 <div class="app-container">
   <aside class="controls-panel">
@@ -168,25 +191,25 @@
 
     <div id="layoutGroup_2" class="card-grid" style="display: none;">
       <div class="layout-card selected" onclick="selectLayout('fb2v')">
-        <div class="card-icon">◫</div><div class="card-label">兩張圖直式<br>(左右對分)</div>
+        <div class="card-icon">◫</div><div class="card-label">兩張圖直式</div>
       </div>
       <div class="layout-card" onclick="selectLayout('fb2h')">
-        <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式<br>(上下對分)</div>
+        <div class="card-icon">⊟</div><div class="card-label">兩張圖橫式</div>
       </div>
     </div>
 
     <div id="layoutGroup_3" class="card-grid" style="display: none;">
       <div class="layout-card selected" onclick="selectLayout('top-1')">
-        <div class="card-icon">⬆️</div><div class="card-label">大圖在上<br>下2</div>
+        <div class="card-icon">⬆️</div><div class="card-label">大圖在上</div>
       </div>
       <div class="layout-card" onclick="selectLayout('bottom-1')">
-        <div class="card-icon">⬇️</div><div class="card-label">大圖在下<br>上2</div>
+        <div class="card-icon">⬇️</div><div class="card-label">大圖在下</div>
       </div>
       <div class="layout-card" onclick="selectLayout('left-1')">
-        <div class="card-icon">⬅️</div><div class="card-label">左1<br>右2</div>
+        <div class="card-icon">⬅️</div><div class="card-label">左一右二</div>
       </div>
       <div class="layout-card" onclick="selectLayout('right-1')">
-        <div class="card-icon">➡️</div><div class="card-label">右1<br>左2</div>
+        <div class="card-icon">➡️</div><div class="card-label">右一左二</div>
       </div>
     </div>
 
@@ -195,19 +218,20 @@
         <div class="card-icon">🪟</div><div class="card-label">均分四格</div>
       </div>
       <div class="layout-card selected" onclick="selectLayout('top-1-bottom-3')">
-        <div class="card-icon">⬆️</div><div class="card-label">上一大<br>下三小</div>
+        <div class="card-icon">⬆️</div><div class="card-label">上一大下三小</div>
       </div>
       <div class="layout-card" onclick="selectLayout('left-1-right-3')">
-        <div class="card-icon">⬅️</div><div class="card-label">左一大<br>右三小</div>
+        <div class="card-icon">⬅️</div><div class="card-label">左一大右三小</div>
       </div>
     </div>
     
     <div>
-      <div class="step-heading">Step 3: 圖片間隙處理方式</div>
+      <div class="step-heading">Step 3: 圖片融合與間隙處理</div>
       <div class="control-group">
         <select id="style" onchange="toggleBorderPreview()">
-          <option value="border" selected>保留實線邊緣 (可選黑/白)</option>
-          <option value="blur">色彩模糊融合 (無縫過渡)</option>
+          <option value="border" selected>保留實線邊緣 (純調整內邊線)</option>
+          <option value="opacity">透明漸層融合 (Linear Alpha) - 推薦✨</option>
+          <option value="blur">色彩模糊融合 (高斯模糊擴散)</option>
         </select>
       </div>
       
@@ -220,7 +244,7 @@
 
       <div class="control-group" style="margin-top: 15px;">
         <label style="font-weight: 600; font-size: 0.85em; display: flex; justify-content: space-between; color: #606770;">
-          <span>邊線寬度 / 渲染深度 (PX)：</span>
+          <span id="sliderLabel">內邊線寬度 (PX)：</span>
           <span id="pxDisplay" style="color: var(--primary);">5 px</span>
         </label>
         <input type="range" id="effectValue" min="0" max="150" value="5" step="1" oninput="updatePxDisplay(this.value)" style="margin-top: 5px;">
@@ -229,7 +253,7 @@
 
     <div style="margin-top: auto;">
       <button class="generate-btn" onclick="exportCollage()">⬇️ 產生並儲存圖片</button>
-      <div id="status" class="status-text">手機版會自動跳出存入相簿畫面</div>
+      <div id="status" class="status-text">預設滿版！滑動時完美保留周圍裁切區不露底。</div>
     </div>
   </aside>
 
@@ -239,7 +263,6 @@
   </div>
 </div>
 
-<!-- 手機版：長按儲存視窗 -->
 <div id="imageModal">
   <div class="modal-content">
     <p style="margin: 0 0 5px 0; font-weight: bold; color: #1c1e21; font-size: 1.1em;">✨ 圖片已組合完成！</p>
@@ -251,50 +274,74 @@
 
 <script>
     const fbLayouts = {
-        'fb2v': { count: 2, cols: '1fr 1fr', rows: '1fr', getArea: (i) => i===0 ? '1/1/2/2' : '1/2/2/3', getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1}] },
-        'fb2h': { count: 2, cols: '1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : '2/1/3/2', getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] },
-        'top-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/3' : (i===1 ? '2/1/3/2' : '2/2/3/3'), getExport: () => [{x:0,y:0,w:1,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] },
-        'bottom-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : '2/1/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1,h:1/2}] },
-        'left-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/3/2' : (i===1 ? '1/2/2/3' : '2/2/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1}, {x:1/2,y:0,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] },
-        'right-1': { count: 3, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '2/1/3/2' : '1/2/3/3'), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1}] },
-        'top-1-bottom-3': { count: 4, cols: '1fr 1fr 1fr', rows: '2fr 1fr', getArea: (i) => i===0 ? '1/1/2/4' : `2/${i}/3/${i+1}`, getExport: () => [{x:0,y:0,w:1,h:2/3}, {x:0,y:2/3,w:1/3,h:1/3}, {x:1/3,y:2/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] },
-        'left-1-right-3': { count: 4, cols: '2fr 1fr', rows: '1fr 1fr 1fr', getArea: (i) => i===0 ? '1/1/4/2' : `${i}/2/${i+1}/3`, getExport: () => [{x:0,y:0,w:2/3,h:1}, {x:2/3,y:0,w:1/3,h:1/3}, {x:2/3,y:1/3,w:1/3,h:1/3}, {x:2/3,y:2/3,w:1/3,h:1/3}] },
-        'grid': { count: 4, cols: '1fr 1fr', rows: '1fr 1fr', getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : (i===2 ? '2/1/3/2' : '2/2/3/3')), getExport: () => [{x:0,y:0,w:1/2,h:1/2}, {x:1/2,y:0,w:1/2,h:1/2}, {x:0,y:1/2,w:1/2,h:1/2}, {x:1/2,y:1/2,w:1/2,h:1/2}] }
+        'fb2v': { count: 2, defaultX: 50, activeSplits: ['x'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `100%`,
+            getArea: (i) => i===0 ? '1/1/2/2' : '1/2/2/3' },
+        'fb2h': { count: 2, defaultY: 50, activeSplits: ['y'],
+            getCols: (x) => `100%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/2' : '2/1/3/2' },
+        'top-1': { count: 3, defaultX: 50, defaultY: 66.66, activeSplits: ['x', 'y'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/3' : (i===1 ? '2/1/3/2' : '2/2/3/3') },
+        'bottom-1': { count: 3, defaultX: 50, defaultY: 33.33, activeSplits: ['x', 'y'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : '2/1/3/3') },
+        'left-1': { count: 3, defaultX: 66.66, defaultY: 50, activeSplits: ['x', 'y'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/3/2' : (i===1 ? '1/2/2/3' : '2/2/3/3') },
+        'right-1': { count: 3, defaultX: 33.33, defaultY: 50, activeSplits: ['x', 'y'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '2/1/3/2' : '1/2/3/3') },
+        'top-1-bottom-3': { count: 4, defaultX: 50, defaultY: 66.66, activeSplits: ['y'],
+            getCols: (x) => `1fr 1fr 1fr`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/4' : `2/${i}/3/${i+1}` },
+        'left-1-right-3': { count: 4, defaultX: 66.66, defaultY: 50, activeSplits: ['x'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `1fr 1fr 1fr`,
+            getArea: (i) => i===0 ? '1/1/4/2' : `${i}/2/${i+1}/3` },
+        'grid': { count: 4, defaultX: 50, defaultY: 50, activeSplits: ['x', 'y'],
+            getCols: (x) => `${x}% ${100-x}%`, getRows: (y) => `${y}% ${100-y}%`,
+            getArea: (i) => i===0 ? '1/1/2/2' : (i===1 ? '1/2/2/3' : (i===2 ? '2/1/3/2' : '2/2/3/3')) }
     };
 
     const state = {
         currentLayout: 'top-1-bottom-3',
         images: [null, null, null, null],
-        cellStates: [ {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1} ]
+        cellStates: [ {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1}, {ox: 0, oy: 0, scale: 1} ],
+        splitX: 50, splitY: 66.66,
+        isDraggingSplitter: null
     };
 
     window.addEventListener('resize', resizeWorkspace);
     window.addEventListener('DOMContentLoaded', () => {
         resizeWorkspace();
-        toggleBorderPreview();
+        updatePreviewDOM(); 
     });
 
     function updatePxDisplay(val) { 
         document.getElementById('pxDisplay').innerText = val + ' px'; 
+        toggleBorderPreview(); 
     }
     
     function toggleBorderPreview() {
         const style = document.getElementById('style').value;
         const colorSelect = document.getElementById('borderColorGroup');
-        const borderColor = document.getElementById('borderColor').value;
+        const container = document.getElementById('workspaceContainer');
+        const effectPX = parseInt(document.getElementById('effectValue').value);
+        const label = document.getElementById('sliderLabel');
 
-        if (style === 'blur') {
+        if (style === 'opacity' || style === 'blur') {
             colorSelect.style.display = 'none'; 
-            document.querySelectorAll('.img-cell.has-image').forEach(cell => {
-                cell.style.border = 'none';
-                cell.style.boxShadow = 'none';
-            });
+            label.innerText = '邊緣渲染融合深度 (PX)：';
+            container.style.gap = '0px'; 
+            container.style.backgroundColor = '#fff';
         } else {
             colorSelect.style.display = 'block'; 
-            document.querySelectorAll('.img-cell.has-image').forEach(cell => {
-                cell.style.border = `3px solid ${borderColor}`; 
-                cell.style.boxShadow = borderColor === '#ffffff' ? '0 0 0 1px #cbd5e1' : '0 0 0 1px #333';
-            });
+            label.innerText = '內邊線留白寬度 (PX)：';
+            const outW = parseInt(document.getElementById('outSize').value.split('x')[0]) || 1200;
+            const domW = container.offsetWidth || 1; 
+            const previewGap = effectPX * (domW / outW);
+            container.style.gap = `${previewGap}px`; 
+            container.style.backgroundColor = document.getElementById('borderColor').value; 
         }
     }
 
@@ -325,7 +372,7 @@
             wrapper.style.minHeight = 'auto';
         }
         
-        updatePreviewDOM(); 
+        toggleBorderPreview(); 
     }
 
     function switchTab(num, element) {
@@ -343,6 +390,9 @@
 
     function selectLayout(layoutId) {
         state.currentLayout = layoutId;
+        const layoutConfig = fbLayouts[layoutId];
+        state.splitX = layoutConfig.defaultX || 50;
+        state.splitY = layoutConfig.defaultY || 50;
         
         document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
         document.querySelectorAll('.layout-card').forEach(c => {
@@ -361,13 +411,23 @@
         workspace.innerHTML = '';
         
         const layoutConfig = fbLayouts[state.currentLayout];
-        workspace.style.gridTemplateColumns = layoutConfig.cols;
-        workspace.style.gridTemplateRows = layoutConfig.rows;
+        workspace.style.gridTemplateColumns = layoutConfig.getCols(state.splitX);
+        workspace.style.gridTemplateRows = layoutConfig.getRows(state.splitY);
 
         for (let i = 0; i < layoutConfig.count; i++) {
             const cell = document.createElement('div');
             cell.className = 'img-cell'; cell.id = `cell-${i}`; 
             cell.style.gridArea = layoutConfig.getArea(i);
+
+            cell.addEventListener('dragover', (e) => { e.preventDefault(); cell.classList.add('drag-over'); });
+            cell.addEventListener('dragleave', (e) => { e.preventDefault(); cell.classList.remove('drag-over'); });
+            cell.addEventListener('drop', (e) => {
+                e.preventDefault(); cell.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('image/')) processFile(file, i);
+                }
+            });
 
             const layer = document.createElement('div');
             layer.className = 'img-layer';
@@ -375,7 +435,9 @@
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file'; fileInput.accept = 'image/*';
-            fileInput.onchange = function() { handleFile(i, this); };
+            fileInput.onchange = function(e) { 
+                if (e.target.files.length > 0) processFile(e.target.files[0], i);
+            };
             cell.appendChild(fileInput);
 
             if (state.images[i]) {
@@ -397,27 +459,65 @@
             workspace.appendChild(cell);
         }
         
+        addSplitters(workspace, layoutConfig);
         toggleBorderPreview(); 
     }
 
-    function handleFile(index, input) {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => { state.images[index] = img; updatePreviewDOM(); };
-                img.src = e.target.result;
+    function addSplitters(workspace, layoutConfig) {
+        if (layoutConfig.activeSplits.includes('y')) {
+            const hSplit = document.createElement('div'); 
+            hSplit.className = 'splitter h-split';
+            hSplit.style.top = `${state.splitY}%`; 
+            hSplit.innerHTML = '<div class="drag-handle"></div>';
+            
+            hSplit.onpointerdown = (e) => { 
+                e.preventDefault(); e.stopPropagation();
+                state.isDraggingSplitter = 'y'; 
+                hSplit.classList.add('active');
             };
-            reader.readAsDataURL(file);
+            workspace.appendChild(hSplit);
+        }
+        if (layoutConfig.activeSplits.includes('x')) {
+            const vSplit = document.createElement('div'); 
+            vSplit.className = 'splitter v-split';
+            vSplit.style.left = `${state.splitX}%`; 
+            vSplit.innerHTML = '<div class="drag-handle"></div>';
+            
+            vSplit.onpointerdown = (e) => { 
+                e.preventDefault(); e.stopPropagation();
+                state.isDraggingSplitter = 'x'; 
+                vSplit.classList.add('active');
+            };
+            workspace.appendChild(vSplit);
         }
     }
 
+    function processFile(file, index) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => { 
+                state.images[index] = img; 
+                state.cellStates[index] = {ox: 0, oy: 0, scale: 1}; 
+                updatePreviewDOM(); 
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // 【核心修正】：改用 Background-Position 控制位移，確保邊緣影像滑入時不會漏出白底
     function applyImageTransform(cell, i) {
         const cs = state.cellStates[i];
         const layer = cell.querySelector('.img-layer');
         layer.style.backgroundImage = `url(${state.images[i].src})`;
-        layer.style.transform = `translate(${cs.ox}px, ${cs.oy}px) scale(${cs.scale})`;
+        
+        // 強制最小為 1 倍大小(確保滿版)
+        const finalScale = Math.max(1, cs.scale); 
+        layer.style.transform = `scale(${finalScale})`;
+        
+        // 透過 backgroundPosition 平移影像，這樣就會從被 Cover 遮住的地方滑出來，完美解決切邊問題！
+        layer.style.backgroundPosition = `calc(50% + ${cs.ox / finalScale}px) calc(50% + ${cs.oy / finalScale}px)`;
     }
 
     function setupImageInteraction(cell, i) {
@@ -431,49 +531,42 @@
         cell.onwheel = function(e) {
             if (e.target.tagName === 'INPUT') return;
             e.preventDefault();
-            cs.scale = Math.max(0.1, Math.min(10, cs.scale + (e.deltaY > 0 ? -0.05 : 0.05)));
+            cs.scale = Math.max(1, Math.min(10, cs.scale + (e.deltaY > 0 ? -0.05 : 0.05)));
             applyImageTransform(cell, i);
         };
 
         cell.onpointerdown = function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.classList.contains('reupload-btn')) return;
+            if (e.target.tagName === 'INPUT' || e.target.classList.contains('reupload-btn') || state.isDraggingSplitter) return;
+            e.preventDefault(); 
             evCache.push(e);
             cell.setPointerCapture(e.pointerId);
             cell.classList.add('dragging');
 
             if (evCache.length === 1) {
                 isDragging = true;
-                dragStartX = e.clientX;
-                dragStartY = e.clientY;
-                initialOx = cs.ox;
-                initialOy = cs.oy;
+                dragStartX = e.clientX; dragStartY = e.clientY;
+                initialOx = cs.ox; initialOy = cs.oy;
             } else if (evCache.length === 2) {
                 isDragging = false;
-                prevDiff = Math.hypot(
-                    evCache[0].clientX - evCache[1].clientX,
-                    evCache[0].clientY - evCache[1].clientY
-                );
+                prevDiff = Math.hypot(evCache[0].clientX - evCache[1].clientX, evCache[0].clientY - evCache[1].clientY);
             }
         };
 
         cell.onpointermove = function(e) {
+            if(state.isDraggingSplitter) return;
             const index = evCache.findIndex(ev => ev.pointerId === e.pointerId);
             if (index > -1) evCache[index] = e;
 
             if (evCache.length === 1 && isDragging) {
                 const dx = e.clientX - dragStartX;
                 const dy = e.clientY - dragStartY;
-                cs.ox = initialOx + dx;
-                cs.oy = initialOy + dy;
+                cs.ox = initialOx + dx; cs.oy = initialOy + dy;
                 applyImageTransform(cell, i);
             } else if (evCache.length === 2) {
-                const curDiff = Math.hypot(
-                    evCache[0].clientX - evCache[1].clientX,
-                    evCache[0].clientY - evCache[1].clientY
-                );
+                const curDiff = Math.hypot(evCache[0].clientX - evCache[1].clientX, evCache[0].clientY - evCache[1].clientY);
                 if (prevDiff > 0) {
                     const ratio = curDiff / prevDiff;
-                    cs.scale = Math.max(0.1, Math.min(10, cs.scale * ratio));
+                    cs.scale = Math.max(1, Math.min(10, cs.scale * ratio));
                     applyImageTransform(cell, i);
                 }
                 prevDiff = curDiff;
@@ -483,7 +576,6 @@
         function pointerEnd(e) {
             const index = evCache.findIndex(ev => ev.pointerId === e.pointerId);
             if (index > -1) evCache.splice(index, 1);
-
             if (evCache.length < 2) prevDiff = -1;
 
             if (evCache.length === 0) {
@@ -492,18 +584,34 @@
                 try { cell.releasePointerCapture(e.pointerId); } catch(err){}
             } else if (evCache.length === 1) {
                 isDragging = true;
-                dragStartX = evCache[0].clientX;
-                dragStartY = evCache[0].clientY;
-                initialOx = cs.ox;
-                initialOy = cs.oy;
+                dragStartX = evCache[0].clientX; dragStartY = evCache[0].clientY;
+                initialOx = cs.ox; initialOy = cs.oy;
             }
         }
 
         cell.onpointerup = pointerEnd;
         cell.onpointercancel = pointerEnd;
-        cell.onpointerout = pointerEnd;
-        cell.onpointerleave = pointerEnd;
     }
+
+    window.addEventListener('pointermove', (e) => {
+        if (state.isDraggingSplitter) {
+            e.preventDefault();
+            const rect = document.getElementById('workspaceContainer').getBoundingClientRect();
+            if (state.isDraggingSplitter === 'x') {
+                state.splitX = Math.max(10, Math.min(90, ((e.clientX - rect.left) / rect.width) * 100));
+            } else if (state.isDraggingSplitter === 'y') {
+                state.splitY = Math.max(10, Math.min(90, ((e.clientY - rect.top) / rect.height) * 100));
+            }
+            updatePreviewDOM(); 
+        }
+    });
+
+    window.addEventListener('pointerup', () => { 
+        if (state.isDraggingSplitter) {
+            state.isDraggingSplitter = null; 
+            document.querySelectorAll('.splitter').forEach(el => el.classList.remove('active'));
+        }
+    });
 
     function drawImageCoverTransformed(ctx, img, cellConfig, cs, workspaceW, workspaceH, outW, outH, overlapPad = 0) {
         ctx.save();
@@ -518,18 +626,16 @@
         ctx.clip();
 
         const imgRatio = img.width / img.height;
-        const cellRatio = cellConfig.w / cellConfig.h;
+        const cellRatio = cellConfig.w / cellConfig.h; 
         let baseW, baseH;
 
         if (imgRatio > cellRatio) {
-            baseW = cellConfig.w; 
-            baseH = cellConfig.w / imgRatio;
+            baseH = cellConfig.h; baseW = cellConfig.h * imgRatio;
         } else {
-            baseH = cellConfig.h; 
-            baseW = cellConfig.h * imgRatio;
+            baseW = cellConfig.w; baseH = cellConfig.w / imgRatio;
         }
 
-        const finalScale = cs.scale; 
+        const finalScale = Math.max(1, cs.scale); 
         const drawW = baseW * finalScale;
         const drawH = baseH * finalScale;
 
@@ -542,6 +648,48 @@
         const dy = cellConfig.y + (cellConfig.h - drawH) / 2 + panY;
 
         ctx.drawImage(img, dx, dy, drawW, drawH);
+        ctx.restore();
+    }
+
+    function drawLinearAlphaMask(ctx, x, y, w, h, pad) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(pad, pad, w - pad*2, h - pad*2);
+
+        let gTop = ctx.createLinearGradient(0, pad, 0, 0);
+        gTop.addColorStop(0, 'rgba(255,255,255,1)'); gTop.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gTop; ctx.fillRect(pad, 0, w - pad*2, pad);
+
+        let gBot = ctx.createLinearGradient(0, h-pad, 0, h);
+        gBot.addColorStop(0, 'rgba(255,255,255,1)'); gBot.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gBot; ctx.fillRect(pad, h-pad, w - pad*2, pad);
+
+        let gLeft = ctx.createLinearGradient(pad, 0, 0, 0);
+        gLeft.addColorStop(0, 'rgba(255,255,255,1)'); gLeft.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gLeft; ctx.fillRect(0, pad, pad, h - pad*2);
+
+        let gRight = ctx.createLinearGradient(w-pad, 0, w, 0);
+        gRight.addColorStop(0, 'rgba(255,255,255,1)'); gRight.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gRight; ctx.fillRect(w-pad, pad, pad, h - pad*2);
+
+        let rTL = ctx.createRadialGradient(pad, pad, 0, pad, pad, pad);
+        rTL.addColorStop(0, 'rgba(255,255,255,1)'); rTL.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rTL; ctx.fillRect(0, 0, pad, pad);
+
+        let rTR = ctx.createRadialGradient(w-pad, pad, 0, w-pad, pad, pad);
+        rTR.addColorStop(0, 'rgba(255,255,255,1)'); rTR.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rTR; ctx.fillRect(w-pad, 0, pad, pad);
+
+        let rBL = ctx.createRadialGradient(pad, h-pad, 0, pad, h-pad, pad);
+        rBL.addColorStop(0, 'rgba(255,255,255,1)'); rBL.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rBL; ctx.fillRect(0, h-pad, pad, pad);
+
+        let rBR = ctx.createRadialGradient(w-pad, h-pad, 0, w-pad, h-pad, pad);
+        rBR.addColorStop(0, 'rgba(255,255,255,1)'); rBR.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rBR; ctx.fillRect(w-pad, h-pad, pad, pad);
+
         ctx.restore();
     }
 
@@ -574,7 +722,7 @@
         const workspaceH = workspaceRect.height;
 
         const statusEl = document.getElementById('status');
-        statusEl.innerText = '正在運算影像，請稍候...';
+        statusEl.innerText = '正在運算影像效果，請稍候...';
         
         setTimeout(() => {
             const canvas = document.createElement('canvas');
@@ -584,21 +732,26 @@
             ctx.fillStyle = style === 'border' ? borderColor : '#000000'; 
             ctx.fillRect(0, 0, outW, outH);
             
-            const relativeCells = layoutConfig.getExport();
-            const cells = relativeCells.map(c => ({
-                x: c.x * outW, y: c.y * outH, w: c.w * outW, h: c.h * outH
-            }));
+            const cells = [];
+            for (let i = 0; i < requiredImgs; i++) {
+                const cellDOM = document.getElementById(`cell-${i}`);
+                const rect = cellDOM.getBoundingClientRect();
+                cells.push({
+                    x: ((rect.left - workspaceRect.left) / workspaceW) * outW,
+                    y: ((rect.top - workspaceRect.top) / workspaceH) * outH,
+                    w: (rect.width / workspaceW) * outW,
+                    h: (rect.height / workspaceH) * outH
+                });
+            }
 
-            // [手機版記憶體優化]：取代耗效能的 blur filter，使用硬體加速支援極佳的 shadowBlur 來製作遮罩
             let tCanvas = null;
             let tCtx = null;
-            if (style === 'blur') {
+            if (style === 'blur' || style === 'opacity') {
                 tCanvas = document.createElement('canvas'); 
                 tCanvas.width = outW; 
                 tCanvas.height = outH; 
                 tCtx = tCanvas.getContext('2d');
                 
-                // 第一層底圖延展交疊 (解決黑邊問題)
                 for (let i = 0; i < requiredImgs; i++) {
                     const expandedCell = {
                         x: cells[i].x - effectPX, y: cells[i].y - effectPX,
@@ -612,25 +765,26 @@
                 const cell = cells[i], img = state.images[i], cs = state.cellStates[i];
                 
                 if (style === 'border') {
-                    const cellShrunk = { 
-                        x: cell.x + effectPX, y: cell.y + effectPX, 
-                        w: Math.max(1, cell.w - effectPX * 2), h: Math.max(1, cell.h - effectPX * 2) 
-                    };
-                    drawImageCoverTransformed(ctx, img, cellShrunk, cs, workspaceW, workspaceH, outW, outH, 0);
+                    drawImageCoverTransformed(ctx, img, cell, cs, workspaceW, workspaceH, outW, outH, 0);
                 } 
+                else if (style === 'opacity') {
+                    tCtx.clearRect(0, 0, outW, outH);
+                    tCtx.globalCompositeOperation = 'source-over';
+                    drawLinearAlphaMask(tCtx, cell.x, cell.y, cell.w, cell.h, effectPX);
+                    tCtx.globalCompositeOperation = 'source-in';
+                    drawImageCoverTransformed(tCtx, img, cell, cs, workspaceW, workspaceH, outW, outH, effectPX); 
+                    ctx.drawImage(tCanvas, 0, 0);
+                }
                 else if (style === 'blur') {
                     tCtx.clearRect(0, 0, outW, outH);
                     tCtx.globalCompositeOperation = 'source-over';
-                    
-                    // 使用 Shadow Blur 製作高效能柔邊遮罩
                     tCtx.save();
                     tCtx.shadowColor = '#ffffff';
                     tCtx.shadowBlur = effectPX;
                     tCtx.fillStyle = '#ffffff';
 
                     let mLeft = cell.x, mTop = cell.y, mRight = cell.x + cell.w, mBottom = cell.y + cell.h;
-                    const safePad = effectPX * 4; 
-                    const shrink = effectPX / 2;
+                    const safePad = effectPX * 4; const shrink = effectPX / 2;
 
                     if (mLeft <= 1) mLeft -= safePad; else mLeft += shrink;
                     if (mTop <= 1) mTop -= safePad; else mTop += shrink;
@@ -638,12 +792,11 @@
                     if (mBottom >= outH - 1) mBottom += safePad; else mBottom -= shrink;
                     
                     tCtx.fillRect(mLeft, mTop, mRight - mLeft, mBottom - mTop);
-                    tCtx.fillRect(mLeft, mTop, mRight - mLeft, mBottom - mTop); // 加強遮罩中心的不透明度
+                    tCtx.fillRect(mLeft, mTop, mRight - mLeft, mBottom - mTop);
                     tCtx.restore();
                     
                     tCtx.globalCompositeOperation = 'source-in';
                     drawImageCoverTransformed(tCtx, img, cell, cs, workspaceW, workspaceH, outW, outH, effectPX * 2); 
-                    
                     ctx.drawImage(tCanvas, 0, 0);
                 }
             }
@@ -652,34 +805,25 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             const filename = `fb_collage_${outW}x${outH}.jpg`;
 
-            // 手機版：優先嘗試系統原生分享/儲存相簿，若失敗則彈出視窗讓使用者長按
             if (isMobile) {
                 try {
                     canvas.toBlob((blob) => {
                         const file = new File([blob], filename, { type: 'image/jpeg' });
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
                             navigator.share({
-                                files: [file],
-                                title: '圖片組合完成',
+                                files: [file], title: '圖片組合完成',
                             }).then(() => {
                                 statusEl.innerHTML = `✅ 已成功開啟分享，請點擊「儲存影像」。`;
-                            }).catch(() => {
-                                showImageModal(dataUrl);
-                            });
-                        } else {
-                            showImageModal(dataUrl);
-                        }
+                            }).catch(() => { showImageModal(dataUrl); });
+                        } else { showImageModal(dataUrl); }
                     }, 'image/jpeg', 0.95);
-                } catch (err) {
-                    showImageModal(dataUrl);
-                }
+                } catch (err) { showImageModal(dataUrl); }
             } else {
-                // 電腦版直接下載
                 const link = document.createElement('a');
                 link.download = filename;
                 link.href = dataUrl;
                 link.click();
-                statusEl.innerHTML = `✅ 電腦版下載完成！`;
+                statusEl.innerHTML = `✅ 電腦版下載完成！<br>真實輸出：鎖定 <span id="statusSize">${outW}x${outH}</span>，所見即所得。`;
             }
         }, 100);
     }
