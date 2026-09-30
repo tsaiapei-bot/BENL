@@ -115,6 +115,17 @@ const detailZh={
 function detailText(x){return zh?(detailZh[x.place]||x.detail):x.detail}
 function dayTitle(d){return (zh?dayNamesZh:dayNamesJa)[d]||d}
 function mapUrl(p){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p)}
+// 交通路線與同一行程列出的多個地點，分別提供各自的 Google 地圖連結。
+function mapTargets(place){
+ const parts=place.split(/\s*(?:→|＆|－| - )\s*/).map(s=>s.trim()).filter(Boolean);
+ return parts.length>1?parts:[place];
+}
+function mapLabel(place){
+ if(!zh)return place;
+ const exact=names[place];
+ if(exact)return exact;
+ return place.replaceAll('空港','機場').replaceAll('駅','站').replaceAll('旧竹林院','舊竹林院').replaceAll('坂本ケーブル','坂本纜車').replaceAll('関西国際','關西國際').replaceAll('台北(桃園)','台北（桃園）');
+}
 function render(){
  document.documentElement.lang=zh?"zh-Hant":"ja";
  document.getElementById("title").textContent=zh?"京阪電車採訪行程":"京阪電車 取材旅程";
@@ -132,7 +143,7 @@ function render(){
  keys.filter(d=>selected==="all"||selected===d).forEach(d=>{
   const a=data.filter(x=>x.day===d),date=a.find(x=>x.date)?.date||"";
   out+='<section><div class="dayhead"><div class="daybadge">'+d+'</div><h2>'+dayTitle(d)+'<small>'+date+(a[0]?.weekday?' · '+(zh?(weekdaysZh[a[0].weekday]||a[0].weekday):a[0].weekday):'')+'</small></h2></div><div class="timeline">';
-  a.forEach(x=>{out+='<article class="event"><div class="meta">'+(x.time?'<span class="time">'+x.time+'</span>':'')+(x.duration?'<span>'+durationText(x.duration)+'</span>':'')+(x.comment?'<span class="tag">'+commentText(x.comment)+'</span>':'')+'</div><h3>'+tr(x.place)+'</h3>'+(detailText(x)?'<p class="detail">'+detailText(x)+'</p>':'')+'<div class="actions"><a class="mapbtn" target="_blank" rel="noopener noreferrer" href="'+mapUrl(x.place)+'">↗ '+(zh?"Google 地圖":"Google マップ")+'</a></div></article>'});
+  a.forEach(x=>{const links=mapTargets(x.place).map((p,i)=>'<a class="mapbtn" target="_blank" rel="noopener noreferrer" href="'+mapUrl(p)+'">↗ '+(zh?'Google 地圖：':'Google マップ：')+mapLabel(p)+'</a>').join('');out+='<article class="event"><div class="meta">'+(x.time?'<span class="time">'+x.time+'</span>':'')+(x.duration?'<span>'+durationText(x.duration)+'</span>':'')+(x.comment?'<span class="tag">'+commentText(x.comment)+'</span>':'')+'</div><h3>'+tr(x.place)+'</h3>'+(detailText(x)?'<p class="detail">'+detailText(x)+'</p>':'')+'<div class="actions">'+links+'</div></article>'});
   out+='</div></section>';
  });
  document.getElementById("itinerary").innerHTML=out;
