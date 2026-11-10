@@ -26,28 +26,29 @@
         -webkit-font-smoothing: antialiased;
     }
 
+    /* 頂部固定導覽頁籤 (Tabs) */
     .nav-container {
         position: sticky;
         top: 0;
-        background: rgba(248, 250, 252, 0.9);
+        background: rgba(248, 250, 252, 0.95);
         backdrop-filter: blur(8px);
         padding: 10px 0 16px 0;
         z-index: 100;
         margin-bottom: 8px;
     }
 
-    .nav-buttons {
+    .nav-tabs {
         display: flex;
         gap: 8px;
         overflow-x: auto;
         padding-bottom: 4px;
         scrollbar-width: none;
     }
-    .nav-buttons::-webkit-scrollbar {
+    .nav-tabs::-webkit-scrollbar {
         display: none;
     }
 
-    .nav-buttons button {
+    .nav-tabs button {
         background: #ffffff;
         color: var(--text-muted);
         border: 1px solid var(--border-color);
@@ -61,18 +62,19 @@
         box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
-    .nav-buttons button:hover {
+    .nav-tabs button:hover {
         border-color: var(--accent);
         color: var(--accent);
     }
 
-    .nav-buttons button.active {
+    .nav-tabs button.active {
         background: var(--accent);
         color: white;
         border-color: var(--accent);
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
+    /* 每日行程主卡片 */
     .day {
         background: var(--card-bg);
         border-radius: 16px;
@@ -108,7 +110,7 @@
 
     .header h2 {
         margin: 0 0 10px 0;
-        font-size: 0.85em;
+        font-size: 0.85em; /* 日期縮小 */
         color: #93c5fd;
         border: none;
         padding: 0;
@@ -202,7 +204,7 @@
         for (var i = 0; i < days.length; i++) {
             days[i].classList.remove('active');
         }
-        var buttons = document.querySelectorAll('.nav-buttons button');
+        var buttons = document.querySelectorAll('.nav-tabs button');
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].classList.remove('active');
         }
@@ -214,8 +216,9 @@
 </head>
 <body>
 
+<!-- 頂部頁籤 (Tabs) 導覽列 -->
 <div class="nav-container">
-    <div class="nav-buttons">
+    <div class="nav-tabs">
         <button id="btn-day-1" class="active" onclick="showDay(1)">Day 1</button>
         <button id="btn-day-2" onclick="showDay(2)">Day 2</button>
         <button id="btn-day-3" onclick="showDay(3)">Day 3</button>
@@ -329,7 +332,7 @@
 <div id="day-3" class="day">
     <div class="header">
         <h2>12/13 (週日)</h2>
-        <h1>清酒巡禮 (壽酒造) 與 Asahi 啤酒見學</h1>
+        <h1>清酒巡禮 (高槻市富田酒造街) 與 Asahi 啤酒見學</h1>
         <div class="weather">
             <strong>⛅ 天氣預報：</strong> 氣溫約 4°C ~ 11°C・晴朗・<a href="https://weather.yahoo.co.jp/weather/jp/27/6100.html" target="_blank" style="color: #93c5fd; text-decoration: underline;">查看即時氣象 ↗</a>
         </div>
@@ -342,16 +345,26 @@
         </div>
         <div class="time-item">
             <div class="time-badge">10:30</div>
-            <div class="location-title"><a href="https://www.google.com/maps/search/?api=1&query=壽酒造+國乃長" target="_blank">壽酒造 (國乃長清酒與精釀啤酒)</a></div>
-            <div class="desc">前往高槻市富田酒造街，於酒廠直營立飲吧台「クラノミ」品嚐在地限定清酒與國乃長精釀啤酒</div>
+            <div class="location-title"><a href="https://www.google.com/maps/search/?api=1&query=高槻市富田酒造街" target="_blank">高槻市富田酒造街</a></div>
+            <div class="desc">搭車前往擁有悠久歷史的富田酒造街散策</div>
         </div>
         <div class="time-item">
-            <div class="time-badge">13:30</div>
+            <div class="time-badge">11:30</div>
+            <div class="location-title">高槻市車站周邊</div>
+            <div class="desc">於車站周邊享用在地美食墊胃</div>
+        </div>
+        <div class="time-item">
+            <div class="time-badge">13:00</div>
+            <div class="location-title"><a href="https://www.google.com/maps/search/?api=1&query=壽酒造+國乃長" target="_blank">壽酒造 國乃長</a></div>
+            <div class="desc">於酒廠直營吧台「クラノミ」品嚐限定清酒與精釀啤酒</div>
+        </div>
+        <div class="time-item">
+            <div class="time-badge">15:00</div>
             <div class="location-title"><a href="https://www.google.com/maps/search/?api=1&query=Asahi+Beer+Museum+吹田工廠" target="_blank">Asahi Beer Museum (朝日啤酒吹田工廠)</a></div>
-            <div class="desc">參觀百年啤酒廠歷史與產線，導覽結束後享用新鮮生啤酒試飲</div>
+            <div class="desc">下午前往吹田工廠參觀歷史與產線，導覽後享用新鮮生啤酒試飲</div>
         </div>
         <div class="time-item">
-            <div class="time-badge">16:00</div>
+            <div class="time-badge">17:30</div>
             <div class="location-title"><a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Premier+Osaka+Hommachi" target="_blank">Super Hotel Premier 大阪本町站前</a></div>
             <div class="desc">返回本町飯店辦理 Check-in，享受 Happy Hour 與天然溫泉</div>
         </div>
@@ -429,7 +442,7 @@
         <div class="time-item">
             <div class="time-badge">08:30</div>
             <div class="location-title">飯店打包</div>
-            <div class="desc">將模型、文具、運動鞋與藥妝妥善裝箱</div>
+            <div class="desc">JSON 模型、文具、運動鞋與藥妝妥善裝箱</div>
         </div>
         <div class="time-item">
             <div class="time-badge">09:30</div>
