@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大阪五天四夜 熱血微醺專屬行程</title>
+<style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f4f4f9; color: #333; max-width: 900px; margin: 20px auto; padding: 20px; line-height: 1.6; }
+    .header { background: #2c3e50; color: white; padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { margin: 0 0 10px 0; font-size: 2em; letter-spacing: 1px; }
+    .weather { font-size: 1.1em; margin-top: 10px; color: #ecf0f1; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; display: inline-block; text-align: left; }
+    .day { background: white; padding: 20px 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
+    .day.active { display: block; }
+    h2 { color: #2980b9; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+    tr:last-child th, tr:last-child td { border-bottom: none; }
+    th { background: #f8f9fa; font-weight: 600; width: 12%; color: #555; white-space: nowrap; }
+    td.location { width: 35%; font-weight: bold; }
+    td.location a { color: #e74c3c; text-decoration: none; display: inline-flex; align-items: center; }
+    td.location a::after { content: " 📍"; font-size: 0.9em; }
+    td.location a:hover { text-decoration: underline; color: #c0392b; }
+    
+    /* Navigation Buttons */
+    .nav-buttons { text-align: center; margin-bottom: 20px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .nav-buttons button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; transition: background 0.3s; }
+    .nav-buttons button:hover { background: #2980b9; }
+    .nav-buttons button.active { background: #e74c3c; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+
+    @media (max-width: 600px) {
+        table, thead, tbody, th, td, tr { display: block; }
+        th { width: auto; background: transparent; padding-bottom: 0; color: #2980b9; }
+        td { padding-top: 5px; }
+        td.location { width: auto; }
+        tr { border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 10px; }
+    }
+</style>
+<script>
+    function showDay(dayIndex) {
+        var days = document.getElementsByClassName('day');
+        for (var i = 0; i < days.length; i++) {
+            days[i].classList.remove('active');
+        }
+        var buttons = document.querySelectorAll('.nav-buttons button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        document.getElementById('day-' + dayIndex).classList.add('active');
+        document.getElementById('btn-day-' + dayIndex).classList.add('active');
+    }
+</script>
+</head>
+<body>
+
+<div class="nav-buttons">
+    <button id="btn-day-1" class="active" onclick="showDay(1)">Day 1 (12/11)</button>
+    <button id="btn-day-2" onclick="showDay(2)">Day 2 (12/12)</button>
+    <button id="btn-day-3" onclick="showDay(3)">Day 3 (12/13)</button>
+    <button id="btn-day-4" onclick="showDay(4)">Day 4 (12/14)</button>
+    <button id="btn-day-5" onclick="showDay(5)">Day 5 (12/15)</button>
+</div>
+
+<!-- Day 1 -->
+<div id="day-1" class="day active">
+    <div class="header">
+        <h1>大阪五天四夜 熱血微醺專屬行程</h1>
+        <div class="weather">
+            <strong>📅 日期：</strong>12月11日 (週五)<br>
+            <strong>⛅ 天氣：</strong>大阪冬季平均氣溫約 5°C ~ 12°C，天氣乾冷。建議採「洋蔥式穿搭」。
+        </div>
+    </div>
+    <h2>Day 1：神戶入境與和牛慶功</h2>
+    <table>
+        <tr><th>11:45</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=神戶機場" target="_blank">神戶機場</a></td><td>搭乘星宇航空 JX1834 抵達</td></tr>
+        <tr><th>12:30</th><td class="location">機場接送</td><td>包車前往大阪市區</td></tr>
+        <tr><th>14:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=心齋橋筋商店街" target="_blank">心齋橋周邊</a></td><td>於商圈周邊享用章魚燒、蓬萊肉包等街頭小吃墊胃</td></tr>
+        <tr><th>15:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=道頓堀" target="_blank">心齋橋 / 道頓堀</a></td><td>感受熱鬧氛圍，視情況採買常備藥妝</td></tr>
+        <tr><th>19:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=燒肉力丸+心齋橋店" target="_blank">燒肉力丸 心齋橋店</a></td><td>專攻七輪炭火烤肉，大口享用和牛與120種品項吃到飽</td></tr>
+        <tr><th>21:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=MIMARU大阪+心斎橋WEST" target="_blank">MIMARU大阪 心斎橋WEST</a></td><td>返回入住飯店休息，於大客廳放鬆暢飲</td></tr>
+    </table>
+</div>
+
+<!-- Day 2 -->
+<div id="day-2" class="day">
+    <div class="header">
+        <h1>大阪五天四夜 熱血微醺專屬行程</h1>
+        <div class="weather">
+            <strong>📅 日期：</strong>12月12日 (週六)<br>
+            <strong>⛅ 天氣：</strong>大阪冬季平均氣溫約 5°C ~ 12°C，天氣乾冷。建議採「洋蔥式穿搭」。
+        </div>
+    </div>
+    <h2>Day 2：日本橋模型挖寶與二郎系挑戰</h2>
+    <table>
+        <tr><th>09:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=日本橋+Den+Den+Town" target="_blank">日本橋 Den Den Town</a></td><td>大叔團的模型玩具尋寶聖地</td></tr>
+        <tr><th>10:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Joshin+Super+Kids+Land+本店" target="_blank">Joshin Super Kids Land 本店</a></td><td>全日本最大級模型店，採購鋼彈、鐵道模型與工具</td></tr>
+        <tr><th>12:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=拉麵莊+銘刻歷史+日本橋店" target="_blank">拉麵莊 銘刻歷史</a></td><td>挑戰二郎系拉麵，極粗麵條與極厚豬肉</td></tr>
+        <tr><th>14:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=駿河屋+大阪日本橋" target="_blank">駿河屋、Mandarake</a></td><td>穿梭日本橋巷弄尋找二手與絕版玩具模型</td></tr>
+        <tr><th>16:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=新世界+大阪" target="_blank">新世界商圈</a></td><td>拍攝通天閣，感受濃厚的昭和下町風情</td></tr>
+        <tr><th>17:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=八重勝+串炸" target="_blank">新世界炸串 (八重勝 / 達摩)</a></td><td>鎖定老店，享用薄脆麵衣炸串與生啤酒</td></tr>
+        <tr><th>19:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=MEGA+Don+Quijote+Shinsekai" target="_blank">MEGA唐吉軻德 新世界店</a></td><td>24小時營業，零食、藥妝與各類雜貨免稅大掃貨</td></tr>
+        <tr><th>21:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=MIMARU大阪+心斎橋WEST" target="_blank">MIMARU大阪 心斎橋WEST</a></td><td>返回入住飯店休息</td></tr>
+    </table>
+</div>
+
+<!-- Day 3 -->
+<div id="day-3" class="day">
+    <div class="header">
+        <h1>大阪五天四夜 熱血微醺專屬行程</h1>
+        <div class="weather">
+            <strong>📅 日期：</strong>12月13日 (週日)<br>
+            <strong>⛅ 天氣：</strong>大阪冬季平均氣溫約 5°C ~ 12°C，天氣乾冷。建議採「洋蔥式穿搭」。
+        </div>
+    </div>
+    <h2>Day 3：酒廠微醺半日遊與百名店串燒</h2>
+    <table>
+        <tr><th>09:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Premier+Osaka+Hommachi" target="_blank">Super Hotel Premier 大阪本町站前</a></td><td>飯店退房，移至本町飯店寄放行李</td></tr>
+        <tr><th>10:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=高槻市車站" target="_blank">高槻市</a></td><td>搭車前往擁有悠久歷史的富田酒造街</td></tr>
+        <tr><th>11:30</th><td class="location">高槻市車站周邊</td><td>於車站周邊享用在地美食墊胃</td></tr>
+        <tr><th>13:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=壽酒造+國乃長" target="_blank">壽酒造 國乃長</a></td><td>於酒廠直營吧台「クラノミ」品嚐限定清酒與精釀啤酒</td></tr>
+        <tr><th>14:15</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=西山天王山站" target="_blank">搭乘阪急線</a></td><td>從阪急「富田站」搭車至阪急「西山天王山站」</td></tr>
+        <tr><th>14:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Suntory+京都天然水啤酒廠" target="_blank">Suntory 京都天然水啤酒廠</a></td><td>參加70分鐘見學行程，結束後免費試飲頂級生啤酒</td></tr>
+        <tr><th>16:30</th><td class="location">返回大阪市區</td><td>搭乘阪急線轉地下鐵回到本町</td></tr>
+        <tr><th>19:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Sumibi+Yakitori+Kibitaki" target="_blank">Sumibi Yakitori Kibitaki</a></td><td>預約制 Tabelog 百名店，享受頂級備長炭烤雞肉串燒</td></tr>
+        <tr><th>21:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Premier+Osaka+Hommachi" target="_blank">Super Hotel Premier 大阪本町站前</a></td><td>返回飯店辦理 Check-in，享受免費酒水與天然溫泉</td></tr>
+    </table>
+</div>
+
+<!-- Day 4 -->
+<div id="day-4" class="day">
+    <div class="header">
+        <h1>大阪五天四夜 熱血微醺專屬行程</h1>
+        <div class="weather">
+            <strong>📅 日期：</strong>12月14日 (週一)<br>
+            <strong>⛅ 天氣：</strong>大阪冬季平均氣溫約 5°C ~ 12°C，天氣乾冷。建議採「洋蔥式穿搭」。
+        </div>
+    </div>
+    <h2>Day 4：梅田瘋狂採購與超厚叉燒拉麵</h2>
+    <table>
+        <tr><th>09:30</th><td class="location">前往梅田</td><td>享用飯店日式米飯早餐後，出發前往梅田商圈</td></tr>
+        <tr><th>10:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Alpen+OSAKA" target="_blank">Alpen OSAKA</a></td><td>狂逛 B2F~4F，鎖定 ASICS 等運動鞋與戶外裝備</td></tr>
+        <tr><th>13:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=人類みな麺類+Premium+LUCUA" target="_blank">人類みな麺類 Premium</a></td><td>大口享用招牌魚貝醬油湯頭與世界級厚切叉燒</td></tr>
+        <tr><th>14:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=KIDDY+LAND+梅田店" target="_blank">KIDDY LAND 梅田店</a></td><td>尋找各式動漫與熱門角色周邊</td></tr>
+        <tr><th>16:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=梅田+LOFT" target="_blank">梅田 LOFT</a></td><td>直上6樓採買手帳與文具，隨後至4樓退稅</td></tr>
+        <tr><th>19:00</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=野乃鳥+梅味堂" target="_blank">野乃鳥 梅味堂</a></td><td>中崎町鐵道高架下硬派居酒屋，大啖備長炭烤雞肉</td></tr>
+        <tr><th>21:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Premier+Osaka+Hommachi" target="_blank">Super Hotel Premier 大阪本町站前</a></td><td>返回飯店休息，泡湯緩解疲勞</td></tr>
+    </table>
+</div>
+
+<!-- Day 5 -->
+<div id="day-5" class="day">
+    <div class="header">
+        <h1>大阪五天四夜 熱血微醺專屬行程</h1>
+        <div class="weather">
+            <strong>📅 日期：</strong>12月15日 (週二)<br>
+            <strong>⛅ 天氣：</strong>大阪冬季平均氣溫約 5°C ~ 12°C，天氣乾冷。建議採「洋蔥式穿搭」。
+        </div>
+    </div>
+    <h2>Day 5：最後補給與滿載出境</h2>
+    <table>
+        <tr><th>08:30</th><td class="location">飯店打包</td><td>將模型、文具、運動鞋與藥妝妥善裝箱</td></tr>
+        <tr><th>09:30</th><td class="location">辦理退房</td><td>離開飯店，準備搭乘電車前往神戶</td></tr>
+        <tr><th>10:30</th><td class="location"><a href="https://www.google.com/maps/search/?api=1&query=神戶機場" target="_blank">神戶機場</a></td><td>提早抵達辦理星宇航空報到與託運手續</td></tr>
+        <tr><th>11:30</th><td class="location">機場免稅店</td><td>過安檢後採買伴手禮，喝杯返台前的生啤酒</td></tr>
+        <tr><th>13:00</th><td class="location">搭機返台</td><td>搭乘星宇航空 JX1835 帶著戰利品返航</td></tr>
+    </table>
+</div>
+
+</body>
+</html>
